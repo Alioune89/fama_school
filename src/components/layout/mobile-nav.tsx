@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/brand/logo";
@@ -14,13 +14,37 @@ import type { Space } from "@/lib/auth/spaces";
 import { cn } from "@/lib/utils";
 
 /** Barre d'onglets en bas d'écran sur téléphone (grosses cibles tactiles), menu complet dans un tiroir. */
+function TabLinks({ space, pathname }: { space: Space; pathname: string | null }) {
+  const t = useTranslations("nav");
+  const { mobile, menu } = NAVIGATION[space];
+  const home = menu[0]!.href;
+  return mobile.map((item) => {
+    const active = pathname !== null && isActiveHref(pathname, item.href, home);
+    return (
+      <li key={item.href}>
+        <Link
+          href={item.href}
+          aria-current={active ? "page" : undefined}
+          className={cn("flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium text-ink-soft", active && "text-ink")}
+        >
+          <span className={cn("flex h-8 w-12 items-center justify-center rounded-full transition-colors", active && "bg-azure-200")}>
+            <NavIcon name={item.icon} className="size-5" />
+          </span>
+          <span className="max-w-full truncate px-1">{t(item.shortLabel ?? item.label)}</span>
+        </Link>
+      </li>
+    );
+  });
+}
+
+function TabLinksLive({ space }: { space: Space }) {
+  return <TabLinks space={space} pathname={usePathname()} />;
+}
+
 export function MobileNav({ space }: { space: Space }) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { mobile, menu } = NAVIGATION[space];
-  const home = menu[0]!.href;
 
   return (
     <>
@@ -29,31 +53,9 @@ export function MobileNav({ space }: { space: Space }) {
         className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 backdrop-blur lg:hidden"
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">
-          {mobile.map((item) => {
-            const active = isActiveHref(pathname, item.href, home);
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium text-ink-soft",
-                    active && "text-ink",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "flex h-8 w-12 items-center justify-center rounded-full transition-colors",
-                      active && "bg-azure-200",
-                    )}
-                  >
-                    <NavIcon name={item.icon} className="size-5" />
-                  </span>
-                  <span className="max-w-full truncate px-1">{t(item.shortLabel ?? item.label)}</span>
-                </Link>
-              </li>
-            );
-          })}
+          <Suspense fallback={<TabLinks space={space} pathname={null} />}>
+            <TabLinksLive space={space} />
+          </Suspense>
           <li>
             <button
               type="button"

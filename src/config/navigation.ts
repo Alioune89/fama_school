@@ -67,11 +67,21 @@ export type SpaceNavigation = {
   mobile: NavItem[];
 };
 
+/** Sélection des onglets mobiles par rubrique (robuste à l'ordre du menu). */
+function pick(items: NavItem[], labels: NavLabelKey[]): NavItem[] {
+  return labels.map((label) => {
+    const item = items.find((candidate) => candidate.label === label);
+    if (!item) throw new Error(`Rubrique absente du menu : ${label}`);
+    return item;
+  });
+}
+
 const direction: SpaceNavigation = {
   menu: [
     { label: "dashboard", shortLabel: "home", href: "/direction", icon: "home" },
     { label: "students", href: "/direction/eleves", icon: "students", soon: true },
-    { label: "teachers", href: "/direction/professeurs", icon: "teachers", soon: true },
+    { label: "teachers", href: "/direction/professeurs", icon: "teachers" },
+    { label: "staff", href: "/direction/personnel", icon: "staff" },
     { label: "classes", href: "/direction/classes", icon: "classes", soon: true },
     { label: "attendance", href: "/direction/presences", icon: "attendance", soon: true },
     { label: "grades", href: "/direction/notes", icon: "grades", soon: true },
@@ -97,7 +107,7 @@ const direction: SpaceNavigation = {
   ],
   mobile: [],
 };
-direction.mobile = [direction.menu[0]!, direction.menu[1]!, direction.menu[4]!, direction.menu[6]!];
+direction.mobile = pick(direction.menu, ["dashboard", "students", "attendance", "finance"]);
 
 const professeur: SpaceNavigation = {
   menu: [
@@ -112,7 +122,7 @@ const professeur: SpaceNavigation = {
   other: [{ label: "profile", href: "/professeur/profil", icon: "profile", soon: true }],
   mobile: [],
 };
-professeur.mobile = [professeur.menu[0]!, professeur.menu[2]!, professeur.menu[3]!, professeur.menu[6]!];
+professeur.mobile = pick(professeur.menu, ["home", "rollCall", "gradeEntry", "messages"]);
 
 const parent: SpaceNavigation = {
   menu: [

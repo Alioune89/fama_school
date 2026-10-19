@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ChevronDown, LogOut } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Logo } from "@/components/brand/logo";
@@ -27,10 +27,9 @@ export function SoonBadge() {
   );
 }
 
-function NavGroup({ item, home, onNavigate }: { item: NavItem; home: string; onNavigate?: () => void }) {
+function NavGroup({ item, home, pathname, onNavigate }: { item: NavItem; home: string; pathname: string | null; onNavigate?: () => void }) {
   const t = useTranslations("nav");
-  const pathname = usePathname();
-  const childActive = item.children?.some((child) => isActiveHref(pathname, child.href, home)) ?? false;
+  const childActive = pathname !== null && (item.children?.some((child) => isActiveHref(pathname, child.href, home)) ?? false);
   const [open, setOpen] = useState(childActive);
 
   return (
@@ -51,7 +50,7 @@ function NavGroup({ item, home, onNavigate }: { item: NavItem; home: string; onN
       {open && (
         <ul className="mt-1 mb-2 ml-6 space-y-0.5 border-l-2 border-line pl-3">
           {item.children!.map((child) => (
-            <NavLeafLink key={child.href} leaf={child} home={home} nested onNavigate={onNavigate} />
+            <NavLeafLink key={child.href} leaf={child} home={home} pathname={pathname} nested onNavigate={onNavigate} />
           ))}
         </ul>
       )}
@@ -64,17 +63,18 @@ function NavLeafLink({
   home,
   icon,
   nested,
+  pathname,
   onNavigate,
 }: {
   leaf: NavLeaf;
   home: string;
   icon?: NavItem["icon"];
   nested?: boolean;
+  pathname: string | null;
   onNavigate?: () => void;
 }) {
   const t = useTranslations("nav");
-  const pathname = usePathname();
-  const active = isActiveHref(pathname, leaf.href, home);
+  const active = pathname !== null && isActiveHref(pathname, leaf.href, home);
 
   return (
     <li>
@@ -96,7 +96,11 @@ function NavLeafLink({
   );
 }
 
-export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: () => void }) {
+/**
+ * Menu d'un espace. Le chemin courant n'est connu qu'à la requête sur les routes dynamiques
+ * (/professeurs/[id]) : le menu est prérendu sans rubrique active, puis surligné (voir SidebarNav).
+ */
+function SidebarNavContent({ space, pathname, onNavigate }: { space: Space; pathname: string | null; onNavigate?: () => void }) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const locale = useLocale();
@@ -112,9 +116,9 @@ export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: (
         <ul className="space-y-1">
           {menu.map((item) =>
             item.children ? (
-              <NavGroup key={item.href} item={item} home={home} onNavigate={onNavigate} />
+              <NavGroup key={item.href} item={item} home={home} pathname={pathname} onNavigate={onNavigate} />
             ) : (
-              <NavLeafLink key={item.href} leaf={item} icon={item.icon} home={home} onNavigate={onNavigate} />
+              <NavLeafLink key={item.href} leaf={item} icon={item.icon} home={home} pathname={pathname} onNavigate={onNavigate} />
             ),
           )}
         </ul>
@@ -125,7 +129,7 @@ export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: (
         </p>
         <ul className="space-y-1">
           {other.map((item) => (
-            <NavLeafLink key={item.href} leaf={item} icon={item.icon} home={home} onNavigate={onNavigate} />
+            <NavLeafLink key={item.href} leaf={item} icon={item.icon} home={home} pathname={pathname} onNavigate={onNavigate} />
           ))}
           <li>
             <form action={signOut.bind(null, locale)}>
@@ -141,6 +145,19 @@ export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: (
         </ul>
       </div>
     </nav>
+  );
+}
+
+function SidebarNavLive({ space, onNavigate }: { space: Space; onNavigate?: () => void }) {
+  const pathname = usePathname();
+  return <SidebarNavContent space={space} pathname={pathname} onNavigate={onNavigate} />;
+}
+
+export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: () => void }) {
+  return (
+    <Suspense fallback={<SidebarNavContent space={space} pathname={null} onNavigate={onNavigate} />}>
+      <SidebarNavLive space={space} onNavigate={onNavigate} />
+    </Suspense>
   );
 }
 

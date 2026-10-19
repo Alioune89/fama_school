@@ -416,5 +416,93 @@
       "thresholdsMax": "Un seuil dépasse le barème.",
       "weightsZero": "Au moins un type d'évaluation doit compter."
     }
+  },
+  "staff": {
+    "contracts": {
+      "permanent": "Permanent",
+      "vacataire": "Vacataire"
+    },
+    "account": {
+      "active": "Compte actif",
+      "invited": "Invité",
+      "inactive": "Désactivé"
+    },
+    "form": {
+      "added": "Ajouté au répertoire. La personne peut se connecter avec son numéro.",
+      "updated": "Fiche mise à jour.",
+      "editTitle": "Modifier la fiche",
+      "addTeacher": "Ajouter un professeur",
+      "addStaff": "Ajouter un membre du personnel",
+      "editHint": "Un nouveau numéro de téléphone donne l'accès avec ce numéro.",
+      "inviteHint": "La personne recevra l'accès à l'école en se connectant avec ce numéro (code par SMS).",
+      "role": "Fonction",
+      "fullName": "Nom complet",
+      "phone": "Téléphone",
+      "phoneHint": "Numéro utilisé pour se connecter.",
+      "email": "E-mail (facultatif)",
+      "title": "Intitulé",
+      "titlePlaceholderTeacher": "Ex. Professeure de mathématiques",
+      "titlePlaceholderStaff": "Ex. Comptable principal",
+      "contract": "Contrat",
+      "save": "Enregistrer",
+      "add": "Ajouter",
+      "cancel": "Annuler"
+    },
+    "list": {
+      "teachersHint": "Professeurs permanents et vacataires, avec leurs matières et leurs classes.",
+      "staffHint": "Direction, censeur, surveillance, comptabilité et secrétariat.",
+      "count": "{count, plural, one {# personne} other {# personnes}}",
+      "teacher": "Professeur",
+      "subjects": "Matières",
+      "classes": "Classes",
+      "phone": "Téléphone",
+      "contract": "Contrat",
+      "account": "Accès",
+      "open": "Ouvrir la fiche",
+      "search": "Rechercher",
+      "searchTeachers": "Rechercher un professeur…",
+      "searchStaff": "Rechercher une personne…",
+      "allContracts": "Tous les contrats",
+      "noResults": "Aucun résultat pour cette recherche.",
+      "emptyTeachers": "Aucun professeur pour l'instant",
+      "emptyTeachersHint": "Ajoutez vos professeurs avec leur numéro : ils pourront saisir les présences et les notes depuis leur téléphone.",
+      "emptyStaff": "Aucun membre du personnel pour l'instant"
+    },
+    "detail": {
+      "backTeachers": "Professeurs",
+      "backStaff": "Personnel",
+      "invitedHint": "Cette personne ne s'est pas encore connectée. Elle aura accès dès sa première connexion avec ce numéro.",
+      "since": "Dans le répertoire depuis le {date}",
+      "edit": "Modifier",
+      "deactivate": "Désactiver",
+      "reactivate": "Réactiver",
+      "deactivateConfirm": "Désactiver {name} ? Son accès à l'école sera suspendu.",
+      "deactivated": "Accès suspendu.",
+      "reactivated": "Accès rétabli."
+    },
+    "assignments": {
+      "year": "Affectations {year}",
+      "title": "Matières et classes",
+      "empty": "Aucune affectation pour l'instant.",
+      "class": "Classe",
+      "subject": "Matière",
+      "chooseClass": "Choisir une classe",
+      "chooseSubject": "Choisir une matière",
+      "takenBy": "{subject} (actuellement : {name})",
+      "assign": "Affecter",
+      "assigned": "Affectation enregistrée.",
+      "remove": "Retirer {subject} en {className}",
+      "homeroomTitle": "Professeur principal",
+      "homeroomHint": "Interlocuteur des parents pour la classe et responsable du conseil de classe.",
+      "homeroomNone": "Professeur principal d'aucune classe.",
+      "homeroomAdd": "Nommer professeur principal de",
+      "homeroomReplace": "{className} (remplace l'actuel)",
+      "homeroomRemove": "Ne plus être professeur principal de {className}",
+      "homeroomSet": "Professeur principal nommé.",
+      "homeroomRemoved": "Professeur principal retiré."
+    },
+    "errors": {
+      "duplicate": "Cette personne figure déjà dans le répertoire avec ce rôle."
+    }
   }
 }

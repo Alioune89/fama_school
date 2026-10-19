@@ -1,0 +1,224 @@
+{
+  "brand": {
+    "name": "Fama School",
+    "tagline": "L'école, les professeurs et les parents, enfin reliés.",
+    "description": "Suivi scolaire, bulletins, présences et paiements avec reçus pour les écoles du Sénégal."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "back": "Retour",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "seeAll": "Voir tout",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "pageOf": "Page {page} sur {total}",
+    "soon": "Bientôt",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "menu": "Menu",
+    "openMenu": "Ouvrir le menu",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "language": "Langue",
+    "languages": {
+      "fr": "Français",
+      "wo": "Wolof (bêta)"
+    },
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "switchSpace": "Changer d'espace",
+    "trendUp": "en hausse de {value} %",
+    "trendDown": "en baisse de {value} %"
+  },
+  "metadata": {
+    "title": "Fama School",
+    "description": "La plateforme qui relie l'école, les professeurs et les parents : notes, bulletins, présences et paiements avec reçus."
+  },
+  "roles": {
+    "owner": "Fondateur",
+    "director": "Directeur",
+    "censor": "Censeur",
+    "supervisor": "Surveillant général",
+    "accountant": "Comptable",
+    "secretary": "Secrétaire",
+    "teacher": "Professeur",
+    "parent": "Parent",
+    "driver": "Chauffeur",
+    "platformAdmin": "Administrateur Fama School"
+  },
+  "spaces": {
+    "direction": "Direction",
+    "professeur": "Professeur",
+    "parent": "Parent",
+    "plateforme": "Plateforme",
+    "chooseTitle": "Choisissez votre espace",
+    "chooseSubtitle": "Votre compte donne accès à plusieurs espaces. Vous pourrez en changer à tout moment depuis votre profil.",
+    "noAccessTitle": "Aucun espace n'est encore ouvert pour ce compte",
+    "noAccessBody": "Demandez à votre école de vous inviter avec le numéro de téléphone {phone}. Votre espace apparaîtra ici dès que l'invitation sera envoyée.",
+    "noAccessBodyNoPhone": "Demandez à votre école de vous inviter. Votre espace apparaîtra ici dès que l'invitation sera envoyée.",
+    "enter": "Entrer"
+  },
+  "nav": {
+    "sectionMenu": "Menu",
+    "sectionOther": "Autre",
+    "dashboard": "Tableau de bord",
+    "students": "Élèves",
+    "teachers": "Professeurs",
+    "staff": "Personnel",
+    "classes": "Classes",
+    "attendance": "Présences",
+    "grades": "Notes et bulletins",
+    "finance": "Finances",
+    "feesCollection": "Encaissements",
+    "invoices": "Factures",
+    "feeSchedule": "Frais de scolarité",
+    "expenses": "Dépenses",
+    "announcements": "Annonces",
+    "calendar": "Calendrier",
+    "messages": "Messages",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "home": "Accueil",
+    "myClasses": "Mes classes",
+    "rollCall": "Appel",
+    "gradeEntry": "Notes",
+    "programme": "Programme",
+    "homework": "Cahier de textes",
+    "children": "Mes enfants",
+    "payments": "Paiements",
+    "schools": "Écoles",
+    "plans": "Formules",
+    "more": "Plus"
+  },
+  "topbar": {
+    "searchPlaceholder": "Rechercher un élève, une classe…",
+    "activeSchool": "École active"
+  },
+  "installCard": {
+    "title": "Gérez votre école depuis votre téléphone",
+    "action": "Installer l'appli",
+    "installed": "Appli installée",
+    "iosHint": "Sur iPhone : touchez Partager, puis « Sur l'écran d'accueil »."
+  },
+  "offline": {
+    "banner": "Vous êtes hors ligne. Vos actions en attente partiront dès le retour du réseau.",
+    "waiting": "En attente de connexion…",
+    "pageTitle": "Pas de connexion",
+    "pageBody": "Cette page n'est pas encore disponible hors ligne. Vos saisies déjà enregistrées sur ce téléphone partiront dès le retour du réseau.",
+    "retry": "Réessayer"
+  },
+  "footer": {
+    "email": "contact@famaschool.sn",
+    "phone": "+221 33 000 00 00",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Confidentialité",
+    "copyright": "© {year} Fama School"
+  },
+  "auth": {
+    "title": "Connexion",
+    "subtitle": "Parents, professeurs et personnel : connectez-vous avec votre numéro de téléphone.",
+    "tabPhone": "Téléphone",
+    "tabEmail": "E-mail (personnel)",
+    "phoneLabel": "Numéro de téléphone",
+    "phonePlaceholder": "77 123 45 67",
+    "phoneHint": "Nous vous envoyons un code à 6 chiffres par SMS.",
+    "sendCode": "Recevoir le code",
+    "emailLabel": "Adresse e-mail",
+    "passwordLabel": "Mot de passe",
+    "signInEmail": "Se connecter",
+    "codeTitle": "Entrez le code reçu",
+    "codeSubtitle": "Un code à 6 chiffres a été envoyé au {phone}.",
+    "codeLabel": "Code de vérification",
+    "verify": "Valider",
+    "changeNumber": "Changer de numéro",
+    "resend": "Renvoyer le code",
+    "resendIn": "Renvoyer le code dans {seconds} s",
+    "codeSent": "Code envoyé.",
+    "sidePanelTitle": "Chaque franc payé, chaque note, chaque absence : visibles des deux côtés.",
+    "sidePanelPoints": {
+      "grades": "Notes et bulletins au fil de l'eau",
+      "payments": "Paiements Wave et Orange Money avec reçu",
+      "attendance": "Présence et sortie des classes en temps réel"
+    },
+    "errors": {
+      "invalidPhone": "Ce numéro n'est pas valide. Exemple : 77 123 45 67.",
+      "invalidCode": "Code incorrect ou expiré. Vérifiez le SMS ou demandez un nouveau code.",
+      "invalidCredentials": "E-mail ou mot de passe incorrect.",
+      "invalidEmail": "Adresse e-mail invalide.",
+      "passwordRequired": "Saisissez votre mot de passe.",
+      "rateLimited": "Trop de demandes rapprochées. Patientez un instant avant de réessayer.",
+      "smsFailed": "Le SMS n'a pas pu être envoyé. Réessayez dans un instant.",
+      "unknown": "Une erreur est survenue. Réessayez."
+    }
+  },
+  "dashboard": {
+    "welcome": "Bonjour {name}",
+    "welcomeFallback": "Bonjour",
+    "students": "Élèves",
+    "teachers": "Professeurs",
+    "staff": "Personnel",
+    "parents": "Parents",
+    "pendingInvitations": "Invitations en attente",
+    "setupTitle": "Mise en route de votre école",
+    "setupBody": "Configurez l'année scolaire, les classes et les matières, puis importez vos élèves. Cela prend environ 30 minutes.",
+    "setupAction": "Commencer la configuration",
+    "agenda": "Agenda",
+    "agendaEmpty": "Aucun événement prévu cette semaine."
+  },
+  "teacherHome": {
+    "title": "Mes classes du jour",
+    "empty": "Vos classes apparaîtront ici dès que la direction vous aura affecté à une classe."
+  },
+  "parentHome": {
+    "title": "Mes enfants",
+    "empty": "Vos enfants apparaîtront ici dès que l'école les aura rattachés à votre numéro."
+  },
+  "platform": {
+    "schoolsTitle": "Écoles clientes",
+    "schoolsEmpty": "Aucune école pour l'instant.",
+    "columns": {
+      "name": "École",
+      "city": "Ville",
+      "plan": "Formule",
+      "status": "Statut",
+      "members": "Membres"
+    },
+    "plans": {
+      "pilot": "Pilote",
+      "starter": "Démarrage",
+      "school": "École",
+      "establishment": "Établissement",
+      "group": "Groupe scolaire"
+    },
+    "statuses": {
+      "trial": "Essai",
+      "active": "Active",
+      "suspended": "Suspendue",
+      "archived": "Archivée"
+    }
+  },
+  "comingSoon": {
+    "title": "Module en préparation",
+    "body": "Ce module arrive dans une prochaine version de Fama School."
+  },
+  "landing": {
+    "heroTitle": "L'école, les professeurs et les parents, enfin reliés.",
+    "heroBody": "Notes, bulletins, présences et paiements avec reçus : tout le suivi scolaire sur une seule plateforme, pensée pour les écoles du Sénégal.",
+    "cta": "Se connecter",
+    "ctaDemo": "Demander une démo"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Le lien est peut-être incorrect, ou la page a été déplacée.",
+    "action": "Revenir à l'accueil"
+  },
+  "errorPage": {
+    "title": "Quelque chose s'est mal passé",
+    "body": "L'erreur a été signalée. Réessayez dans un instant.",
+    "retry": "Réessayer"
+  }
+}

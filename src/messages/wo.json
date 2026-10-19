@@ -1,0 +1,23 @@
+{
+  "common": {
+    "signIn": "Duggu",
+    "signOut": "Génn",
+    "languages": {
+      "fr": "Faranse",
+      "wo": "Wolof (bêta)"
+    }
+  },
+  "roles": {
+    "teacher": "Jàngalekat",
+    "parent": "Waajur"
+  },
+  "nav": {
+    "children": "Sama doom yi"
+  },
+  "dashboard": {
+    "welcomeFallback": "Dalal ak jàmm"
+  },
+  "parentHome": {
+    "title": "Sama doom yi"
+  }
+}

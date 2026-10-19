@@ -1,0 +1,180 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Palette Fama School, d'après les maquettes (style « SchoolHub ») :
+ * aplats pastel lavande / azur / soleil sur une toile gris-lavande, cartes blanches arrondies.
+ * Les textes posés sur les aplats restent foncés (encre) pour respecter le contraste AA.
+ */
+@theme {
+  --color-lavender-50: #f3f2ff;
+  --color-lavender-100: #e7e6ff;
+  --color-lavender-200: #cfceff;
+  --color-lavender-300: #b7b5fb;
+  --color-lavender-400: #9c99f2;
+  --color-lavender-500: #7e7ae6;
+  --color-lavender-600: #625dd0;
+  --color-lavender-700: #4d48b3;
+
+  --color-azure-50: #eef8fd;
+  --color-azure-100: #ddf2fb;
+  --color-azure-200: #c3ebfa;
+  --color-azure-300: #9edcf6;
+  --color-azure-400: #6fc8f0;
+  --color-azure-500: #3db0e6;
+  --color-azure-600: #1b8fc7;
+  --color-azure-700: #1570a6;
+  --color-azure-800: #125c88;
+
+  --color-sun-50: #fffbea;
+  --color-sun-100: #fef4c7;
+  --color-sun-200: #fae27c;
+  --color-sun-300: #f6d55a;
+  --color-sun-400: #f1c232;
+  --color-sun-500: #e0a90e;
+  --color-sun-600: #b98500;
+  --color-sun-700: #8c6400;
+
+  --color-ink: #1e2433;
+  --color-ink-soft: #475067;
+  --color-canvas: #f4f5fa;
+  --color-line: #e9ebf2;
+
+  --color-success-50: #ecfdf3;
+  --color-success-500: #12b76a;
+  --color-success-700: #067647;
+  --color-warning-50: #fffaeb;
+  --color-warning-500: #f79009;
+  --color-warning-700: #b54708;
+  --color-danger-50: #fef3f2;
+  --color-danger-500: #f04438;
+  --color-danger-700: #b42318;
+
+  --shadow-card: 0 1px 2px rgb(30 36 51 / 0.04), 0 1px 1px rgb(30 36 51 / 0.02);
+  --shadow-float: 0 12px 32px -12px rgb(30 36 51 / 0.18);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #f4f5fa;
+  --foreground: #1e2433;
+  --card: #ffffff;
+  --card-foreground: #1e2433;
+  --popover: #ffffff;
+  --popover-foreground: #1e2433;
+  --primary: #1570a6;
+  --primary-foreground: #ffffff;
+  --secondary: #c3ebfa;
+  --secondary-foreground: #1e2433;
+  --muted: #f1f2f7;
+  --muted-foreground: #667085;
+  --accent: #eef8fd;
+  --accent-foreground: #1e2433;
+  --destructive: #d92d20;
+  --border: #e9ebf2;
+  --input: #e2e5ee;
+  --ring: #6fc8f0;
+  --chart-1: #6fc8f0;
+  --chart-2: #f6d55a;
+  --chart-3: #9c99f2;
+  --chart-4: #1570a6;
+  --chart-5: #4d48b3;
+  --radius: 0.875rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #475067;
+  --sidebar-primary: #1570a6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #c3ebfa;
+  --sidebar-accent-foreground: #1e2433;
+  --sidebar-border: #eef0f5;
+  --sidebar-ring: #6fc8f0;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading tracking-tight text-ink;
+  }
+}
+
+@layer utilities {
+  /* Chiffres alignés pour les montants et les notes. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -3,28 +3,20 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useUrlParams } from "./use-url-params";
 
 /** Recherche reflétée dans l'URL (?q=…) : partageable, et le serveur filtre directement. */
 export function SearchInput({ placeholder, label, param = "q" }: { placeholder: string; label: string; param?: string }) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const setParams = useUrlParams();
   const [value, setValue] = useState(searchParams.get(param) ?? "");
 
   useEffect(() => {
     const current = searchParams.get(param) ?? "";
     if (value.trim() === current) return;
-    const timer = window.setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value.trim()) params.set(param, value.trim());
-      else params.delete(param);
-      params.delete("page");
-      const query = Object.fromEntries(params.entries());
-      router.replace({ pathname, query }, { scroll: false });
-    }, 300);
+    const timer = window.setTimeout(() => setParams({ [param]: value.trim() || null }), 300);
     return () => window.clearTimeout(timer);
-  }, [value, param, pathname, router, searchParams]);
+  }, [value, param, searchParams, setParams]);
 
   return (
     <label className="relative block w-full sm:w-72">

@@ -79,7 +79,7 @@ function pick(items: NavItem[], labels: NavLabelKey[]): NavItem[] {
 const direction: SpaceNavigation = {
   menu: [
     { label: "dashboard", shortLabel: "home", href: "/direction", icon: "home" },
-    { label: "students", href: "/direction/eleves", icon: "students", soon: true },
+    { label: "students", href: "/direction/eleves", icon: "students" },
     { label: "teachers", href: "/direction/professeurs", icon: "teachers" },
     { label: "staff", href: "/direction/personnel", icon: "staff" },
     { label: "classes", href: "/direction/classes", icon: "classes", soon: true },

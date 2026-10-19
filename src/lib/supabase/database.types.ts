@@ -985,6 +985,11 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
+      register_student: {
+        Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };
+        Returns: string;
+      };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
     };
     Enums: {

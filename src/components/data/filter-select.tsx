@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { NativeSelect } from "@/components/ui/native-select";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useUrlParams } from "./use-url-params";
 
 /** Filtre en pilule (maquettes : « Toutes les classes ▾ ») synchronisé avec l'URL. */
 export function FilterSelect({
@@ -16,22 +16,15 @@ export function FilterSelect({
   allLabel: string;
   options: { value: string; label: string }[];
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const setParams = useUrlParams();
 
   return (
     <label className="block w-full sm:w-auto">
       <span className="sr-only">{label}</span>
       <NativeSelect
         value={searchParams.get(param) ?? ""}
-        onChange={(event) => {
-          const params = new URLSearchParams(searchParams.toString());
-          if (event.target.value) params.set(param, event.target.value);
-          else params.delete(param);
-          params.delete("page");
-          router.replace({ pathname, query: Object.fromEntries(params.entries()) }, { scroll: false });
-        }}
+        onChange={(event) => setParams({ [param]: event.target.value || null })}
         className="sm:min-w-44 [&_select]:rounded-full [&_select]:shadow-card"
       >
         <option value="">{allLabel}</option>

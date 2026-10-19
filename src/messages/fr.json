@@ -199,6 +199,23 @@
       "active": "Active",
       "suspended": "Suspendue",
       "archived": "Archivée"
+    },
+    "newSchool": "Nouvelle école",
+    "create": {
+      "title": "Nouvelle école",
+      "description": "L'école démarre en période d'essai. Son directeur reçoit l'accès avec son numéro de téléphone.",
+      "schoolSection": "L'école",
+      "name": "Nom de l'école",
+      "slug": "Identifiant",
+      "slugHint": "Adresse du futur mini-site : famaschool.sn/ecoles/{slug}",
+      "region": "Région",
+      "directorSection": "Directeur ou directrice",
+      "directorHint": "Il ou elle se connectera avec ce numéro (code SMS) ou cette adresse e-mail.",
+      "directorName": "Nom complet",
+      "directorPhone": "Téléphone",
+      "directorEmail": "E-mail (facultatif)",
+      "submit": "Créer l'école",
+      "success": "École créée. Le directeur peut se connecter."
     }
   },
   "comingSoon": {
@@ -220,5 +237,184 @@
     "title": "Quelque chose s'est mal passé",
     "body": "L'erreur a été signalée. Réessayez dans un instant.",
     "retry": "Réessayer"
+  },
+  "validation": {
+    "form": "Certains champs sont à corriger.",
+    "required": "Ce champ est obligatoire.",
+    "tooShort": "Trop court.",
+    "tooLong": "Trop long.",
+    "invalid": "Valeur invalide.",
+    "invalidPhone": "Numéro invalide. Exemple : 77 123 45 67.",
+    "invalidEmail": "Adresse e-mail invalide.",
+    "invalidDate": "Date invalide.",
+    "invalidSlug": "Lettres minuscules, chiffres et tirets uniquement.",
+    "slugTaken": "Cet identifiant est déjà utilisé par une autre école.",
+    "phoneOrEmail": "Indiquez un téléphone ou une adresse e-mail.",
+    "duplicate": "Cette valeur existe déjà."
+  },
+  "errors": {
+    "unknown": "Une erreur est survenue. Réessayez.",
+    "forbidden": "Vous n'avez pas les droits pour cette action.",
+    "notFound": "Élément introuvable.",
+    "conflict": "Cet élément a été modifié entre-temps. Rechargez la page."
+  },
+  "setup": {
+    "title": "Paramètres",
+    "subtitle": "Mise en route de votre école : six étapes, environ 30 minutes.",
+    "progress": "{completed} étapes sur {total} terminées",
+    "stepOf": "Étape {index} sur {total}",
+    "done": "Fait",
+    "todo": "À faire",
+    "configure": "Configurer",
+    "edit": "Modifier",
+    "backToOverview": "Mise en route",
+    "saveAndContinue": "Enregistrer et continuer",
+    "save": "Enregistrer",
+    "saved": "Enregistré.",
+    "readOnly": "Vous pouvez consulter ces réglages ; seule la direction peut les modifier.",
+    "allDone": "Votre école est prête. Vous pouvez maintenant inscrire vos élèves et votre personnel.",
+    "steps": {
+      "school": {
+        "title": "Identité de l'école",
+        "description": "Nom, coordonnées et logo, repris sur les bulletins et les reçus."
+      },
+      "year": {
+        "title": "Année scolaire",
+        "description": "Dates de l'année et découpage en semestres ou trimestres."
+      },
+      "levels": {
+        "title": "Cycles et niveaux",
+        "description": "Du préscolaire à la terminale, séries du lycée, filière franco-arabe."
+      },
+      "subjects": {
+        "title": "Matières et coefficients",
+        "description": "Matières enseignées à chaque niveau, avec leur coefficient."
+      },
+      "classes": {
+        "title": "Classes",
+        "description": "Classes de l'année en cours, niveau par niveau."
+      },
+      "evaluation": {
+        "title": "Mentions et évaluations",
+        "description": "Seuils des mentions et poids des devoirs, interrogations et compositions."
+      }
+    },
+    "summary": {
+      "year": "{label} · {count, plural, =2 {2 semestres} =3 {3 trimestres} other {# périodes}}",
+      "levels": "{count, plural, one {# niveau} other {# niveaux}}",
+      "subjects": "{count, plural, one {# matière} other {# matières}}",
+      "classes": "{count, plural, one {# classe} other {# classes}}",
+      "evaluation": "Félicitations à partir de {felicitations}/20"
+    },
+    "school": {
+      "name": "Nom de l'école",
+      "shortName": "Nom court",
+      "shortNameHint": "Affiché dans les SMS et sur téléphone (ex. « Les Baobabs »).",
+      "city": "Ville",
+      "region": "Région",
+      "address": "Adresse",
+      "phone": "Téléphone de l'école",
+      "email": "E-mail de l'école",
+      "logo": "Logo",
+      "logoHint": "PNG, JPG ou SVG, 1 Mo maximum. Il figure sur les bulletins et les reçus.",
+      "logoUpload": "Choisir un logo",
+      "logoUpdated": "Logo mis à jour."
+    },
+    "year": {
+      "label": "Année scolaire",
+      "startsOn": "Rentrée",
+      "endsOn": "Fin de l'année",
+      "periodKind": "Découpage",
+      "semester": "Semestres",
+      "trimester": "Trimestres",
+      "periodsTitle": "Périodes",
+      "periodsHint": "Dates proposées selon les congés habituels ; ajustez-les à votre calendrier.",
+      "periodLabel": "Nom",
+      "from": "Du",
+      "to": "Au",
+      "regenerate": "Recalculer les dates"
+    },
+    "levels": {
+      "cyclesTitle": "Cycles enseignés dans votre école",
+      "seriesTitle": "Séries du lycée",
+      "seriesHint": "Une classe par série et par niveau (2nde L, 2nde S…).",
+      "francoArabic": "École franco-arabe",
+      "francoArabicHint": "Ajoute la filière arabe (Coran, langue arabe, fiqh…) et un bulletin double.",
+      "gradingScale": {
+        "appreciation": "Appréciations",
+        "ten": "Notes sur 10",
+        "twenty": "Notes sur 20"
+      },
+      "levelsCount": "{count, plural, one {# niveau} other {# niveaux}}"
+    },
+    "subjects": {
+      "intro": "Indiquez le coefficient de la matière à chaque niveau où elle est enseignée ; laissez la case vide sinon.",
+      "applyPresets": "Pré-remplir avec les matières usuelles",
+      "presetsApplied": "Matières usuelles ajoutées : vérifiez les coefficients.",
+      "addSubject": "Ajouter une matière",
+      "subject": "Matière",
+      "shortName": "Abrév.",
+      "group": "Groupe",
+      "track": {
+        "french": "Filière française",
+        "arabic": "Filière arabe"
+      },
+      "nameAr": "Intitulé en arabe",
+      "remove": "Retirer la matière",
+      "removeConfirm": "Retirer « {name} » ? Ses affectations de professeurs seront aussi supprimées.",
+      "noLevels": "Commencez par choisir les cycles et niveaux de l'école.",
+      "coefficientFor": "Coefficient en {level}",
+      "newSubject": "Nouvelle matière",
+      "tabHasErrors": "Cet onglet contient une erreur"
+    },
+    "classes": {
+      "intro": "Indiquez le nombre de classes par niveau. Les classes déjà créées sont conservées.",
+      "count": "Nombre de classes",
+      "capacity": "Effectif maximum par classe",
+      "existing": "Déjà créées",
+      "preview": "Seront créées",
+      "create": "Créer les classes",
+      "created": "{count, plural, =0 {Aucune nouvelle classe.} one {# classe créée.} other {# classes créées.}}",
+      "noYear": "Enregistrez d'abord l'année scolaire.",
+      "noLevels": "Choisissez d'abord les cycles et niveaux."
+    },
+    "evaluation": {
+      "thresholdsTitle": "Seuils des mentions",
+      "thresholdsHint": "Mentions attribuées automatiquement d'après la moyenne générale. L'avertissement et le blâme restent décidés en conseil de classe.",
+      "twenty": "Notes sur 20 (moyen, secondaire)",
+      "ten": "Notes sur 10 (élémentaire)",
+      "felicitations": "Félicitations",
+      "encouragements": "Encouragements",
+      "tableauHonneur": "Tableau d'honneur",
+      "weightsTitle": "Poids des évaluations",
+      "weightsHint": "Poids de chaque type de note dans la moyenne d'une matière.",
+      "devoir": "Devoirs",
+      "interrogation": "Interrogations",
+      "composition": "Compositions",
+      "example": "Exemple : devoir 12, interrogation 14, composition 10 → moyenne {average}/20"
+    },
+    "errors": {
+      "yearLabel": "Format attendu : 2026-2027.",
+      "yearDates": "La fin de l'année doit suivre la rentrée.",
+      "periodCount": "Le nombre de périodes ne correspond pas au découpage choisi.",
+      "periodDates": "La fin de la période doit suivre son début.",
+      "periodOutside": "La période doit être comprise dans l'année scolaire.",
+      "periodOverlap": "Les périodes ne doivent pas se chevaucher.",
+      "periodLocked": "Une période est déjà clôturée : l'année ne peut plus être modifiée.",
+      "noCycle": "Choisissez au moins un cycle.",
+      "noSeries": "Choisissez au moins une série pour le lycée.",
+      "levelInUse": "Ce niveau a déjà des classes : retirez d'abord ses classes.",
+      "coefficient": "Coefficient entre 0,5 et 20.",
+      "noYear": "Enregistrez d'abord l'année scolaire.",
+      "logoType": "Format accepté : PNG, JPG, WebP ou SVG.",
+      "logoSize": "Le logo dépasse 1 Mo."
+    }
+  },
+  "settings": {
+    "errors": {
+      "thresholdsOrder": "Les seuils doivent être décroissants : félicitations, encouragements, tableau d'honneur.",
+      "thresholdsMax": "Un seuil dépasse le barème.",
+      "weightsZero": "Au moins un type d'évaluation doit compter."
+    }
   }
 }

@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Building2 } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { StatusPill, type StatusTone } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
+import { buttonVariants } from "@/components/ui/button";
 import { listSchools } from "@/features/platform/queries";
+import { Link } from "@/i18n/navigation";
 import { requireSpace } from "@/lib/auth/session";
 import { formatInteger } from "@/lib/format";
 import type { Enums } from "@/lib/supabase/database.types";
@@ -67,7 +69,15 @@ export default async function PlatformSchoolsPage() {
   const t = await getTranslations("platform");
   return (
     <>
-      <PageHeader title={t("schoolsTitle")} />
+      <PageHeader
+        title={t("schoolsTitle")}
+        actions={
+          <Link href="/plateforme/ecoles/nouvelle" className={buttonVariants()}>
+            <Plus aria-hidden />
+            {t("newSchool")}
+          </Link>
+        }
+      />
       <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-white shadow-card" aria-hidden />}>
         <SchoolsTable />
       </Suspense>

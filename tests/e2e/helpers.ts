@@ -9,6 +9,7 @@ export const DEMO = {
   parentPhone: "77 000 00 01",
   teacherPhone: "77 000 00 02",
   censorPhone: "77 000 00 03",
+  alAmineDirectorPhone: "77 000 00 04",
 } as const;
 
 export async function loginWithPhone(page: Page, phone: string, code: string = DEMO.otp) {

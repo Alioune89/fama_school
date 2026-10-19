@@ -93,7 +93,7 @@ const direction: SpaceNavigation = {
   ],
   other: [
     { label: "profile", href: "/direction/profil", icon: "profile", soon: true },
-    { label: "settings", href: "/direction/parametres", icon: "settings", soon: true },
+    { label: "settings", href: "/direction/parametres", icon: "settings" },
   ],
   mobile: [],
 };

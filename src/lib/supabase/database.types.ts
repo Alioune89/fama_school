@@ -985,7 +985,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
     };
     Enums: {
       app_locale: "fr" | "wo";

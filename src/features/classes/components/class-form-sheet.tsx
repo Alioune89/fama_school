@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -39,15 +39,15 @@ export function ClassFormSheet({ klass, teachers, trigger }: Props) {
           <SheetDescription>{t("hint")}</SheetDescription>
         </SheetHeader>
         <form
-          action={(formData) =>
+          onSubmit={submitForm((formData) =>
             form.run({
               id: klass.id,
               name: String(formData.get("name") ?? ""),
               room: String(formData.get("room") ?? ""),
               capacity: String(formData.get("capacity") ?? ""),
               homeroomStaffId: String(formData.get("homeroomStaffId") ?? ""),
-            })
-          }
+            }),
+          )}
           noValidate
           className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 py-5"
         >

@@ -7,7 +7,8 @@ export const requiredText = (max = 120, min = 1) =>
   z
     .string({ error: "validation.required" })
     .trim()
-    .min(min, { error: min <= 1 ? "validation.required" : "validation.tooShort" })
+    .min(1, { error: "validation.required" })
+    .min(min, { error: "validation.tooShort" })
     .max(max, { error: "validation.tooLong" });
 
 export const optionalText = (max = 120) =>

@@ -92,7 +92,8 @@
     "payments": "Paiements",
     "schools": "Écoles",
     "plans": "Formules",
-    "more": "Plus"
+    "more": "Plus",
+    "demoRequests": "Demandes de démo"
   },
   "topbar": {
     "searchPlaceholder": "Rechercher un élève, une classe…",
@@ -246,6 +247,29 @@
       "directorEmail": "E-mail (facultatif)",
       "submit": "Créer l'école",
       "success": "École créée. Le directeur peut se connecter."
+    },
+    "demoRequests": {
+      "title": "Demandes de démo",
+      "hint": "Demandes déposées sur la page d'accueil. Rappelez sous 48 heures ouvrées, puis mettez à jour le suivi.",
+      "empty": "Aucune demande pour l'instant",
+      "emptyHint": "Les demandes envoyées depuis la page d'accueil apparaîtront ici.",
+      "count": "{count, plural, one {# demande} other {# demandes}} · {fresh, plural, =0 {aucune nouvelle} one {# nouvelle} other {# nouvelles}}",
+      "columns": {
+        "date": "Reçue le",
+        "contact": "Contact",
+        "school": "École",
+        "message": "Message",
+        "status": "Suivi"
+      },
+      "statuses": {
+        "new": "Nouvelle",
+        "contacted": "Rappelée",
+        "scheduled": "Démo prévue",
+        "closed": "Close"
+      },
+      "statusFor": "Suivi de la demande de {name}",
+      "updated": "Suivi mis à jour.",
+      "students": "{range} élèves"
     }
   },
   "comingSoon": {
@@ -253,10 +277,208 @@
     "body": "Ce module arrive dans une prochaine version de Fama School."
   },
   "landing": {
-    "heroTitle": "L'école, les professeurs et les parents, enfin reliés.",
-    "heroBody": "Notes, bulletins, présences et paiements avec reçus : tout le suivi scolaire sur une seule plateforme, pensée pour les écoles du Sénégal.",
-    "cta": "Se connecter",
-    "ctaDemo": "Demander une démo"
+    "nav": {
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "demo": "Démo",
+      "faq": "Questions",
+      "login": "Se connecter",
+      "menu": "Navigation"
+    },
+    "hero": {
+      "eyebrow": "Gestion scolaire pensée pour le Sénégal",
+      "title": "L'école, les professeurs et les parents, enfin reliés.",
+      "body": "Notes, bulletins, présences et paiements avec reçus : tout le suivi scolaire sur une seule plateforme, sur le téléphone de chacun.",
+      "ctaDemo": "Demander une démo",
+      "ctaLogin": "Se connecter",
+      "points": {
+        "free": "Gratuit pour les parents",
+        "offline": "Fonctionne avec une connexion faible",
+        "mobileMoney": "Wave, Orange Money et espèces"
+      }
+    },
+    "phone": {
+      "title": "Espace parents",
+      "child": "Awa · CM2 A",
+      "arrival": "Awa est arrivée à l'école",
+      "arrivalTime": "7 h 52",
+      "report": "Bulletin du 1er semestre disponible",
+      "reportDetail": "Moyenne 15,40 / 20 · Mention Bien",
+      "payment": "Paiement reçu",
+      "paymentDetail": "Mensualité de novembre · 40 000 FCFA",
+      "receipt": "Reçu n° 2026-0412",
+      "homework": "Devoir de mathématiques pour jeudi"
+    },
+    "spaces": {
+      "title": "Un espace pour chacun",
+      "body": "Chacun se connecte avec son numéro de téléphone et voit ce qui le concerne.",
+      "direction": {
+        "title": "Direction et administration",
+        "items": {
+          "first": "Inscriptions, classes et professeurs",
+          "second": "Encaissements, reçus et relances des impayés",
+          "third": "Tableau de bord de l'école en temps réel"
+        }
+      },
+      "teachers": {
+        "title": "Professeurs",
+        "items": {
+          "first": "Appel en un toucher, même sans réseau",
+          "second": "Saisie des notes de devoirs et de compositions",
+          "third": "Cahier de textes et suivi du programme"
+        }
+      },
+      "parents": {
+        "title": "Parents",
+        "items": {
+          "first": "Présences, notes et bulletins de chaque enfant",
+          "second": "Paiement par Wave ou Orange Money, reçu immédiat",
+          "third": "Annonces et messages de l'école"
+        }
+      }
+    },
+    "features": {
+      "title": "Tout le suivi scolaire, au même endroit",
+      "body": "Les fonctions de base sont incluses dans toutes les formules : c'est ce qui fait adopter l'outil par les familles.",
+      "students": {
+        "title": "Élèves et inscriptions",
+        "body": "Fiches élèves, parents et tuteurs, matricules automatiques. Import de la liste de l'école depuis Excel."
+      },
+      "grades": {
+        "title": "Notes et bulletins",
+        "body": "Moyennes, rangs et mentions selon vos coefficients. Bulletins en PDF, y compris le bulletin franco-arabe."
+      },
+      "attendance": {
+        "title": "Présences et pointage",
+        "body": "Appel en classe et pointage par carte QR à l'entrée. Les parents sont prévenus des absences."
+      },
+      "payments": {
+        "title": "Paiements et reçus",
+        "body": "Mensualités, inscriptions et cantine. Paiement en ligne ou au guichet, reçus numérotés, relances automatiques."
+      },
+      "messages": {
+        "title": "Annonces et messages",
+        "body": "Annonces à toute l'école, à une classe ou aux familles en retard de paiement. Calendrier des événements."
+      },
+      "transport": {
+        "title": "Transport scolaire",
+        "body": "Les parents suivent le bus et sont prévenus à l'approche de l'arrêt.",
+        "badge": "En option"
+      }
+    },
+    "recovery": {
+      "title": "Moins d'impayés, plus de trésorerie",
+      "body": "Les parents paient depuis leur téléphone et reçoivent leur reçu tout de suite. L'école suit les retards et relance en un clic.",
+      "exampleLabel": "Exemple",
+      "example": "Une école de 500 élèves à 40 000 FCFA par mois facture 200 millions FCFA par an. Réduire les impayés de 5 points, c'est 10 millions FCFA récupérés."
+    },
+    "pricing": {
+      "title": "Des formules simples, selon la taille de l'école",
+      "body": "Un forfait mensuel facturé sur 10 mois, d'octobre à juillet. L'application est gratuite pour les parents.",
+      "perMonth": "par mois",
+      "onQuote": "Sur devis",
+      "yearly": "{price} par an en paiement d'avance (2 mois offerts)",
+      "upTo": "Jusqu'à {count} élèves",
+      "from": "De {min} à {max} élèves",
+      "beyond": "Plus de 1 000 élèves ou plusieurs sites",
+      "popular": "La plus choisie",
+      "plans": {
+        "starter": "Démarrage",
+        "school": "École",
+        "establishment": "Établissement",
+        "group": "Groupe scolaire"
+      },
+      "choose": "Demander une démo",
+      "includedTitle": "Inclus dans toutes les formules",
+      "included": {
+        "students": "Élèves, classes et inscriptions",
+        "grades": "Notes, compositions et bulletins",
+        "attendance": "Présences et appel",
+        "programme": "Programmes et cahier de textes",
+        "parents": "Application parents",
+        "receipts": "Reçus de paiement"
+      },
+      "optionsTitle": "Options",
+      "options": {
+        "setup": {
+          "name": "Mise en place (import des élèves, paramétrage, formation)",
+          "price": "150 000 à 500 000 FCFA, une fois",
+          "note": "Offerte aux écoles pilotes"
+        },
+        "transport": {
+          "name": "Transport GPS",
+          "price": "15 000 à 25 000 FCFA par bus et par mois"
+        },
+        "cards": {
+          "name": "Cartes élèves QR pour le pointage",
+          "price": "Prix des cartes imprimées"
+        },
+        "sms": {
+          "name": "Packs SMS et WhatsApp",
+          "price": "Au volume"
+        }
+      }
+    },
+    "demo": {
+      "title": "Voyons ensemble si Fama School convient à votre école",
+      "body": "Laissez vos coordonnées : nous vous appelons pour une démonstration de 30 minutes, sur place ou à distance.",
+      "pilot": "Écoles pilotes : mise en place offerte et un trimestre gratuit (Dakar, Pikine, Rufisque).",
+      "fullName": "Votre nom",
+      "schoolName": "Nom de l'école",
+      "role": "Votre fonction",
+      "roles": {
+        "founder": "Fondateur ou promoteur",
+        "director": "Directeur ou directrice",
+        "censor": "Censeur",
+        "accountant": "Comptable ou intendant",
+        "other": "Autre"
+      },
+      "choose": "Choisir",
+      "phone": "Téléphone",
+      "email": "E-mail (facultatif)",
+      "city": "Ville",
+      "studentsRange": "Nombre d'élèves",
+      "ranges": {
+        "lt200": "Moins de 200",
+        "200to500": "200 à 500",
+        "500to1000": "500 à 1 000",
+        "gt1000": "Plus de 1 000"
+      },
+      "message": "Votre message (facultatif)",
+      "messagePlaceholder": "Vos besoins, vos outils actuels, vos questions…",
+      "submit": "Être rappelé",
+      "sending": "Envoi…",
+      "successTitle": "Merci, votre demande est bien reçue.",
+      "successBody": "Nous vous appelons sous 48 heures ouvrées au numéro indiqué.",
+      "again": "Envoyer une autre demande",
+      "tooMany": "Vous avez déjà envoyé plusieurs demandes aujourd'hui : nous vous rappelons très vite.",
+      "privacy": "Vos coordonnées servent uniquement à vous recontacter."
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": {
+        "network": {
+          "q": "Faut-il une bonne connexion internet ?",
+          "a": "Non. L'application est légère et l'appel des élèves fonctionne même sans réseau : les données partent dès que la connexion revient."
+        },
+        "install": {
+          "q": "Les parents doivent-ils installer une application ?",
+          "a": "Ils ouvrent un lien et se connectent avec leur numéro de téléphone (code par SMS). L'application s'ajoute à l'écran d'accueil comme une appli, gratuitement."
+        },
+        "payments": {
+          "q": "Comment se passent les paiements ?",
+          "a": "Les parents paient par Wave, Orange Money ou carte, ou en espèces au guichet. L'argent arrive sur le compte de l'école et le reçu est envoyé tout de suite."
+        },
+        "import": {
+          "q": "Peut-on reprendre nos listes d'élèves existantes ?",
+          "a": "Oui. La liste de l'école s'importe depuis un fichier Excel ou CSV, avec un aperçu et la liste des lignes à corriger avant l'import."
+        },
+        "data": {
+          "q": "Nos données sont-elles protégées ?",
+          "a": "Chaque école ne voit que ses propres données, et chaque parent seulement ses enfants. Les données sont sauvegardées chaque jour."
+        }
+      }
+    }
   },
   "notFound": {
     "title": "Page introuvable",

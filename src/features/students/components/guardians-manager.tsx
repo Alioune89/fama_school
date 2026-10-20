@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm, useMessage } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm, useMessage } from "@/components/forms/use-action-form";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -202,7 +202,7 @@ function GuardianDialog({
           </DialogTitle>
           <DialogDescription>{guardian ? t("guardians.editHint") : t("guardians.addHint")}</DialogDescription>
         </DialogHeader>
-        <form action={submit} noValidate className="flex flex-col gap-4">
+        <form onSubmit={submitForm(submit)} noValidate className="flex flex-col gap-4">
           <Field data-invalid={form.hasError("fullName") || undefined}>
             <FieldLabel htmlFor={id("fullName")}>{t("form.guardianName")}</FieldLabel>
             <Input id={id("fullName")} name="fullName" defaultValue={guardian?.full_name} autoComplete="off" required />

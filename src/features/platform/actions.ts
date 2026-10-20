@@ -1,9 +1,12 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { z } from "zod";
 import { fail, invalid, ok, type ActionResult } from "@/lib/action-result";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { Constants } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/supabase/server";
 import { createSchoolSchema, type CreateSchoolInput } from "./schemas";
 
 /**
@@ -58,4 +61,25 @@ export async function createSchool(input: CreateSchoolInput): Promise<ActionResu
 
   refresh();
   return ok(school);
+}
+
+const demoStatusSchema = z.object({ id: z.uuid(), status: z.enum(Constants.public.Enums.demo_request_status) });
+
+/** Suivi d'une demande de démo (nouvelle → rappelée → démo prévue → close). */
+export async function setDemoRequestStatus(input: z.input<typeof demoStatusSchema>): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user?.isPlatformAdmin) return fail("errors.forbidden");
+  const parsed = demoStatusSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("demo_requests")
+    .update({ status: parsed.data.status, handled_by: user.id })
+    .eq("id", parsed.data.id)
+    .select("id");
+  if (error) return fail("errors.unknown");
+  if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
 }

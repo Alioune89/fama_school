@@ -191,6 +191,55 @@ export type Database = {
           },
         ];
       };
+      demo_requests: {
+        Row: {
+          city: string | null;
+          created_at: string;
+          email: string | null;
+          full_name: string;
+          handled_by: string | null;
+          id: string;
+          message: string | null;
+          phone: string;
+          role: string;
+          school_name: string;
+          status: Database["public"]["Enums"]["demo_request_status"];
+          students_range: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          city?: string | null;
+          created_at?: string;
+          email?: string | null;
+          full_name: string;
+          handled_by?: string | null;
+          id?: string;
+          message?: string | null;
+          phone: string;
+          role: string;
+          school_name: string;
+          status?: Database["public"]["Enums"]["demo_request_status"];
+          students_range?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          city?: string | null;
+          created_at?: string;
+          email?: string | null;
+          full_name?: string;
+          handled_by?: string | null;
+          id?: string;
+          message?: string | null;
+          phone?: string;
+          role?: string;
+          school_name?: string;
+          status?: Database["public"]["Enums"]["demo_request_status"];
+          students_range?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       enrollments: {
         Row: {
           academic_year_id: string;
@@ -999,6 +1048,7 @@ export type Database = {
       app_locale: "fr" | "wo";
       app_role: "owner" | "director" | "censor" | "supervisor" | "accountant" | "secretary" | "teacher" | "parent" | "driver";
       cycle_code: "prescolaire" | "elementaire" | "moyen" | "secondaire";
+      demo_request_status: "new" | "contacted" | "scheduled" | "closed";
       enrollment_status: "active" | "transferred" | "left" | "completed";
       grading_scale: "appreciation" | "ten" | "twenty";
       guardian_relationship: "father" | "mother" | "guardian" | "grandparent" | "uncle" | "aunt" | "sibling" | "other";
@@ -1120,6 +1170,7 @@ export const Constants = {
       app_locale: ["fr", "wo"],
       app_role: ["owner", "director", "censor", "supervisor", "accountant", "secretary", "teacher", "parent", "driver"],
       cycle_code: ["prescolaire", "elementaire", "moyen", "secondaire"],
+      demo_request_status: ["new", "contacted", "scheduled", "closed"],
       enrollment_status: ["active", "transferred", "left", "completed"],
       grading_scale: ["appreciation", "ten", "twenty"],
       guardian_relationship: ["father", "mother", "guardian", "grandparent", "uncle", "aunt", "sibling", "other"],

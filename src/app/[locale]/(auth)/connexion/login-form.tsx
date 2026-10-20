@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { sendPhoneCode, signInWithEmail } from "@/features/auth/actions";
 import type { AuthErrorCode } from "@/features/auth/errors";
 import { useRouter } from "@/i18n/navigation";
+import { submitForm } from "@/components/forms/use-action-form";
 
 export function LoginForm() {
   const t = useTranslations("auth");
@@ -64,7 +65,7 @@ export function LoginForm() {
       </TabsList>
 
       <TabsContent value="phone" className="pt-4">
-        <form action={submitPhone} className="space-y-5" noValidate>
+        <form onSubmit={submitForm(submitPhone)} className="space-y-5" noValidate>
           <Field data-invalid={phoneError ? true : undefined}>
             <FieldLabel htmlFor="phone">{t("phoneLabel")}</FieldLabel>
             <div className="flex items-stretch gap-2">
@@ -94,7 +95,7 @@ export function LoginForm() {
       </TabsContent>
 
       <TabsContent value="email" className="pt-4">
-        <form action={submitEmail} className="space-y-5" noValidate>
+        <form onSubmit={submitForm(submitEmail)} className="space-y-5" noValidate>
           <Field data-invalid={emailError === "invalidEmail" ? true : undefined}>
             <FieldLabel htmlFor="email">{t("emailLabel")}</FieldLabel>
             <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />

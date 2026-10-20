@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm } from "@/components/forms/use-action-form";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -37,7 +37,7 @@ export function CreateSchoolForm() {
     <form
       className="grid max-w-3xl gap-6"
       noValidate
-      action={(formData) =>
+      onSubmit={submitForm((formData) =>
         form.run({
           name: String(formData.get("name") ?? ""),
           slug: String(formData.get("slug") ?? ""),
@@ -47,8 +47,7 @@ export function CreateSchoolForm() {
           directorName: String(formData.get("directorName") ?? ""),
           directorPhone: String(formData.get("directorPhone") ?? ""),
           directorEmail: String(formData.get("directorEmail") ?? ""),
-        })
-      }
+        }))}
     >
       <section className="grid gap-5 rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70 sm:grid-cols-2">
         <h2 className="text-lg font-semibold sm:col-span-2">{t("create.schoolSection")}</h2>

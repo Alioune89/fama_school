@@ -20,6 +20,7 @@ export type NavIconName =
   | "children"
   | "payments"
   | "schools"
+  | "demoRequests"
   | "plans";
 
 /** Clés de traduction du namespace « nav ». */
@@ -50,6 +51,7 @@ export type NavLabelKey =
   | "children"
   | "payments"
   | "schools"
+  | "demoRequests"
   | "plans";
 
 export type NavLeaf = { label: NavLabelKey; href: string; soon?: boolean };
@@ -140,6 +142,7 @@ parent.mobile = parent.menu.slice(0, 4);
 const plateforme: SpaceNavigation = {
   menu: [
     { label: "schools", href: "/plateforme", icon: "schools" },
+    { label: "demoRequests", href: "/plateforme/demandes", icon: "demoRequests" },
     { label: "plans", href: "/plateforme/formules", icon: "plans", soon: true },
   ],
   other: [],

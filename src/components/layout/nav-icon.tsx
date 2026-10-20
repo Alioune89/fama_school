@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   GraduationCap,
   House,
+  Inbox,
   LayoutGrid,
   Megaphone,
   MessagesSquare,
@@ -40,6 +41,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   children: UsersRound,
   payments: Wallet,
   schools: Building2,
+  demoRequests: Inbox,
   plans: Tags,
 };
 

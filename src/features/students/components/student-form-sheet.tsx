@@ -5,7 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -108,7 +108,7 @@ export function StudentFormSheet({ student, classes = [], defaultClassId, trigge
           <SheetTitle className="text-lg font-bold">{student ? t("form.editTitle") : t("form.registerTitle")}</SheetTitle>
           <SheetDescription>{student ? t("form.editHint") : t("form.registerHint")}</SheetDescription>
         </SheetHeader>
-        <form action={submit} noValidate className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-5">
+        <form onSubmit={submitForm(submit)} noValidate className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-5">
           <fieldset className="grid gap-4 sm:grid-cols-2">
             <legend className="mb-3 text-sm font-semibold text-ink">{t("form.identity")}</legend>
             <Field data-invalid={form.hasError("lastName") || undefined}>

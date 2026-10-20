@@ -5,7 +5,7 @@ import { ImageUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm, useMessage } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm, useMessage } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -68,7 +68,7 @@ export function SchoolIdentityForm({
       <form
         noValidate
         className="grid gap-5 rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70 sm:grid-cols-2"
-        action={(formData) =>
+        onSubmit={submitForm((formData) =>
           form.run({
             name: String(formData.get("name") ?? ""),
             shortName: String(formData.get("shortName") ?? ""),
@@ -77,8 +77,7 @@ export function SchoolIdentityForm({
             address: String(formData.get("address") ?? ""),
             phone: String(formData.get("phone") ?? ""),
             email: String(formData.get("email") ?? ""),
-          })
-        }
+          }))}
       >
         {!canEdit && <p className="rounded-xl bg-azure-50 px-4 py-3 text-sm text-azure-800 sm:col-span-2">{t("readOnly")}</p>}
         <Field className="sm:col-span-2" data-invalid={form.hasError("name") || undefined}>

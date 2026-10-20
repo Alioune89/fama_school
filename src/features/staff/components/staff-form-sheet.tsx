@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -76,7 +76,7 @@ export function StaffFormSheet({ kind, roleOptions = [], member, trigger }: Prop
           </SheetTitle>
           <SheetDescription>{member ? t("form.editHint") : t("form.inviteHint")}</SheetDescription>
         </SheetHeader>
-        <form action={submit} noValidate className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">
+        <form onSubmit={submitForm(submit)} noValidate className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">
           {kind === "staff" && !member && (
             <Field>
               <FieldLabel htmlFor="role">{t("form.role")}</FieldLabel>

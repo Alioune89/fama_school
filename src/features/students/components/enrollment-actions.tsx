@@ -5,7 +5,7 @@ import { ArrowRightLeft, LogOut, Undo2, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
-import { useActionForm, useMessage } from "@/components/forms/use-action-form";
+import { submitForm, useActionForm, useMessage } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -101,7 +101,7 @@ function ClassDialog({
           <DialogDescription>{enrolled ? t("changeClassHint") : t("enrollHint")}</DialogDescription>
         </DialogHeader>
         <form
-          action={(formData) => form.run({ studentId, classId: String(formData.get("classId") ?? "") })}
+          onSubmit={submitForm((formData) => form.run({ studentId, classId: String(formData.get("classId") ?? "") }))}
           noValidate
           className="flex flex-col gap-4"
         >
@@ -164,13 +164,13 @@ function DepartureDialog({ studentId }: { studentId: string }) {
           <DialogDescription>{t("departureHint")}</DialogDescription>
         </DialogHeader>
         <form
-          action={(formData) =>
+          onSubmit={submitForm((formData) =>
             form.run({
               studentId,
               status: String(formData.get("status") ?? "") as (typeof DEPARTURE_STATUSES)[number],
               leftOn: String(formData.get("leftOn") ?? ""),
-            })
-          }
+            }),
+          )}
           noValidate
           className="flex flex-col gap-4"
         >

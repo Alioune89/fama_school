@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { DEMO, loginWithEmail } from "./helpers";
 
 test.describe("pages publiques", () => {
   test("la page d'accueil présente Fama School et mène à la connexion", async ({ page }) => {
@@ -44,5 +45,45 @@ test.describe("pages publiques", () => {
     const response = await page.goto("/page-qui-n-existe-pas");
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { name: "Page introuvable" })).toBeVisible();
+  });
+});
+
+test.describe("page d'accueil : demande de démo", () => {
+  test("un visiteur demande une démo, l'équipe Fama School la suit", async ({ page, browser }) => {
+    const digits = String(Date.now()).slice(-7);
+    const phone = `76 ${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)}`;
+    const school = `École Démo ${Date.now().toString(36)}`;
+
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Des formules simples, selon la taille de l'école" })).toBeVisible();
+    await expect(page.getByText("120 000 FCFA").first()).toBeVisible();
+
+    await page.getByRole("link", { name: "Demander une démo" }).first().click();
+    await page.getByLabel("Votre nom").fill("Mame Diarra Sène");
+    await page.getByLabel("Votre fonction").selectOption("founder");
+    await page.getByLabel("Nom de l'école").fill(school);
+    await page.getByLabel("Téléphone").fill("12 34");
+    await page.getByRole("button", { name: "Être rappelé" }).click();
+    await expect(page.getByText("Numéro invalide. Exemple : 77 123 45 67.")).toBeVisible();
+
+    await page.getByLabel("Téléphone").fill(phone);
+    await page.getByLabel("Ville").fill("Mbour");
+    await page.getByLabel("Nombre d'élèves").selectOption("200to500");
+    await page.getByRole("button", { name: "Être rappelé" }).click();
+    await expect(page.getByText("Merci, votre demande est bien reçue.")).toBeVisible();
+
+    const admin = await (await browser.newContext()).newPage();
+    await loginWithEmail(admin, DEMO.admin);
+    await expect(admin).toHaveURL(/\/plateforme$/);
+    await admin.goto("/plateforme/demandes");
+    await expect(admin.getByText(school)).toBeVisible();
+    await expect(admin.getByText("Mbour · 200 à 500 élèves").first()).toBeVisible();
+    const status = admin.getByRole("combobox", { name: "Suivi de la demande de Mame Diarra Sène" }).first();
+    await status.selectOption("contacted");
+    await expect(admin.getByText("Suivi mis à jour.")).toBeVisible();
+    await admin.reload();
+    await expect(admin.getByRole("combobox", { name: "Suivi de la demande de Mame Diarra Sène" }).first()).toHaveValue(
+      "contacted",
+    );
   });
 });

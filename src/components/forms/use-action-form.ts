@@ -52,3 +52,15 @@ export function useActionForm<TInput, TData>(
     hasErrorUnder: (prefix: string) => Object.keys(fieldErrors).some((path) => path === prefix || path.startsWith(`${prefix}.`)),
   };
 }
+
+/**
+ * Envoi d'un formulaire à champs non contrôlés, sans la remise à zéro automatique de React 19
+ * (`<form action>` vide tous les champs après chaque envoi, même refusé : la saisie serait perdue).
+ * Usage : `<form onSubmit={submitForm((formData) => …)}>`.
+ */
+export function submitForm(handler: (formData: FormData) => void) {
+  return (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handler(new FormData(event.currentTarget));
+  };
+}

@@ -35,7 +35,7 @@ test.describe("connexion et espaces", () => {
     await expect(page).toHaveURL(/\/direction$/);
     await expect(page.getByRole("heading", { name: "Tableau de bord", level: 1 })).toBeVisible();
     await expect(page.getByText("Groupe Scolaire Les Baobabs").first()).toBeVisible();
-    await expect(page.getByText("Invitations en attente")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Effectifs par classe" })).toBeVisible();
 
     if (isMobile) await page.getByRole("button", { name: "Plus" }).click();
     await page.getByRole("button", { name: "Se déconnecter" }).click();

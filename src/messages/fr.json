@@ -158,16 +158,46 @@
   "dashboard": {
     "welcome": "Bonjour {name}",
     "welcomeFallback": "Bonjour",
-    "students": "Élèves",
+    "students": "Élèves inscrits",
     "teachers": "Professeurs",
-    "staff": "Personnel",
-    "parents": "Parents",
-    "pendingInvitations": "Invitations en attente",
+    "classes": "Classes",
+    "connectedParents": "Parents connectés sur {total}",
     "setupTitle": "Mise en route de votre école",
     "setupBody": "Configurez l'année scolaire, les classes et les matières, puis importez vos élèves. Cela prend environ 30 minutes.",
     "setupAction": "Commencer la configuration",
-    "agenda": "Agenda",
-    "agendaEmpty": "Aucun événement prévu cette semaine."
+    "setupContinue": "Continuer la configuration",
+    "setupProgress": "{done} étapes sur {total}",
+    "headcount": {
+      "title": "Effectifs par classe",
+      "hint": "Élèves inscrits en {year}, face à la capacité de chaque classe.",
+      "noYear": "Aucune année scolaire en cours.",
+      "legend": "Légende",
+      "girls": "Filles",
+      "boys": "Garçons",
+      "capacity": "Capacité",
+      "rowLabel": "{name} : {total} élèves, {girls} filles et {boys} garçons",
+      "tooltipTotal": "{total} élèves",
+      "tooltipTotalOf": "{total} élèves sur {capacity}",
+      "empty": "Aucune classe pour l'instant",
+      "emptyHint": "Les classes de l'année apparaîtront ici avec leurs effectifs."
+    },
+    "gender": {
+      "title": "Filles et garçons",
+      "girls": "Filles",
+      "boys": "Garçons",
+      "empty": "Aucun élève inscrit pour l'instant."
+    },
+    "calendar": {
+      "title": "Calendrier scolaire",
+      "noYear": "Créez l'année scolaire dans les paramètres pour suivre les semestres ou trimestres.",
+      "daysToStart": "{count, plural, one {Rentrée dans # jour} other {Rentrée dans # jours}}",
+      "daysToEnd": "{count, plural, one {Encore # jour} other {Encore # jours}}",
+      "yearOver": "Année terminée",
+      "progress": "{value} %",
+      "past": "Terminé",
+      "upcoming": "À venir",
+      "yearRange": "Année scolaire du {start} au {end}"
+    }
   },
   "teacherHome": {
     "title": "Mes classes du jour",

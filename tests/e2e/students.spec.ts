@@ -68,13 +68,15 @@ test.describe("Lot 1 — élèves", () => {
 
     await page.goto("/direction/eleves/importer");
     await expect(page.getByRole("heading", { name: "Importer une liste d'élèves", level: 1 })).toBeVisible();
-    await page.locator("#student-import-file").setInputFiles({
-      name: "eleves.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from("﻿" + csv, "utf8"),
-    });
-
-    await expect(visibleText(page, "1 ligne avec une classe inconnue")).toBeVisible();
+    // Le titre arrive avec le HTML serveur : on redépose le fichier tant que la page n'est pas interactive.
+    await expect(async () => {
+      await page.locator("#student-import-file").setInputFiles({
+        name: "eleves.csv",
+        mimeType: "text/csv",
+        buffer: Buffer.from("﻿" + csv, "utf8"),
+      });
+      await expect(visibleText(page, "1 ligne avec une classe inconnue")).toBeVisible({ timeout: 2_000 });
+    }).toPass();
     await page.getByRole("button", { name: "Importer 2 élèves" }).click();
     await expect(visibleText(page, "2 élèves importés")).toBeVisible();
 

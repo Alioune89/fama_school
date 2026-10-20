@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { DEMO, loginWithEmail } from "./helpers";
 
 test.describe("Lot 1 — tableau de bord de la direction", () => {
-  test("indicateurs, effectifs par classe et calendrier scolaire", async ({ page, isMobile }) => {
+  test("indicateurs, effectifs par classe et calendrier scolaire", { tag: "@smoke" }, async ({ page, isMobile }) => {
     await loginWithEmail(page, DEMO.director);
     await expect(page).toHaveURL(/\/direction$/);
 

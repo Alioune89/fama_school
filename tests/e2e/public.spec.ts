@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { DEMO, loginWithEmail } from "./helpers";
 
 test.describe("pages publiques", () => {
-  test("la page d'accueil présente Fama School et mène à la connexion", async ({ page }) => {
+  test("la page d'accueil présente Fama School et mène à la connexion", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("L'école, les professeurs et les parents");
     await page.getByRole("link", { name: "Se connecter" }).first().click();
@@ -10,20 +10,20 @@ test.describe("pages publiques", () => {
     await expect(page.getByRole("heading", { name: "Connexion" })).toBeVisible();
   });
 
-  test("le wolof est servi sous /wo avec repli en français", async ({ page }) => {
+  test("le wolof est servi sous /wo avec repli en français", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/wo/connexion");
     await expect(page.locator("html")).toHaveAttribute("lang", "wo");
     await expect(page.getByRole("heading", { name: "Connexion" })).toBeVisible();
   });
 
-  test("un numéro invalide est refusé avec un message clair", async ({ page }) => {
+  test("un numéro invalide est refusé avec un message clair", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/connexion");
     await page.getByLabel("Numéro de téléphone").fill("12 34");
     await page.getByRole("button", { name: "Recevoir le code" }).click();
     await expect(page.getByText("Ce numéro n'est pas valide")).toBeVisible();
   });
 
-  test("le manifeste PWA est disponible", async ({ request }) => {
+  test("le manifeste PWA est disponible", { tag: "@smoke" }, async ({ request }) => {
     const response = await request.get("/manifest.webmanifest");
     expect(response.ok()).toBeTruthy();
     const manifest = await response.json();
@@ -41,7 +41,7 @@ test.describe("pages publiques", () => {
     await expect(page.getByRole("status")).toHaveCount(0);
   });
 
-  test("une URL inconnue affiche la page 404 traduite", async ({ page }) => {
+  test("une URL inconnue affiche la page 404 traduite", { tag: "@smoke" }, async ({ page }) => {
     const response = await page.goto("/page-qui-n-existe-pas");
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { name: "Page introuvable" })).toBeVisible();

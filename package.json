@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
     "format": "prettier --write .",
     "db:start": "SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN=${SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN:-local-dummy} supabase start",
     "db:stop": "supabase stop",

@@ -3,7 +3,7 @@ import { DEMO, loginWithEmail, loginWithPhone } from "./helpers";
 
 // Nécessite Supabase local avec le seed : `npm run db:reset`.
 test.describe("connexion et espaces", () => {
-  test("un visiteur est renvoyé vers la connexion en voulant ouvrir un espace", async ({ page }) => {
+  test("un visiteur est renvoyé vers la connexion en voulant ouvrir un espace", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/direction");
     await expect(page).toHaveURL(/\/connexion\?suite=%2Fdirection$/);
   });
@@ -14,7 +14,7 @@ test.describe("connexion et espaces", () => {
     await expect(page.getByText("Code incorrect ou expiré")).toBeVisible();
   });
 
-  test("un parent invité entre directement dans son espace", async ({ page }) => {
+  test("un parent invité entre directement dans son espace", { tag: "@smoke" }, async ({ page }) => {
     await loginWithPhone(page, DEMO.parentPhone);
     await expect(page).toHaveURL(/\/parent$/);
     await expect(page.getByRole("heading", { name: "Mes enfants", level: 1 })).toBeVisible();
@@ -30,7 +30,7 @@ test.describe("connexion et espaces", () => {
     await expect(page.getByText("Bonjour Awa · Institut Franco-Arabe Al Amine")).toBeVisible();
   });
 
-  test("le directeur voit le tableau de bord de son école puis se déconnecte", async ({ page, isMobile }) => {
+  test("le directeur voit le tableau de bord de son école puis se déconnecte", { tag: "@smoke" }, async ({ page, isMobile }) => {
     await loginWithEmail(page, DEMO.director);
     await expect(page).toHaveURL(/\/direction$/);
     await expect(page.getByRole("heading", { name: "Tableau de bord", level: 1 })).toBeVisible();

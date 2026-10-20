@@ -1,8 +1,11 @@
 import { expect, type Page } from "@playwright/test";
 
-/** Comptes de démonstration (voir supabase/seed.sql). */
+/**
+ * Comptes de démonstration (voir supabase/seed.sql). Sur le staging, le mot de passe du directeur
+ * est changé après le seed (supabase/staging/secure-demo-accounts.sql) : E2E_DEMO_PASSWORD le fournit.
+ */
 export const DEMO = {
-  password: "FamaSchool2026",
+  password: process.env.E2E_DEMO_PASSWORD ?? "FamaSchool2026",
   otp: "123456",
   admin: "admin@famaschool.test",
   director: "directeur@famaschool.test",

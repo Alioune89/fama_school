@@ -1,0 +1,57 @@
+name: Staging
+
+# Inactif tant que la variable STAGING_PROJECT_REF n'est pas définie (voir docs/deploiement-staging.md).
+on:
+  push:
+    branches: [main]
+  # Vercel signale chaque déploiement terminé : on vérifie alors le site en ligne.
+  deployment_status:
+  workflow_dispatch:
+
+concurrency:
+  group: staging-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Migrations Supabase (staging)
+    if: vars.STAGING_PROJECT_REF != '' && github.event_name != 'deployment_status'
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.121.0
+      - run: supabase link --project-ref "${{ vars.STAGING_PROJECT_REF }}"
+      # N'applique que les migrations manquantes ; le seed n'est jamais rejoué ici.
+      - run: supabase db push
+
+  smoke:
+    name: Parcours essentiels sur le site en ligne
+    if: >-
+      vars.STAGING_URL != '' && (
+        github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
+      )
+    runs-on: ubuntu-latest
+    env:
+      E2E_BASE_URL: ${{ vars.STAGING_URL }}
+      E2E_DEMO_PASSWORD: ${{ secrets.STAGING_DEMO_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:smoke
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-staging
+          path: playwright-report
+          retention-days: 7

@@ -10,7 +10,7 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
 
 | Service | Ce qu'il faut | Coût |
 | --- | --- | --- |
-| [Supabase](https://supabase.com) | une organisation, puis un projet `fama-school-staging` | gratuit (offre Free) pour le staging |
+| [Supabase](https://supabase.com) | une organisation, puis un projet `fama-school-staging` (référence `bxxizeumyzotmurbzfye`) | gratuit (offre Free) pour le staging ; l'offre Free est limitée à 2 projets actifs par personne |
 | [Vercel](https://vercel.com) | un compte relié à GitHub, accès au dépôt `Alioune89/fama_school` | gratuit (offre Hobby) pour le staging |
 | GitHub | droits d'administration du dépôt (variables et secrets) | — |
 
@@ -27,10 +27,13 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
    npx supabase db push --include-seed
    ```
 
+   Le CLI passe par un rôle temporaire : le mot de passe de la base n'est pas demandé.
+
 3. Sécuriser les comptes de démonstration. Le seed leur donne un mot de passe public :
    le compte « équipe Fama School » reçoit un mot de passe fort, et le directeur de démonstration
    celui que l'on communique aux prospects. Chaîne de connexion : *Project Settings > Database >
-   Connection string* (mode « Session »).
+   Connection string* (mode « Session »). Sans `psql`, coller les deux `update` du script dans
+   *SQL Editor*, en remplaçant `:'admin_password'` et `:'demo_password'` par les mots de passe entre apostrophes.
 
    ```sh
    psql "<chaîne de connexion>" \
@@ -40,8 +43,8 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
    ```
 
 4. Authentification (*Authentication > Sign In / Providers* et *URL Configuration*) :
-   - **Site URL** : l'adresse du staging (étape 3), par exemple `https://fama-school-staging.vercel.app`.
-   - **Redirect URLs** : `https://fama-school-staging.vercel.app/**`.
+   - **Site URL** : l'adresse du staging (étape 3), par exemple `https://fama-school.vercel.app`.
+   - **Redirect URLs** : `https://fama-school.vercel.app/**`.
    - **Email** : activé, sans confirmation obligatoire.
    - **Phone** : activé avec Twilio. Pour les démos, des identifiants Twilio fictifs suffisent
      si l'on déclare les **numéros de test** ci-dessous : aucun SMS n'est envoyé, le code est fixe.
@@ -53,6 +56,9 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
      | 221770000003 | 123456 | censeur |
      | 221770000004 | 123456 | directeur d'Al Amine (école à configurer) |
 
+     Supabase demande une date de fin de validité des numéros de test (*Test OTPs Valid Until*) :
+     31 juillet 2027 pour le staging. Passé cette date, la repousser au même endroit.
+
      Pour de vrais parents, il faudra un vrai compte Twilio (ou un fournisseur sénégalais) :
      à décider avant le pilote.
 5. Noter, dans *Project Settings > API Keys* : l'URL du projet, la clé **publishable** et la clé **secret**.
@@ -60,7 +66,7 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
 ## 3. Projet Vercel
 
 1. *Add New > Project*, importer le dépôt GitHub `fama_school`. Framework détecté : Next.js.
-2. Nom du projet : `fama-school-staging` (l'adresse sera `fama-school-staging.vercel.app`).
+2. Nom du projet : `fama-school` (adresse : `https://fama-school.vercel.app`).
 3. Variables d'environnement (*Production* et *Preview*) :
 
    | Variable | Valeur |
@@ -69,6 +75,9 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
    | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | clé publishable |
    | `SUPABASE_SECRET_KEY` | clé secret (jamais côté navigateur) |
 
+   Astuce : coller un bloc `NOM=valeur` (une ligne par variable) dans le champ *Key* crée toutes les
+   variables d'un coup. Sans ces variables, le site s'affiche mais toute connexion échoue
+   (journal Vercel : « Variables Supabase manquantes »). Après un ajout, il faut **redéployer**.
 4. Déployer. La branche de production est `main` : chaque push redéploie le staging.
 
 ## 4. GitHub : mise à jour automatique et vérification
@@ -79,7 +88,7 @@ Le workflow `.github/workflows/staging.yml` reste inactif tant que ces réglages
 | Type | Nom | Valeur |
 | --- | --- | --- |
 | Variable | `STAGING_PROJECT_REF` | référence du projet Supabase |
-| Variable | `STAGING_URL` | `https://fama-school-staging.vercel.app` |
+| Variable | `STAGING_URL` | `https://fama-school.vercel.app` |
 | Secret | `SUPABASE_ACCESS_TOKEN` | jeton personnel Supabase (*Account > Access Tokens*) |
 | Secret | `STAGING_DB_PASSWORD` | mot de passe de la base |
 | Secret | `STAGING_DEMO_PASSWORD` | mot de passe de démo du directeur |
@@ -93,7 +102,7 @@ Une fois réglé :
 Vérification à la main, depuis sa machine :
 
 ```sh
-E2E_BASE_URL=https://fama-school-staging.vercel.app E2E_DEMO_PASSWORD='<mot de passe de démo>' npm run test:smoke
+E2E_BASE_URL=https://fama-school.vercel.app E2E_DEMO_PASSWORD='<mot de passe de démo>' npm run test:smoke
 ```
 
 ## 5. Faire une démo

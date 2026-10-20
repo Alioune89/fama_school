@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Constants } from "@/lib/supabase/database.types";
-import { optionalIsoDateField, optionalPhoneField, optionalText, requiredText } from "@/lib/validation";
+import { isoDateField, optionalIsoDateField, optionalPhoneField, optionalText, requiredText } from "@/lib/validation";
 
 export const RELATIONSHIPS = Constants.public.Enums.guardian_relationship;
 export type Relationship = (typeof RELATIONSHIPS)[number];
@@ -69,3 +69,18 @@ export const importRowSchema = z.object({
 export type ImportRow = z.infer<typeof importRowSchema>;
 
 export const importBatchSchema = z.object({ rows: z.array(importRowSchema).min(1).max(250) });
+
+export const changeClassSchema = z.object({
+  studentId: z.uuid(),
+  classId: z.uuid({ error: "students.errors.classRequired" }),
+});
+export type ChangeClassInput = z.input<typeof changeClassSchema>;
+
+export const DEPARTURE_STATUSES = ["transferred", "left"] as const;
+
+export const endEnrollmentSchema = z.object({
+  studentId: z.uuid(),
+  status: z.enum(DEPARTURE_STATUSES, { error: "validation.required" }),
+  leftOn: isoDateField,
+});
+export type EndEnrollmentInput = z.input<typeof endEnrollmentSchema>;

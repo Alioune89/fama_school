@@ -9,7 +9,8 @@ import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
-import { getStudent } from "../queries";
+import { getStudent, listClassOptions } from "../queries";
+import { EnrollmentActions } from "./enrollment-actions";
 import { StudentFormSheet } from "./student-form-sheet";
 
 /** Âge révolu à partir d'une date « AAAA-MM-JJ ». */
@@ -24,12 +25,15 @@ function age(birthDate: string) {
 /** Fiche élève (données de requête : sous <Suspense>). */
 export async function StudentDetailView({ id }: { id: string }) {
   const { entry } = await requireSpace("direction");
-  const detail = await getStudent(entry.schoolId!, id);
+  const canEdit = permissions.managePeople(entry.roles);
+  const [detail, options] = await Promise.all([
+    getStudent(entry.schoolId!, id),
+    canEdit ? listClassOptions(entry.schoolId!) : Promise.resolve({ yearLabel: null, classes: [] }),
+  ]);
   if (!detail) notFound();
   const { student, current, enrollments, guardians } = detail;
   const t = await getTranslations("students");
   const fullName = `${student.first_name} ${student.last_name}`;
-  const canEdit = permissions.managePeople(entry.roles);
 
   return (
     <>
@@ -47,9 +51,16 @@ export async function StudentDetailView({ id }: { id: string }) {
           <h1 className="text-2xl font-bold">{fullName}</h1>
           <p className="tabular text-sm text-muted-foreground">{t("detail.matricule", { matricule: student.matricule })}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {current ? (
+            {current?.status === "active" ? (
               <StatusPill tone="info">
                 {t("detail.inClass", { className: current.className, year: current.yearLabel })}
+              </StatusPill>
+            ) : current ? (
+              <StatusPill tone="warning">
+                {t("detail.departed", {
+                  status: t(`enrollmentStatus.${current.status}`),
+                  date: current.leftOn ? formatDate(current.leftOn) : "—",
+                })}
               </StatusPill>
             ) : (
               <StatusPill tone="warning">{t("detail.notEnrolled")}</StatusPill>
@@ -144,6 +155,16 @@ export async function StudentDetailView({ id }: { id: string }) {
         <div className="space-y-6">
           <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
             <h2 className="text-lg font-semibold">{t("detail.history")}</h2>
+            {canEdit && (
+              <div className="mt-3">
+                <EnrollmentActions
+                  studentId={student.id}
+                  current={current ? { classId: current.classId, status: current.status } : null}
+                  yearLabel={options.yearLabel}
+                  classes={options.classes}
+                />
+              </div>
+            )}
             <ol className="mt-4 space-y-3">
               {enrollments.map((enrollment) => (
                 <li key={enrollment.id} className="flex items-center justify-between gap-3 text-sm">
@@ -151,6 +172,7 @@ export async function StudentDetailView({ id }: { id: string }) {
                     <span className="font-semibold">{enrollment.yearLabel}</span> · {enrollment.className}
                     <span className="block text-xs text-muted-foreground">
                       {t("detail.enrolledOn", { date: formatDate(enrollment.enrolledOn) })}
+                      {enrollment.leftOn && ` · ${t("detail.leftOn", { date: formatDate(enrollment.leftOn) })}`}
                     </span>
                   </span>
                   <StatusPill tone={enrollment.status === "active" ? "success" : "neutral"}>

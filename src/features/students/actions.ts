@@ -6,9 +6,13 @@ import { permissions } from "@/lib/auth/permissions";
 import { getSchoolContext } from "@/lib/auth/school-context";
 import { createClient } from "@/lib/supabase/server";
 import {
+  changeClassSchema,
+  endEnrollmentSchema,
   importBatchSchema,
   registerStudentSchema,
   updateStudentSchema,
+  type ChangeClassInput,
+  type EndEnrollmentInput,
   type ImportRow,
   type RegisterStudentInput,
   type UpdateStudentInput,
@@ -24,11 +28,11 @@ const REGISTRATION_CODES = [
   "forbidden",
 ] as const;
 export type RegistrationCode = (typeof REGISTRATION_CODES)[number] | "unknown";
-const isRegistrationCode = (value: unknown): value is RegistrationCode => (REGISTRATION_CODES as readonly unknown[]).includes(value);
+const isRegistrationCode = (value: unknown): value is RegistrationCode =>
+  (REGISTRATION_CODES as readonly unknown[]).includes(value);
 
 function registrationCode(error: { code?: string; message?: string }): RegistrationCode {
-  if (error.code === "P0001" && isRegistrationCode(error.message))
-    return error.message;
+  if (error.code === "P0001" && isRegistrationCode(error.message)) return error.message;
   if (error.code === "23505") return "duplicateMatricule";
   if (error.code === "42501") return "forbidden";
   if (error.code && ["23514", "22P02", "22007", "22008", "23502"].includes(error.code)) return "invalidValue";
@@ -140,4 +144,99 @@ export async function importStudents(input: { rows: ImportRow[] }): Promise<Acti
       code: isRegistrationCode(e.code) ? e.code : "unknown",
     })),
   });
+}
+
+async function currentYearId(schoolId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("academic_years")
+    .select("id")
+    .eq("school_id", schoolId)
+    .eq("is_current", true)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
+/** Classe de l'année en cours : changement de classe, ou réinscription d'un élève sans inscription cette année. */
+export async function changeClass(input: ChangeClassInput): Promise<ActionResult> {
+  const ctx = await getSchoolContext("direction");
+  if (!ctx || !permissions.managePeople(ctx.roles)) return fail("errors.forbidden");
+  const parsed = changeClassSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const yearId = await currentYearId(ctx.schoolId);
+  if (!yearId) return fail("students.errors.noYear");
+
+  const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("enrollments")
+    .select("id")
+    .eq("school_id", ctx.schoolId)
+    .eq("student_id", parsed.data.studentId)
+    .eq("academic_year_id", yearId)
+    .maybeSingle();
+
+  // La clé (classe, année) garantit que la classe choisie appartient bien à l'année en cours.
+  const { error } = existing
+    ? await supabase.from("enrollments").update({ class_id: parsed.data.classId }).eq("id", existing.id)
+    : await supabase.from("enrollments").insert({
+        school_id: ctx.schoolId,
+        student_id: parsed.data.studentId,
+        class_id: parsed.data.classId,
+        academic_year_id: yearId,
+      });
+  if (error) {
+    if (error.code === "23503") return fail("validation.form", { classId: "students.errors.unknownClass" });
+    return fail(registrationCode(error) === "forbidden" ? "errors.forbidden" : "errors.unknown");
+  }
+  refresh();
+  return ok(undefined);
+}
+
+/** Départ en cours d'année (transfert vers une autre école ou abandon) : l'élève quitte l'effectif de sa classe. */
+export async function endEnrollment(input: EndEnrollmentInput): Promise<ActionResult> {
+  const ctx = await getSchoolContext("direction");
+  if (!ctx || !permissions.managePeople(ctx.roles)) return fail("errors.forbidden");
+  const parsed = endEnrollmentSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const yearId = await currentYearId(ctx.schoolId);
+  if (!yearId) return fail("students.errors.noYear");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("enrollments")
+    .update({ status: parsed.data.status, left_on: parsed.data.leftOn })
+    .eq("school_id", ctx.schoolId)
+    .eq("student_id", parsed.data.studentId)
+    .eq("academic_year_id", yearId)
+    .eq("status", "active")
+    .select("id");
+  if (error?.code === "23514") return fail("validation.form", { leftOn: "students.errors.leftBeforeEnrollment" });
+  if (error) return fail("errors.unknown");
+  if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
+}
+
+/** Annule un départ enregistré par erreur : l'élève retrouve sa classe. */
+export async function cancelDeparture(input: { studentId: string }): Promise<ActionResult> {
+  const ctx = await getSchoolContext("direction");
+  if (!ctx || !permissions.managePeople(ctx.roles)) return fail("errors.forbidden");
+  const parsed = changeClassSchema.pick({ studentId: true }).safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const yearId = await currentYearId(ctx.schoolId);
+  if (!yearId) return fail("students.errors.noYear");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("enrollments")
+    .update({ status: "active", left_on: null })
+    .eq("school_id", ctx.schoolId)
+    .eq("student_id", parsed.data.studentId)
+    .eq("academic_year_id", yearId)
+    .in("status", ["transferred", "left"])
+    .select("id");
+  if (error) return fail("errors.unknown");
+  if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
 }

@@ -82,7 +82,7 @@ const direction: SpaceNavigation = {
     { label: "students", href: "/direction/eleves", icon: "students" },
     { label: "teachers", href: "/direction/professeurs", icon: "teachers" },
     { label: "staff", href: "/direction/personnel", icon: "staff" },
-    { label: "classes", href: "/direction/classes", icon: "classes", soon: true },
+    { label: "classes", href: "/direction/classes", icon: "classes" },
     { label: "attendance", href: "/direction/presences", icon: "attendance", soon: true },
     { label: "grades", href: "/direction/notes", icon: "grades", soon: true },
     {

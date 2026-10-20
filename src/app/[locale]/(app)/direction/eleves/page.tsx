@@ -147,7 +147,12 @@ async function StudentsList({ searchParams }: { searchParams: SearchParams }) {
                   </Link>
                 </td>
                 <td className="px-5 py-3.5">
-                  {student.className ? <StatusPill tone="info">{student.className}</StatusPill> : "—"}
+                  <span className="flex flex-wrap gap-1.5">
+                    {student.className ? <StatusPill tone="info">{student.className}</StatusPill> : "—"}
+                    {student.enrollmentStatus && student.enrollmentStatus !== "active" && (
+                      <StatusPill tone="warning">{t(`enrollmentStatus.${student.enrollmentStatus}`)}</StatusPill>
+                    )}
+                  </span>
                 </td>
                 <td className="px-5 py-3.5 text-ink-soft">{t(`sex.${student.sex}`)}</td>
                 <td className="tabular px-5 py-3.5 whitespace-nowrap text-ink-soft">
@@ -192,6 +197,9 @@ async function StudentsList({ searchParams }: { searchParams: SearchParams }) {
                 {student.className && (
                   <span className="mt-2 flex flex-wrap gap-1.5">
                     <StatusPill tone="info">{student.className}</StatusPill>
+                    {student.enrollmentStatus && student.enrollmentStatus !== "active" && (
+                      <StatusPill tone="warning">{t(`enrollmentStatus.${student.enrollmentStatus}`)}</StatusPill>
+                    )}
                   </span>
                 )}
               </span>

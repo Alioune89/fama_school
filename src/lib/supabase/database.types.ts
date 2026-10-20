@@ -985,12 +985,15 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      add_student_guardian: { Args: { p_guardian: Json; p_school_id: string; p_student_id: string }; Returns: string };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       register_student: {
         Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };
         Returns: string;
       };
+      remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
+      set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
     };
     Enums: {
       app_locale: "fr" | "wo";

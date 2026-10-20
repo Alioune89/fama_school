@@ -83,3 +83,82 @@ test.describe("Lot 1 — élèves", () => {
     await expect(page.getByText("2 élèves").filter({ visible: true })).toBeVisible();
   });
 });
+
+/** PNG 1×1 (photo d'identité de test) et PDF minimal (extrait de naissance). */
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64",
+);
+const PDF = Buffer.from("%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n");
+
+test.describe("Lot 1 — fiche élève : parents, photo et dossier", () => {
+  test.beforeEach(async ({ page }) => {
+    await loginWithEmail(page, DEMO.director);
+    await expect(page).toHaveURL(/\/direction$/);
+  });
+
+  test("ajouter, modifier, désigner et retirer un parent ; photo et documents", async ({ page }) => {
+    page.on("dialog", (dialog) => void dialog.accept());
+    const firstName = `Dossier${Date.now().toString(36)}`;
+    await page.goto("/direction/eleves");
+    await page.getByRole("button", { name: "Inscrire un élève" }).click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByLabel("Nom", { exact: true }).fill("Cissé");
+    await sheet.getByLabel("Prénom(s)").fill(firstName);
+    await sheet.getByLabel("Sexe").selectOption("F");
+    await sheet.getByLabel("Classe").selectOption({ index: 1 });
+    await sheet.getByLabel("Nom complet").fill("Mamadou Cissé");
+    await sheet.getByLabel("Téléphone").fill(uniquePhone("77"));
+    await sheet.getByLabel("Lien").selectOption("father");
+    await sheet.getByRole("button", { name: "Inscrire", exact: true }).click();
+    await expect(page.getByRole("heading", { name: `${firstName} Cissé`, level: 1 })).toBeVisible();
+
+    // Second parent, contact principal
+    await page.getByRole("button", { name: "Ajouter un parent" }).click();
+    const add = page.getByRole("dialog");
+    await add.getByLabel("Nom complet").fill("Rokhaya Cissé");
+    await add.getByLabel("Téléphone").fill(uniquePhone("70"));
+    await add.getByLabel("Lien").selectOption("mother");
+    await add.getByLabel("En faire le contact principal").check();
+    await add.getByRole("button", { name: "Ajouter", exact: true }).click();
+    await expect(visibleText(page, "Parent ajouté.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Faire de Mamadou Cissé le contact principal" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Faire de Mamadou Cissé le contact principal" }).click();
+    await expect(page.getByRole("button", { name: "Faire de Rokhaya Cissé le contact principal" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Modifier Rokhaya Cissé" }).click();
+    const edit = page.getByRole("dialog");
+    await edit.getByLabel("Profession").fill("Couturière");
+    await edit.getByRole("button", { name: "Enregistrer" }).click();
+    await expect(visibleText(page, "Mère · Couturière")).toBeVisible();
+
+    await page.getByRole("button", { name: "Retirer Rokhaya Cissé" }).click();
+    await expect(visibleText(page, "Parent retiré.")).toBeVisible();
+    await expect(page.getByText("Rokhaya Cissé").filter({ visible: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Retirer Mamadou Cissé" })).toHaveCount(0);
+
+    // Photo d'identité
+    await page.getByLabel("Ajouter une photo").setInputFiles({ name: "photo.png", mimeType: "image/png", buffer: PNG });
+    await expect(visibleText(page, "Photo enregistrée.")).toBeVisible();
+    await expect
+      .poll(
+        () =>
+          page
+            .locator("main section img")
+            .first()
+            .evaluate((img: HTMLImageElement) => img.naturalWidth),
+        {
+          message: "la photo est chargée depuis le stockage",
+        },
+      )
+      .toBeGreaterThan(0);
+
+    // Dossier : extrait de naissance en PDF
+    await page.getByLabel("Ajouter un document").setInputFiles({ name: "extrait.pdf", mimeType: "application/pdf", buffer: PDF });
+    await expect(visibleText(page, "Document ajouté.")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Télécharger extrait.pdf" })).toBeVisible();
+    await page.getByRole("button", { name: "Supprimer extrait.pdf" }).click();
+    await expect(visibleText(page, "Aucun document pour l'instant.")).toBeVisible();
+  });
+});

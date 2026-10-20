@@ -84,3 +84,39 @@ export const endEnrollmentSchema = z.object({
   leftOn: isoDateField,
 });
 export type EndEnrollmentInput = z.input<typeof endEnrollmentSchema>;
+
+export const addGuardianSchema = guardianInputSchema.extend({ studentId: z.uuid(), isPrimary: z.boolean().default(false) });
+export type AddGuardianInput = z.input<typeof addGuardianSchema>;
+
+export const updateGuardianSchema = guardianInputSchema.extend({
+  studentId: z.uuid(),
+  guardianId: z.uuid(),
+  profession: optionalText(80),
+});
+export type UpdateGuardianInput = z.input<typeof updateGuardianSchema>;
+
+export const guardianLinkSchema = z.object({ studentId: z.uuid(), guardianId: z.uuid() });
+
+/** Documents du dossier (la photo d'identité est gérée à part, sur la fiche). */
+export const DOCUMENT_KINDS = ["birth_certificate", "previous_report", "medical", "other"] as const;
+export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
+
+/** Formats acceptés par le stockage (bucket student-documents), 5 Mo au plus. */
+export const DOCUMENT_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "application/pdf"] as const;
+export const DOCUMENT_MAX_BYTES = 5 * 1024 * 1024;
+
+const storedFile = {
+  studentId: z.uuid(),
+  path: z.string().regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp|pdf)$/),
+};
+
+export const recordDocumentSchema = z.object({
+  ...storedFile,
+  kind: z.enum(DOCUMENT_KINDS),
+  fileName: requiredText(200),
+  mimeType: z.enum(DOCUMENT_MIME_TYPES),
+  sizeBytes: z.number().int().min(1).max(DOCUMENT_MAX_BYTES),
+});
+export type RecordDocumentInput = z.input<typeof recordDocumentSchema>;
+
+export const studentPhotoSchema = z.object({ ...storedFile, path: storedFile.path.nullable() });

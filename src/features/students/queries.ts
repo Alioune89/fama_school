@@ -102,7 +102,7 @@ export async function getStudent(schoolId: string, studentId: string) {
   const { data: student } = await supabase
     .from("students")
     .select(
-      "id, matricule, first_name, last_name, sex, birth_date, birth_place, nationality, address, medical_notes, status, created_at, enrollments(id, status, enrolled_on, left_on, class:classes!enrollments_class_id_school_id_fkey(id, name, year:academic_years(label, is_current))), student_guardians(relationship, is_primary, guardian:guardians(id, full_name, phone, email, profession, user_id))",
+      "id, matricule, first_name, last_name, sex, birth_date, birth_place, nationality, address, medical_notes, photo_path, status, created_at, student_documents(id, kind, file_name, file_path, mime_type, size_bytes, created_at), enrollments(id, status, enrolled_on, left_on, class:classes!enrollments_class_id_school_id_fkey(id, name, year:academic_years(label, is_current))), student_guardians(relationship, is_primary, guardian:guardians(id, full_name, phone, email, profession, user_id))",
     )
     .eq("school_id", schoolId)
     .eq("id", studentId)
@@ -127,8 +127,32 @@ export async function getStudent(schoolId: string, studentId: string) {
     .map((link) => ({ ...link.guardian!, relationship: link.relationship, isPrimary: link.is_primary }))
     .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary) || byName(a.full_name, b.full_name));
 
+  // Liens signés (1 h) : le stockage des documents est privé.
+  const storage = supabase.storage.from("student-documents");
+  const [photo, documents] = await Promise.all([
+    student.photo_path ? storage.createSignedUrl(student.photo_path, 3600) : Promise.resolve(null),
+    Promise.all(
+      [...student.student_documents]
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))
+        .map(async (doc) => {
+          const { data } = await storage.createSignedUrl(doc.file_path, 3600, { download: doc.file_name });
+          return {
+            id: doc.id,
+            kind: doc.kind,
+            fileName: doc.file_name,
+            mimeType: doc.mime_type,
+            sizeBytes: doc.size_bytes,
+            createdAt: doc.created_at,
+            url: data?.signedUrl ?? null,
+          };
+        }),
+    ),
+  ]);
+
   return {
     student,
+    photoUrl: photo?.data?.signedUrl ?? null,
+    documents,
     current: enrollments.find((e) => e.isCurrent) ?? null,
     enrollments,
     guardians,

@@ -10,7 +10,34 @@ export function toneFor(name: string): (typeof TONES)[number] {
   return TONES[hash % TONES.length]!;
 }
 
-export function PersonAvatar({ name, size = "md", className }: { name: string; size?: "sm" | "md" | "lg"; className?: string }) {
+export function PersonAvatar({
+  name,
+  size = "md",
+  src,
+  className,
+}: {
+  name: string;
+  size?: "sm" | "md" | "lg";
+  /** Photo (lien signé) ; à défaut, les initiales sur une pastille colorée. */
+  src?: string | null;
+  className?: string;
+}) {
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- lien signé du stockage privé, déjà dimensionné
+      <img
+        src={src}
+        alt=""
+        className={cn(
+          "shrink-0 rounded-full object-cover",
+          size === "sm" && "size-8",
+          size === "md" && "size-10",
+          size === "lg" && "size-16",
+          className,
+        )}
+      />
+    );
+  }
   return (
     <span
       aria-hidden

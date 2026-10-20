@@ -1,17 +1,18 @@
-import { ArrowLeft, Cake, HeartPulse, MapPin, Pencil, Phone, Star } from "lucide-react";
+import { ArrowLeft, Cake, HeartPulse, MapPin, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { StatusPill } from "@/components/dashboard/status-pill";
-import { PersonAvatar } from "@/components/people/person-avatar";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
-import { formatPhone } from "@/lib/phone";
 import { getStudent, listClassOptions } from "../queries";
 import { EnrollmentActions } from "./enrollment-actions";
+import { GuardiansManager } from "./guardians-manager";
+import { StudentDocuments } from "./student-documents";
 import { StudentFormSheet } from "./student-form-sheet";
+import { StudentPhoto } from "./student-photo";
 
 /** Âge révolu à partir d'une date « AAAA-MM-JJ ». */
 function age(birthDate: string) {
@@ -31,7 +32,7 @@ export async function StudentDetailView({ id }: { id: string }) {
     canEdit ? listClassOptions(entry.schoolId!) : Promise.resolve({ yearLabel: null, classes: [] }),
   ]);
   if (!detail) notFound();
-  const { student, current, enrollments, guardians } = detail;
+  const { student, photoUrl, documents, current, enrollments, guardians } = detail;
   const t = await getTranslations("students");
   const fullName = `${student.first_name} ${student.last_name}`;
 
@@ -46,7 +47,7 @@ export async function StudentDetailView({ id }: { id: string }) {
       </Link>
 
       <section className="mt-4 mb-6 flex flex-col gap-5 rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70 sm:flex-row sm:items-center">
-        <PersonAvatar name={fullName} size="lg" />
+        <StudentPhoto schoolId={entry.schoolId!} studentId={student.id} name={fullName} photoUrl={photoUrl} canEdit={canEdit} />
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold">{fullName}</h1>
           <p className="tabular text-sm text-muted-foreground">{t("detail.matricule", { matricule: student.matricule })}</p>
@@ -108,49 +109,14 @@ export async function StudentDetailView({ id }: { id: string }) {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
-          <h2 className="text-lg font-semibold">{t("detail.guardians")}</h2>
-          {guardians.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">{t("detail.noGuardians")}</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-line">
-              {guardians.map((guardian) => (
-                <li key={guardian.id} className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0">
-                  <PersonAvatar name={guardian.full_name} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="flex items-center gap-1.5 font-semibold">
-                      {guardian.full_name}
-                      {guardian.isPrimary && (
-                        <Star className="size-3.5 fill-sun-300 text-sun-400" aria-label={t("detail.primary")} />
-                      )}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {t(`relationships.${guardian.relationship}`)}
-                      {guardian.profession && ` · ${guardian.profession}`}
-                    </p>
-                  </div>
-                  {guardian.phone && (
-                    <a
-                      href={`tel:${guardian.phone}`}
-                      className="tabular inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink"
-                    >
-                      <Phone className="size-4" aria-hidden />
-                      {formatPhone(guardian.phone)}
-                    </a>
-                  )}
-                  {guardian.user_id ? (
-                    <StatusPill tone="success">{t("detail.parentConnected")}</StatusPill>
-                  ) : guardian.phone ? (
-                    <StatusPill tone="warning">{t("detail.parentInvited")}</StatusPill>
-                  ) : (
-                    <StatusPill tone="neutral">{t("detail.parentNoPhone")}</StatusPill>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-4 rounded-lg bg-azure-50 px-3 py-2 text-xs text-ink-soft">{t("detail.parentAccessHint")}</p>
-        </section>
+        <div className="space-y-6">
+          <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
+            <GuardiansManager studentId={student.id} guardians={guardians} canEdit={canEdit} />
+          </section>
+          <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
+            <StudentDocuments schoolId={entry.schoolId!} studentId={student.id} documents={documents} canEdit={canEdit} />
+          </section>
+        </div>
 
         <div className="space-y-6">
           <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">

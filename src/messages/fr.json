@@ -702,6 +702,71 @@
       "departed": "Départ enregistré.",
       "cancelDeparture": "Annuler le départ",
       "cancelled": "L'élève a retrouvé sa classe."
+    },
+    "guardians": {
+      "add": "Ajouter un parent",
+      "addTitle": "Ajouter un parent ou tuteur",
+      "addHint": "S'il est déjà connu de l'école (même numéro, pour un frère ou une sœur), sa fiche est réutilisée.",
+      "addSubmit": "Ajouter",
+      "isPrimary": "En faire le contact principal",
+      "editTitle": "Modifier le parent",
+      "editHint": "Coordonnées du parent et lien avec l'élève.",
+      "edit": "Modifier {name}",
+      "profession": "Profession",
+      "sharedHint": "Les coordonnées sont communes à tous les enfants de ce parent dans l'école.",
+      "phoneLockedHint": "Ce parent se connecte avec ce numéro : lui seul peut le changer.",
+      "makePrimary": "Faire de {name} le contact principal",
+      "primarySet": "{name} est le contact principal.",
+      "remove": "Retirer {name}",
+      "removeConfirm": "Retirer {name} des parents de cet élève ? Sa fiche reste pour ses autres enfants.",
+      "removed": "Parent retiré.",
+      "added": "Parent ajouté.",
+      "updated": "Parent mis à jour.",
+      "errors": {
+        "unknownStudent": "Élève introuvable.",
+        "invalidGuardian": "Le nom du parent est obligatoire.",
+        "alreadyLinked": "Ce parent est déjà relié à l'élève.",
+        "unknownGuardian": "Ce parent n'est pas relié à l'élève.",
+        "lastGuardian": "L'élève doit garder au moins un parent ou tuteur.",
+        "phoneTaken": "Ce numéro appartient déjà à un autre parent de l'école.",
+        "phoneLocked": "Ce parent se connecte avec ce numéro : lui seul peut le changer."
+      }
+    },
+    "photo": {
+      "add": "Ajouter une photo",
+      "change": "Changer la photo",
+      "remove": "Retirer la photo",
+      "updated": "Photo enregistrée.",
+      "removed": "Photo retirée.",
+      "errors": {
+        "unsupported": "Format non pris en charge : choisissez une photo (JPEG, PNG).",
+        "tooLarge": "Photo trop volumineuse (5 Mo au plus).",
+        "failed": "L'envoi a échoué. Vérifiez la connexion et réessayez."
+      }
+    },
+    "documents": {
+      "title": "Dossier",
+      "empty": "Aucun document pour l'instant.",
+      "hint": "Photo ou PDF, 5 Mo au plus. Les photos sont allégées avant l'envoi.",
+      "kind": "Type de document",
+      "kinds": {
+        "birth_certificate": "Extrait de naissance",
+        "previous_report": "Bulletin précédent",
+        "medical": "Certificat médical",
+        "other": "Autre document"
+      },
+      "upload": "Ajouter un document",
+      "uploading": "Envoi…",
+      "added": "Document ajouté.",
+      "download": "Télécharger {name}",
+      "remove": "Supprimer {name}",
+      "removeConfirm": "Supprimer « {name} » du dossier ?",
+      "removed": "Document supprimé.",
+      "errors": {
+        "unsupported": "Format non pris en charge : photo (JPEG, PNG, WebP) ou PDF.",
+        "tooLarge": "Fichier trop volumineux (5 Mo au plus).",
+        "failed": "L'envoi a échoué. Vérifiez la connexion et réessayez."
+      }
     }
   },
   "classes": {

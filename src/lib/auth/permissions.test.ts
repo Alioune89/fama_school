@@ -15,6 +15,8 @@ describe("permissions (miroir de la RLS)", () => {
   it("confie les inscriptions au secrétariat", () => {
     expect(permissions.managePeople(["secretary"])).toBe(true);
     expect(permissions.managePeople(["teacher", "accountant"])).toBe(false);
+    expect(permissions.takeAttendance(["supervisor"])).toBe(true);
+    expect(permissions.takeAttendance(["secretary", "accountant", "teacher"])).toBe(false);
   });
 
   it("limite qui peut ajouter qui au répertoire", () => {

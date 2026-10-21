@@ -1135,6 +1135,18 @@ export type Database = {
     };
     Functions: {
       add_student_guardian: { Args: { p_guardian: Json; p_school_id: string; p_student_id: string }; Returns: string };
+      attendance_absence_summary: {
+        Args: { p_from: string; p_school_id: string; p_to: string };
+        Returns: {
+          absences: number;
+          class_name: string;
+          first_name: string;
+          last_absence: string;
+          last_name: string;
+          lates: number;
+          student_id: string;
+        }[];
+      };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       register_student: {
         Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };

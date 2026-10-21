@@ -13,6 +13,8 @@ export const permissions = {
   manageAcademics: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor"]),
   /** Élèves, inscriptions, parents (private.can_manage_people). */
   managePeople: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "secretary"]),
+  /** Appel de n'importe quelle classe (private.can_take_attendance, hors enseignants de la classe). */
+  takeAttendance: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "supervisor"]),
   /** Ajout au répertoire selon le rôle visé (private.can_invite). */
   inviteRole: (roles: readonly AppRole[], target: AppRole) => {
     if (target === "owner") return hasAny(roles, ["owner"]);

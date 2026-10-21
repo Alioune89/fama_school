@@ -110,12 +110,20 @@ export type RollCallData = {
 export async function getRollCall(schoolId: string, userId: string, classId: string, date: string): Promise<RollCallData | null> {
   const { subjects } = await teacherClassIds(schoolId, userId);
   if (!subjects.has(classId)) return null;
+  return loadRollCall(schoolId, classId, date);
+}
 
+/**
+ * Liste d'appel d'une classe de l'école, quel que soit l'enseignant (direction, surveillance).
+ * Null si la classe n'appartient pas à l'année en cours de l'école.
+ */
+export async function loadRollCall(schoolId: string, classId: string, date: string): Promise<RollCallData | null> {
   const supabase = await createClient();
   const [classResult, rosterResult, sessionsResult] = await Promise.all([
     supabase
       .from("classes")
       .select("id, name, level:levels(label), year:academic_years!inner(is_current)")
+      .eq("school_id", schoolId)
       .eq("id", classId)
       .eq("year.is_current", true)
       .maybeSingle(),

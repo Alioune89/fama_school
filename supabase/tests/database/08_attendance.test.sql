@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(14);
+select plan(16);
 
 insert into public.schools (id, name, slug) values ('35000000-0000-4000-8000-00000000000c', 'École Test I', 'ecole-test-i');
 insert into auth.users (id, aud, role, email) values
@@ -134,6 +134,13 @@ select is(
   'le surveillant général fait l''appel de n''importe quelle classe'
 );
 
+select results_eq(
+  $$ select last_name, absences, lates from public.attendance_absence_summary('35000000-0000-4000-8000-00000000000c', current_date - 30, current_date)
+     order by last_name $$,
+  $$ values ('Fall'::text, 0, 1), ('Seck'::text, 1, 0) $$,
+  'le bilan compte les demi-journées d''absence et les retards de chaque élève'
+);
+
 -- Le parent voit la présence de son enfant, pas celle des autres.
 select set_config('request.jwt.claims', '{"sub": "45000000-0000-4000-8000-0000000000c4", "role": "authenticated"}', true);
 
@@ -147,6 +154,12 @@ select throws_ok(
   $$ select public.submit_roll_call(gen_random_uuid(), '95000000-0000-4000-8000-0000000000c1', current_date, 'morning', now(), '{}') $$,
   'P0001', 'forbidden',
   'le parent ne fait pas l''appel'
+);
+
+select results_eq(
+  $$ select last_name from public.attendance_absence_summary('35000000-0000-4000-8000-00000000000c', current_date - 30, current_date) $$,
+  $$ values ('Fall'::text) $$,
+  'le bilan d''un parent ne contient que son enfant'
 );
 
 select * from finish();

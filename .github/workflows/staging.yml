@@ -18,8 +18,10 @@ jobs:
     if: vars.STAGING_PROJECT_REF != '' && github.event_name != 'deployment_status'
     runs-on: ubuntu-latest
     env:
+      # Sans mot de passe, le CLI passe par un rôle temporaire obtenu avec le jeton (comme en local).
+      # Avec SUPABASE_DB_PASSWORD, il viserait l'hôte direct de la base, joignable seulement en IPv6,
+      # ce que les machines GitHub Actions ne savent pas faire.
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
     steps:
       - uses: actions/checkout@v5
       - uses: supabase/setup-cli@v1

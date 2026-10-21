@@ -39,16 +39,16 @@ jobs:
       E2E_BASE_URL: ${{ vars.STAGING_URL }}
       E2E_DEMO_PASSWORD: ${{ secrets.STAGING_DEMO_PASSWORD }}
     steps:
-      # Vercel déploie chaque push de son côté : on attend que le staging serve ce commit (15 min au plus).
+      # Vercel déploie chaque push de son côté : on attend que le staging serve ce commit (30 min au plus : la file Vercel dépasse parfois 15 min).
       - name: Attendre le déploiement Vercel de ce commit
         run: |
-          for attempt in $(seq 1 60); do
+          for attempt in $(seq 1 120); do
             served=$(curl -fsS "$E2E_BASE_URL/api/health" | jq -r '.commit // empty' || true)
             if [ "$served" = "$GITHUB_SHA" ]; then echo "Commit $GITHUB_SHA en ligne."; exit 0; fi
-            echo "En ligne : ${served:-inconnu} ; attendu : $GITHUB_SHA (essai $attempt/60)"
+            echo "En ligne : ${served:-inconnu} ; attendu : $GITHUB_SHA (essai $attempt/120)"
             sleep 15
           done
-          echo "::error::Le staging ne sert toujours pas $GITHUB_SHA après 15 minutes (déploiement Vercel en échec ?)."
+          echo "::error::Le staging ne sert toujours pas $GITHUB_SHA après 30 minutes (déploiement Vercel en échec ?)."
           exit 1
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

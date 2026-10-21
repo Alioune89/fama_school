@@ -29,7 +29,17 @@ async function MarkPill({ status }: { status: AttendanceStatus | undefined }) {
   return <StatusPill tone={tone}>{t(status)}</StatusPill>;
 }
 
-async function SlotSummary({ state, classId, canTake }: { state: SlotState; classId: string; canTake: boolean }) {
+async function SlotSummary({
+  state,
+  classId,
+  canTake,
+  date,
+}: {
+  state: SlotState;
+  classId: string;
+  canTake: boolean;
+  date: string;
+}) {
   const t = await getTranslations("attendance.direction");
   if (!state) {
     return (
@@ -48,6 +58,13 @@ async function SlotSummary({ state, classId, canTake }: { state: SlotState; clas
       <p className="text-sm text-ink">
         {formatTime(state.takenAt)}
         {state.takenBy && <span className="text-muted-foreground"> · {state.takenBy}</span>}
+        {" · "}
+        <Link
+          href={`/direction/presences/historique?date=${date}&classe=${classId}`}
+          className="font-semibold text-azure-700 hover:underline"
+        >
+          {t("history")}
+        </Link>
       </p>
       {state.absent + state.late > 0 ? (
         <div className="flex flex-wrap gap-1.5">
@@ -115,7 +132,7 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
                   </th>
                   {ATTENDANCE_SLOTS.map((slot) => (
                     <td key={slot} className="py-3 pr-4 align-top">
-                      <SlotSummary state={klass.slots[slot]} classId={klass.id} canTake={canTake} />
+                      <SlotSummary state={klass.slots[slot]} classId={klass.id} canTake={canTake} date={date} />
                     </td>
                   ))}
                 </tr>
@@ -134,7 +151,7 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
               {ATTENDANCE_SLOTS.map((slot) => (
                 <div key={slot} className="flex gap-3">
                   <span className="w-24 shrink-0 pt-0.5 text-xs font-semibold text-ink-soft">{tSlots(slot)}</span>
-                  <SlotSummary state={klass.slots[slot]} classId={klass.id} canTake={canTake} />
+                  <SlotSummary state={klass.slots[slot]} classId={klass.id} canTake={canTake} date={date} />
                 </div>
               ))}
             </li>

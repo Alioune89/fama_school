@@ -226,3 +226,51 @@ export async function getMonthGrid(schoolId: string, classId: string, month: str
 export async function listAttendanceClasses(schoolId: string) {
   return (await currentYearClasses(schoolId)).map(({ id, name }) => ({ id, name }));
 }
+
+export type RollCallLogEntry = Awaited<ReturnType<typeof getRollCallLog>>[number];
+
+/** Journal des appels d'une journée : chaque envoi, son auteur, ses heures et les élèves concernés. */
+export async function getRollCallLog(schoolId: string, date: string, classId: string | null) {
+  const supabase = await createClient();
+  let query = supabase
+    .from("attendance_submissions")
+    .select(
+      "id, class_id, slot, submitted_by, taken_at, received_at, outcome, is_first, absent_count, late_count, class:classes(name), changes:attendance_changes(student_id, previous_status, new_status, student:students(first_name, last_name))",
+    )
+    .eq("school_id", schoolId)
+    .eq("date", date)
+    .order("received_at", { ascending: false })
+    .limit(200);
+  if (classId) query = query.eq("class_id", classId);
+  const { data, error } = await query;
+  if (error) throw error;
+  const rows = data ?? [];
+
+  const authorIds = [...new Set(rows.map((r) => r.submitted_by).filter((id): id is string => Boolean(id)))];
+  const { data: authors } = authorIds.length
+    ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
+    : { data: [] as { id: string; full_name: string | null }[] };
+  const authorName = new Map((authors ?? []).map((p) => [p.id, p.full_name]));
+
+  return rows.map((row) => ({
+    id: row.id,
+    className: row.class?.name ?? "",
+    slot: row.slot,
+    author: row.submitted_by ? (authorName.get(row.submitted_by) ?? null) : null,
+    takenAt: iso(row.taken_at),
+    receivedAt: iso(row.received_at),
+    outcome: row.outcome as "applied" | "stale",
+    isFirst: row.is_first,
+    absent: row.absent_count,
+    late: row.late_count,
+    changes: row.changes
+      .map((change) => ({
+        studentId: change.student_id,
+        name: change.student ? `${change.student.first_name} ${change.student.last_name}` : "",
+        lastName: change.student?.last_name ?? "",
+        previous: change.previous_status,
+        next: change.new_status,
+      }))
+      .sort((a, b) => byName(a.lastName, b.lastName)),
+  }));
+}

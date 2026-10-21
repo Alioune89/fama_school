@@ -1191,7 +1191,32 @@
       "absencesTotalHint": "Demi-journées d'absence",
       "latesTotal": "Ret.",
       "backToDay": "Présences du jour",
-      "classesWithoutRollCall": "Classes sans appel ce jour-là"
+      "classesWithoutRollCall": "Classes sans appel ce jour-là",
+      "tabHistory": "Historique",
+      "history": "Historique"
+    },
+    "history": {
+      "hint": "Chaque appel envoyé, premier appel ou correction : qui l'a fait, à quelle heure, et quels élèves sont concernés.",
+      "classFilter": "Classe",
+      "allClasses": "Toutes les classes",
+      "listLabel": "Appels envoyés",
+      "empty": "Aucun appel envoyé ce jour-là",
+      "emptyHint": "Les appels des enseignants et de la surveillance apparaîtront ici, avec leurs corrections.",
+      "first": "Premier appel",
+      "correction": "Correction",
+      "stale": "Ignoré",
+      "staleHint": "Cet appel est arrivé après une version plus récente du même appel : il n'a rien modifié.",
+      "author": "Fait par",
+      "unknownAuthor": "Compte supprimé",
+      "times": "Heures",
+      "takenAt": "fait le {date} à {time}",
+      "receivedAt": "reçu à {time}",
+      "syncedLater": "envoyé plus tard (hors ligne)",
+      "allPresent": "Tous les élèves présents.",
+      "noChange": "Aucun changement.",
+      "changesLabel": "Élèves concernés",
+      "becomes": "devient",
+      "after": "Après cet envoi : {absent, plural, one {# absent} other {# absents}} · {late, plural, one {# retard} other {# retards}}"
     }
   },
   "sync": {

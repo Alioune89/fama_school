@@ -45,6 +45,46 @@ export type Database = {
           },
         ];
       };
+      attendance_changes: {
+        Row: {
+          new_status: Database["public"]["Enums"]["attendance_status"];
+          previous_status: Database["public"]["Enums"]["attendance_status"] | null;
+          school_id: string;
+          student_id: string;
+          submission_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          new_status: Database["public"]["Enums"]["attendance_status"];
+          previous_status?: Database["public"]["Enums"]["attendance_status"] | null;
+          school_id: string;
+          student_id: string;
+          submission_id: string;
+        };
+        Update: {
+          new_status?: Database["public"]["Enums"]["attendance_status"];
+          previous_status?: Database["public"]["Enums"]["attendance_status"] | null;
+          school_id?: string;
+          student_id?: string;
+          submission_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attendance_changes_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "attendance_changes_submission_id_fkey";
+            columns: ["submission_id"];
+            isOneToOne: false;
+            referencedRelation: "attendance_submissions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       attendance_records: {
         Row: {
           class_id: string;
@@ -136,6 +176,70 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "classes";
             referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      attendance_submissions: {
+        Row: {
+          absent_count: number;
+          class_id: string;
+          date: string;
+          id: string;
+          is_first: boolean;
+          late_count: number;
+          outcome: string;
+          received_at: string;
+          school_id: string;
+          session_id: string | null;
+          slot: Database["public"]["Enums"]["attendance_slot"];
+          submitted_by: string | null;
+          taken_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          absent_count?: number;
+          class_id: string;
+          date: string;
+          id: string;
+          is_first?: boolean;
+          late_count?: number;
+          outcome: string;
+          received_at?: string;
+          school_id: string;
+          session_id?: string | null;
+          slot: Database["public"]["Enums"]["attendance_slot"];
+          submitted_by?: string | null;
+          taken_at: string;
+        };
+        Update: {
+          absent_count?: number;
+          class_id?: string;
+          date?: string;
+          id?: string;
+          is_first?: boolean;
+          late_count?: number;
+          outcome?: string;
+          received_at?: string;
+          school_id?: string;
+          session_id?: string | null;
+          slot?: Database["public"]["Enums"]["attendance_slot"];
+          submitted_by?: string | null;
+          taken_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attendance_submissions_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "attendance_submissions_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "attendance_sessions";
+            referencedColumns: ["id"];
           },
         ];
       };

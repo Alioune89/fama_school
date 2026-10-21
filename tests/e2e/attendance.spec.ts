@@ -41,10 +41,31 @@ test.describe("Présences côté direction", () => {
     await expect(page.getByRole("region", { name: /Absents et retards/ }).getByText(name)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Absences répétées" })).toBeVisible();
 
+    // Correction : l'élève absent est finalement arrivé en retard. Le journal garde les deux envois.
+    await page.goto(`/direction/presences/appel/${classId}`);
+    await expect(async () => {
+      if (!(await students.first().getAttribute("aria-label"))?.endsWith(": En retard")) await students.first().click();
+      await expect(students.first()).toHaveAttribute("aria-label", /: En retard$/, { timeout: 1_000 });
+    }).toPass();
+    await page.getByRole("button", { name: "Enregistrer les modifications" }).click();
+    await expect(page.getByText(/Appel envoyé à \d{1,2} h \d{2}/)).toBeVisible();
+
+    await page.goto("/direction/presences");
+    await page.getByRole("link", { name: "Historique", exact: true }).first().click();
+    await expect(page).toHaveURL(/\/direction\/presences\/historique/);
+    const latest = page.getByRole("list", { name: "Appels envoyés" }).getByRole("listitem").first();
+    await expect(latest.getByText(/^3e A · /)).toBeVisible();
+    await expect(latest.getByText("Correction")).toBeVisible();
+    await expect(latest.getByText("Moussa Ndiaye")).toBeVisible();
+    await expect(latest.getByText(/fait le \S+ \d{1,2} \S+ à \d{1,2} h \d{2} · reçu à/)).toBeVisible();
+    const change = latest.getByRole("list", { name: "Élèves concernés" }).getByRole("listitem").filter({ hasText: name });
+    await expect(change.getByText("Absent")).toBeVisible();
+    await expect(change.getByText("En retard")).toBeVisible();
+
     await page.getByRole("link", { name: "Grille du mois" }).click();
     await page.getByRole("combobox", { name: "Classe" }).selectOption({ label: "3e A" });
     await expect(page).toHaveURL(new RegExp(`classe=${classId}`));
-    await expect(page.getByRole("img", { name: new RegExp(`^${name}, .* : .*absent`) }).first()).toBeVisible();
+    await expect(page.getByRole("img", { name: new RegExp(`^${name}, .* : .*en retard`) }).first()).toBeVisible();
   });
 
   test("on remonte aux jours précédents", async ({ page }) => {

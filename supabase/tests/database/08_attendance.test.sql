@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(16);
+select plan(20);
 
 insert into public.schools (id, name, slug) values ('35000000-0000-4000-8000-00000000000c', 'École Test I', 'ecole-test-i');
 insert into auth.users (id, aud, role, email) values
@@ -96,6 +96,33 @@ select results_eq(
      where student_id = 'a5000000-0000-4000-8000-0000000000c1' $$,
   $$ values ('late'::text, 1) $$,
   'un seul appel pour la classe, le jour et le créneau, avec le statut le plus récent'
+);
+
+select results_eq(
+  $$ select outcome, is_first, absent_count, late_count from public.attendance_submissions order by taken_at $$,
+  $$ values ('applied'::text, true, 1, 0), ('stale'::text, false, 0, 1), ('applied'::text, false, 0, 1) $$,
+  'le journal garde chaque envoi : premier appel, appel ancien ignoré, correction'
+);
+
+select results_eq(
+  $$ select s.is_first, c.previous_status::text, c.new_status::text
+     from public.attendance_changes c join public.attendance_submissions s on s.id = c.submission_id
+     where c.student_id = 'a5000000-0000-4000-8000-0000000000c1' order by s.taken_at $$,
+  $$ values (true, null::text, 'absent'::text), (false, 'absent'::text, 'late'::text) $$,
+  'le journal dit quel élève a changé de statut, et comment'
+);
+
+select is(
+  (select submitted_by from public.attendance_submissions where is_first),
+  '45000000-0000-4000-8000-0000000000c1'::uuid,
+  'le journal garde l''auteur de l''appel'
+);
+
+select throws_ok(
+  $$ insert into public.attendance_submissions (id, school_id, class_id, date, slot, taken_at, outcome)
+     values (gen_random_uuid(), '35000000-0000-4000-8000-00000000000c', '95000000-0000-4000-8000-0000000000c1', current_date, 'afternoon', now(), 'applied') $$,
+  '42501', null,
+  'le journal ne s''écrit pas directement depuis l''application'
 );
 
 select throws_ok(

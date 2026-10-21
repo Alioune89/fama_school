@@ -90,14 +90,15 @@ Le workflow `.github/workflows/staging.yml` reste inactif tant que ces réglages
 | Variable | `STAGING_PROJECT_REF` | référence du projet Supabase |
 | Variable | `STAGING_URL` | `https://fama-school.vercel.app` |
 | Secret | `SUPABASE_ACCESS_TOKEN` | jeton personnel Supabase (*Account > Access Tokens*) |
-| Secret | `STAGING_DB_PASSWORD` | mot de passe de la base |
 | Secret | `STAGING_DEMO_PASSWORD` | mot de passe de démo du directeur |
 
 Une fois réglé :
 
-- chaque push sur `main` applique les nouvelles migrations au staging (`supabase db push`, sans le seed) ;
-- chaque déploiement Vercel réussi lance les parcours essentiels (`@smoke`) sur le site en ligne.
-  Ils ne font que lire : ils ne créent pas de données dans le staging.
+- chaque push sur `main` applique les nouvelles migrations au staging (`supabase db push`, sans le seed),
+  par le rôle temporaire du CLI : le mot de passe de la base n'est pas nécessaire ;
+- le workflow attend ensuite que le staging serve ce commit (`/api/health` renvoie `commit`),
+  puis lance les parcours essentiels (`@smoke`). Ils ne font que lire : ils ne créent pas de données.
+  Le jeton Supabase a une date d'expiration : le recréer avant (*Account > Access Tokens*).
 
 Vérification à la main, depuis sa machine :
 

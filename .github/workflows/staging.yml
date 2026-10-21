@@ -1,21 +1,20 @@
 name: Staging
 
-# Inactif tant que la variable STAGING_PROJECT_REF n'est pas définie (voir docs/deploiement-staging.md).
+# Inactif tant que les variables STAGING_PROJECT_REF et STAGING_URL ne sont pas définies
+# (voir docs/deploiement-staging.md).
 on:
   push:
     branches: [main]
-  # Vercel signale chaque déploiement terminé : on vérifie alors le site en ligne.
-  deployment_status:
   workflow_dispatch:
 
 concurrency:
-  group: staging-${{ github.event_name }}
+  group: staging
   cancel-in-progress: false
 
 jobs:
   migrate:
     name: Migrations Supabase (staging)
-    if: vars.STAGING_PROJECT_REF != '' && github.event_name != 'deployment_status'
+    if: vars.STAGING_PROJECT_REF != ''
     runs-on: ubuntu-latest
     env:
       # Sans mot de passe, le CLI passe par un rôle temporaire obtenu avec le jeton (comme en local).
@@ -33,16 +32,24 @@ jobs:
 
   smoke:
     name: Parcours essentiels sur le site en ligne
-    if: >-
-      vars.STAGING_URL != '' && (
-        github.event_name == 'workflow_dispatch' ||
-        (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
-      )
+    needs: migrate
+    if: always() && vars.STAGING_URL != '' && needs.migrate.result != 'failure'
     runs-on: ubuntu-latest
     env:
       E2E_BASE_URL: ${{ vars.STAGING_URL }}
       E2E_DEMO_PASSWORD: ${{ secrets.STAGING_DEMO_PASSWORD }}
     steps:
+      # Vercel déploie chaque push de son côté : on attend que le staging serve ce commit (15 min au plus).
+      - name: Attendre le déploiement Vercel de ce commit
+        run: |
+          for attempt in $(seq 1 60); do
+            served=$(curl -fsS "$E2E_BASE_URL/api/health" | jq -r '.commit // empty' || true)
+            if [ "$served" = "$GITHUB_SHA" ]; then echo "Commit $GITHUB_SHA en ligne."; exit 0; fi
+            echo "En ligne : ${served:-inconnu} ; attendu : $GITHUB_SHA (essai $attempt/60)"
+            sleep 15
+          done
+          echo "::error::Le staging ne sert toujours pas $GITHUB_SHA après 15 minutes (déploiement Vercel en échec ?)."
+          exit 1
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:

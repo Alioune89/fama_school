@@ -4,7 +4,7 @@ import { DEMO, loginWithEmail } from "./helpers";
 test.describe("pages publiques", () => {
   test("la page d'accueil présente Fama School et mène à la connexion", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("L'école, les professeurs et les parents");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("L'école, les enseignants et les parents");
     await page.getByRole("link", { name: "Se connecter" }).first().click();
     await expect(page).toHaveURL(/\/connexion$/);
     await expect(page.getByRole("heading", { name: "Connexion" })).toBeVisible();

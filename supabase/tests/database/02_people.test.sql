@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(22);
+select plan(23);
 
 -- ---------------------------------------------------------------------------
 -- Données de test : école C (complète) et école D (isolée)
@@ -224,6 +224,12 @@ select throws_ok(
   '42501',
   null,
   'le lien entre fiche et compte ne peut pas être modifié par l''application'
+);
+
+select lives_ok(
+  $$ update public.school_staff set title = 'Institutrice', sex = 'F', cycle = 'elementaire', contract = 'permanent'
+     where id = 'a1000000-0000-4000-8000-0000000000c1' $$,
+  'la direction modifie l''intitulé, le genre et le cycle d''un enseignant'
 );
 
 update public.school_staff set status = 'inactive' where id = 'a1000000-0000-4000-8000-0000000000c1';

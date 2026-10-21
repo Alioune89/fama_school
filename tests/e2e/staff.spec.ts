@@ -83,6 +83,15 @@ test.describe("Lot 1 — enseignants et personnel", () => {
     await expect(visibleText(page, "Toutes les matières (CM2 A)")).toBeVisible();
     await expect(page.getByText("Ousmane Faye").filter({ visible: true })).toHaveCount(0);
 
+    // Le genre et le cycle se modifient depuis la fiche.
+    await page.getByRole("link", { name: /Aïssatou Cissé/ }).filter({ visible: true }).click();
+    await page.getByRole("button", { name: "Modifier" }).click();
+    const edit = page.getByRole("dialog");
+    await edit.getByLabel("Genre").selectOption("F");
+    await edit.getByLabel("Cycle d'enseignement").selectOption("elementaire");
+    await edit.getByRole("button", { name: "Enregistrer" }).click();
+    await expect(visibleText(page, "Fiche mise à jour.")).toBeVisible();
+
     await page.goto("/direction/classes");
     await page.getByRole("link", { name: /CM2 A/ }).click();
     await expect(page.getByRole("heading", { name: "Titulaire de la classe" })).toBeVisible();

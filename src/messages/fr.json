@@ -1,7 +1,7 @@
 {
   "brand": {
     "name": "Fama School",
-    "tagline": "L'école, les professeurs et les parents, enfin reliés.",
+    "tagline": "L'école, les enseignants et les parents, enfin reliés.",
     "description": "Suivi scolaire, bulletins, présences et paiements avec reçus pour les écoles du Sénégal."
   },
   "common": {
@@ -36,7 +36,7 @@
   },
   "metadata": {
     "title": "Fama School",
-    "description": "La plateforme qui relie l'école, les professeurs et les parents : notes, bulletins, présences et paiements avec reçus."
+    "description": "La plateforme qui relie l'école, les enseignants et les parents : notes, bulletins, présences et paiements avec reçus."
   },
   "roles": {
     "owner": "Fondateur",
@@ -121,7 +121,7 @@
   },
   "auth": {
     "title": "Connexion",
-    "subtitle": "Parents, professeurs et personnel : connectez-vous avec votre numéro de téléphone.",
+    "subtitle": "Parents, enseignants et personnel : connectez-vous avec votre numéro de téléphone.",
     "tabPhone": "Téléphone",
     "tabEmail": "E-mail (personnel)",
     "phoneLabel": "Numéro de téléphone",
@@ -287,7 +287,7 @@
     },
     "hero": {
       "eyebrow": "Gestion scolaire pensée pour le Sénégal",
-      "title": "L'école, les professeurs et les parents, enfin reliés.",
+      "title": "L'école, les enseignants et les parents, enfin reliés.",
       "body": "Notes, bulletins, présences et paiements avec reçus : tout le suivi scolaire sur une seule plateforme, sur le téléphone de chacun.",
       "ctaDemo": "Demander une démo",
       "ctaLogin": "Se connecter",
@@ -315,13 +315,13 @@
       "direction": {
         "title": "Direction et administration",
         "items": {
-          "first": "Inscriptions, classes et professeurs",
+          "first": "Inscriptions, classes et enseignants",
           "second": "Encaissements, reçus et relances des impayés",
           "third": "Tableau de bord de l'école en temps réel"
         }
       },
       "teachers": {
-        "title": "Professeurs",
+        "title": "Enseignants",
         "items": {
           "first": "Appel en un toucher, même sans réseau",
           "second": "Saisie des notes de devoirs et de compositions",
@@ -613,7 +613,7 @@
       },
       "nameAr": "Intitulé en arabe",
       "remove": "Retirer la matière",
-      "removeConfirm": "Retirer « {name} » ? Ses affectations de professeurs seront aussi supprimées.",
+      "removeConfirm": "Retirer « {name} » ? Ses affectations d'enseignants seront aussi supprimées.",
       "noLevels": "Commencez par choisir les cycles et niveaux de l'école.",
       "coefficientFor": "Coefficient en {level}",
       "newSubject": "Nouvelle matière",

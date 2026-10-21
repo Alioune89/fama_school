@@ -7,6 +7,8 @@ import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
+import { ReportList } from "@/features/reports/components/report-list";
+import { listStudentReports } from "@/features/reports/queries";
 import { getStudent, listClassOptions } from "../queries";
 import { EnrollmentActions } from "./enrollment-actions";
 import { GuardiansManager } from "./guardians-manager";
@@ -27,13 +29,15 @@ function age(birthDate: string) {
 export async function StudentDetailView({ id }: { id: string }) {
   const { entry } = await requireSpace("direction");
   const canEdit = permissions.managePeople(entry.roles);
-  const [detail, options] = await Promise.all([
+  const [detail, options, reports] = await Promise.all([
     getStudent(entry.schoolId!, id),
     canEdit ? listClassOptions(entry.schoolId!) : Promise.resolve({ yearLabel: null, classes: [] }),
+    listStudentReports(id),
   ]);
   if (!detail) notFound();
   const { student, photoUrl, documents, current, enrollments, guardians } = detail;
   const t = await getTranslations("students");
+  const tReports = await getTranslations("reports");
   const fullName = `${student.first_name} ${student.last_name}`;
 
   return (
@@ -115,6 +119,12 @@ export async function StudentDetailView({ id }: { id: string }) {
           </section>
           <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
             <StudentDocuments schoolId={entry.schoolId!} studentId={student.id} documents={documents} canEdit={canEdit} />
+          </section>
+          <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70" aria-labelledby="student-reports">
+            <h2 id="student-reports" className="text-lg font-semibold">
+              {tReports("studentTitle")}
+            </h2>
+            <ReportList reports={reports} emptyLabel={tReports("studentEmpty")} />
           </section>
         </div>
 

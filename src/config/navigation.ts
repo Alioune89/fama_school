@@ -21,7 +21,8 @@ export type NavIconName =
   | "payments"
   | "schools"
   | "demoRequests"
-  | "plans";
+  | "plans"
+  | "reports";
 
 /** Clés de traduction du namespace « nav ». */
 export type NavLabelKey =
@@ -52,7 +53,8 @@ export type NavLabelKey =
   | "payments"
   | "schools"
   | "demoRequests"
-  | "plans";
+  | "plans"
+  | "reports";
 
 export type NavLeaf = { label: NavLabelKey; href: string; soon?: boolean };
 export type NavItem = NavLeaf & {
@@ -116,6 +118,7 @@ const professeur: SpaceNavigation = {
     { label: "home", href: "/professeur", icon: "home" },
     { label: "myClasses", href: "/professeur/classes", icon: "classes", soon: true },
     { label: "rollCall", href: "/professeur/appel", icon: "rollCall" },
+    { label: "reports", href: "/professeur/signalements", icon: "reports" },
     { label: "gradeEntry", href: "/professeur/notes", icon: "grades", soon: true },
     { label: "programme", href: "/professeur/programme", icon: "programme", soon: true },
     { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework", soon: true },
@@ -124,7 +127,7 @@ const professeur: SpaceNavigation = {
   other: [{ label: "profile", href: "/professeur/profil", icon: "profile", soon: true }],
   mobile: [],
 };
-professeur.mobile = pick(professeur.menu, ["home", "rollCall", "gradeEntry", "messages"]);
+professeur.mobile = pick(professeur.menu, ["home", "rollCall", "reports", "messages"]);
 
 const parent: SpaceNavigation = {
   menu: [

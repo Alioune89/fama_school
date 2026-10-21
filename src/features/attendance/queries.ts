@@ -97,6 +97,34 @@ export async function listTeacherClasses(schoolId: string, userId: string, date:
     .map(({ item }) => item);
 }
 
+export type TeacherRoster = { id: string; name: string; students: RosterStudent[] };
+
+/** Classes du professeur avec leurs élèves (formulaire de signalement). */
+export async function listTeacherRosters(schoolId: string, userId: string): Promise<TeacherRoster[]> {
+  const { subjects } = await teacherClassIds(schoolId, userId);
+  const ids = [...subjects.keys()];
+  if (ids.length === 0) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("classes")
+    .select(
+      "id, name, level:levels(position), year:academic_years!inner(is_current), enrollments!enrollments_class_id_school_id_fkey(status, student:students(id, first_name, last_name))",
+    )
+    .in("id", ids)
+    .eq("year.is_current", true);
+  if (error) throw error;
+  return (data ?? [])
+    .sort((a, b) => (a.level?.position ?? 0) - (b.level?.position ?? 0) || byName(a.name, b.name))
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      students: c.enrollments
+        .filter((e) => e.status === "active" && e.student)
+        .map((e) => ({ id: e.student!.id, firstName: e.student!.first_name, lastName: e.student!.last_name }))
+        .sort((a, b) => byName(a.lastName, b.lastName) || byName(a.firstName, b.firstName)),
+    }));
+}
+
 export type RollCallData = {
   classId: string;
   className: string;

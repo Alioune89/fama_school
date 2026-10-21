@@ -24,8 +24,23 @@ export const rollCallPayloadSchema = z.object({
 
 export type RollCallPayload = z.infer<typeof rollCallPayloadSchema>;
 
+export const REPORT_CATEGORIES = ["behavior", "health", "homework", "equipment", "other"] as const;
+export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
+
+export const studentReportPayloadSchema = z.object({
+  studentId: z.uuid(),
+  classId: z.uuid(),
+  category: z.enum(REPORT_CATEGORIES),
+  message: z.string().trim().min(3, "validation.tooShort").max(1000, "validation.tooLong"),
+  /** Moment du signalement sur le téléphone. */
+  occurredAt: z.iso.datetime(),
+});
+
+export type StudentReportPayload = z.infer<typeof studentReportPayloadSchema>;
+
 export const operationSchema = z.discriminatedUnion("kind", [
   z.object({ id: z.uuid(), kind: z.literal("attendance.rollCall"), payload: rollCallPayloadSchema }),
+  z.object({ id: z.uuid(), kind: z.literal("student.report"), payload: studentReportPayloadSchema }),
 ]);
 
 export type Operation = z.infer<typeof operationSchema>;

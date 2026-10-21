@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(20);
+select plan(21);
 
 insert into public.schools (id, name, slug) values ('35000000-0000-4000-8000-00000000000c', 'École Test I', 'ecole-test-i');
 insert into auth.users (id, aud, role, email) values
@@ -181,6 +181,12 @@ select throws_ok(
   $$ select public.submit_roll_call(gen_random_uuid(), '95000000-0000-4000-8000-0000000000c1', current_date, 'morning', now(), '{}') $$,
   'P0001', 'forbidden',
   'le parent ne fait pas l''appel'
+);
+
+select results_eq(
+  $$ select slot::text from public.attendance_sessions order by slot $$,
+  $$ values ('morning'::text) $$,
+  'le parent voit le créneau de l''appel où figure son enfant, pas les autres appels'
 );
 
 select results_eq(

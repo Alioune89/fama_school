@@ -9,6 +9,7 @@ import {
   Inbox,
   LayoutGrid,
   Megaphone,
+  MessageSquareWarning,
   MessagesSquare,
   NotebookPen,
   Settings,
@@ -43,6 +44,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   schools: Building2,
   demoRequests: Inbox,
   plans: Tags,
+  reports: MessageSquareWarning,
 };
 
 export function NavIcon({ name, className }: { name: NavIconName; className?: string }) {

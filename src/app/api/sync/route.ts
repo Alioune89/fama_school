@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { attendanceSyncHandlers } from "@/features/attendance/sync";
+import { reportSyncHandlers } from "@/features/reports/sync";
 import { syncRequestSchema, type SyncResponse } from "@/lib/offline/operations";
 import { applyOperations, type SyncHandlers } from "@/lib/offline/server";
 import { createClient } from "@/lib/supabase/server";
 
-const handlers: SyncHandlers = { ...attendanceSyncHandlers };
+const handlers: SyncHandlers = { ...attendanceSyncHandlers, ...reportSyncHandlers };
 
 /**
  * Reçoit les opérations enregistrées hors ligne par les téléphones (src/lib/offline/outbox.ts).

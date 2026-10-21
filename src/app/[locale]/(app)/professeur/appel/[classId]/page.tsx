@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, MessageSquareWarning } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
+import { buttonVariants } from "@/components/ui/button";
 import { RollCallBoard } from "@/features/attendance/components/roll-call-board";
 import { RollCallFallback } from "@/features/attendance/components/roll-call-fallback";
 import { getRollCall } from "@/features/attendance/queries";
@@ -24,6 +25,16 @@ async function RollCall({ params }: { params: PageProps<"/[locale]/professeur/ap
   return <RollCallBoard userId={user.id} data={data} initialSlot={defaultSlot()} />;
 }
 
+async function ReportLink({ params }: { params: PageProps<"/[locale]/professeur/appel/[classId]">["params"] }) {
+  const [{ classId }, t] = await Promise.all([params, getTranslations("reports")]);
+  return (
+    <Link href={`/professeur/signalements?classe=${classId}`} className={buttonVariants({ variant: "outline" })}>
+      <MessageSquareWarning aria-hidden />
+      {t("reportStudent")}
+    </Link>
+  );
+}
+
 export default async function ClassRollCallPage({ params }: PageProps<"/[locale]/professeur/appel/[classId]">) {
   const t = await getTranslations("attendance.rollCall");
   return (
@@ -35,7 +46,15 @@ export default async function ClassRollCallPage({ params }: PageProps<"/[locale]
         <ChevronLeft className="size-4" aria-hidden />
         {t("back")}
       </Link>
-      <PageHeader title={t("title")} description={t("hint")} />
+      <PageHeader
+        title={t("title")}
+        description={t("hint")}
+        actions={
+          <Suspense fallback={null}>
+            <ReportLink params={params} />
+          </Suspense>
+        }
+      />
       <Suspense fallback={<RollCallFallback />}>
         <RollCall params={params} />
       </Suspense>

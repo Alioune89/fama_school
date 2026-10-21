@@ -1069,6 +1069,61 @@ export type Database = {
           },
         ];
       };
+      student_reports: {
+        Row: {
+          author_name: string;
+          category: Database["public"]["Enums"]["report_category"];
+          class_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          message: string;
+          occurred_at: string;
+          school_id: string;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_name: string;
+          category: Database["public"]["Enums"]["report_category"];
+          class_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id: string;
+          message: string;
+          occurred_at: string;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          author_name?: string;
+          category?: Database["public"]["Enums"]["report_category"];
+          class_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          message?: string;
+          occurred_at?: string;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_reports_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_reports_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       students: {
         Row: {
           address: string | null;
@@ -1270,6 +1325,17 @@ export type Database = {
         };
         Returns: string;
       };
+      submit_student_report: {
+        Args: {
+          p_category: Database["public"]["Enums"]["report_category"];
+          p_class_id: string;
+          p_message: string;
+          p_occurred_at: string;
+          p_operation_id: string;
+          p_student_id: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       app_locale: "fr" | "wo";
@@ -1284,6 +1350,7 @@ export type Database = {
       membership_status: "invited" | "active" | "suspended";
       period_kind: "semester" | "trimester";
       person_status: "active" | "inactive";
+      report_category: "behavior" | "health" | "homework" | "equipment" | "other";
       school_plan: "pilot" | "starter" | "school" | "establishment" | "group";
       school_status: "trial" | "active" | "suspended" | "archived";
       sex: "F" | "M";
@@ -1408,6 +1475,7 @@ export const Constants = {
       membership_status: ["invited", "active", "suspended"],
       period_kind: ["semester", "trimester"],
       person_status: ["active", "inactive"],
+      report_category: ["behavior", "health", "homework", "equipment", "other"],
       school_plan: ["pilot", "starter", "school", "establishment", "group"],
       school_status: ["trial", "active", "suspended", "archived"],
       sex: ["F", "M"],

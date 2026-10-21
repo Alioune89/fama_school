@@ -93,7 +93,8 @@
     "schools": "Écoles",
     "plans": "Formules",
     "more": "Plus",
-    "demoRequests": "Demandes de démo"
+    "demoRequests": "Demandes de démo",
+    "reports": "Signalements"
   },
   "topbar": {
     "searchPlaceholder": "Rechercher un élève, une classe…",
@@ -1231,5 +1232,59 @@
       "unauthenticated": "Reconnectez-vous pour envoyer vos saisies.",
       "server": "Le serveur ne répond pas : nouvel essai dans un instant."
     }
+  },
+  "reports": {
+    "hint": "Signalez un élève à sa famille : comportement, santé, travail non fait… Le parent voit le signalement dans son espace, avec votre nom, la date, l'heure et le motif.",
+    "newTitle": "Signaler un élève",
+    "mineTitle": "Mes derniers signalements",
+    "mineEmpty": "Vous n'avez encore fait aucun signalement.",
+    "noClasses": "Aucune classe pour l'instant",
+    "noClassesHint": "Vous pourrez signaler un élève dès que la direction vous aura affecté à une classe.",
+    "reportStudent": "Signaler un élève",
+    "studentTitle": "Signalements des enseignants",
+    "studentEmpty": "Aucun signalement pour cet élève.",
+    "listLabel": "Signalements",
+    "when": "le {date} à {time}",
+    "byIn": "Par {author} · {className}",
+    "unknownAuthor": "Enseignant",
+    "categories": {
+      "behavior": "Comportement",
+      "health": "Santé",
+      "homework": "Travail non fait",
+      "equipment": "Matériel oublié",
+      "other": "Autre"
+    },
+    "form": {
+      "class": "Classe",
+      "student": "Élève",
+      "chooseStudentOption": "Choisir l'élève…",
+      "category": "Type de signalement",
+      "message": "Motif",
+      "messagePlaceholder": "Ex. A eu de la fièvre vers 10 h, a été mis au repos à l'infirmerie.",
+      "messageHint": "Le parent lira ce message tel quel.",
+      "submit": "Envoyer le signalement",
+      "saved": "Signalement de {name} envoyé. Le parent le verra dans son espace.",
+      "savedOffline": "Signalement de {name} enregistré sur ce téléphone. Il partira dès le retour du réseau.",
+      "chooseStudent": "Choisissez l'élève.",
+      "chooseCategory": "Choisissez le type de signalement.",
+      "opLabel": "Signalement de {name} ({category})"
+    },
+    "errors": {
+      "unknownStudent": "Cet élève n'est plus inscrit dans cette classe.",
+      "invalidMessage": "Le motif doit faire entre 3 et 1 000 caractères."
+    }
+  },
+  "parentSpace": {
+    "back": "Mes enfants",
+    "summary": "{days} derniers jours : {absences, plural, =0 {aucune absence} one {# demi-journée d'absence} other {# demi-journées d'absence}} · {lates, plural, =0 {aucun retard} one {# retard} other {# retards}} · {reports, plural, =0 {aucun signalement} one {# signalement} other {# signalements}}",
+    "absentToday": "Absent aujourd'hui ({slot})",
+    "lateToday": "En retard aujourd'hui ({slot})",
+    "reportsTitle": "Signalements des enseignants",
+    "reportsHint": "Ce que les enseignants ont signalé, avec la date, l'heure et le motif.",
+    "reportsEmpty": "Aucun signalement pour {name}.",
+    "absencesTitle": "Absences et retards ({days} derniers jours)",
+    "absencesLabel": "Absences et retards",
+    "absencesEmpty": "{name} n'a eu ni absence ni retard.",
+    "rollCallAt": "{className} · appel de {time}"
   }
 }

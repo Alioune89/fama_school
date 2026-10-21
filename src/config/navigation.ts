@@ -115,7 +115,7 @@ const professeur: SpaceNavigation = {
   menu: [
     { label: "home", href: "/professeur", icon: "home" },
     { label: "myClasses", href: "/professeur/classes", icon: "classes", soon: true },
-    { label: "rollCall", href: "/professeur/appel", icon: "rollCall", soon: true },
+    { label: "rollCall", href: "/professeur/appel", icon: "rollCall" },
     { label: "gradeEntry", href: "/professeur/notes", icon: "grades", soon: true },
     { label: "programme", href: "/professeur/programme", icon: "programme", soon: true },
     { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework", soon: true },

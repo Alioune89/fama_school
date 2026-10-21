@@ -28,6 +28,14 @@ export function formatDate(
   return new Intl.DateTimeFormat(APP_LOCALE_TAG, { timeZone: APP_TIME_ZONE, ...options }).format(date);
 }
 
+const timeFormatter = new Intl.DateTimeFormat(APP_LOCALE_TAG, { hour: "numeric", minute: "2-digit", timeZone: APP_TIME_ZONE });
+
+/** Heure à la sénégalaise : « 8 h 05 ». */
+export function formatTime(value: Date | string): string {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return timeFormatter.format(date).replace(":", " h ");
+}
+
 /** Initiales pour les avatars sans photo : « Awa Diop » → « AD ». */
 export function initials(fullName: string | null | undefined): string {
   if (!fullName) return "?";

@@ -1073,5 +1073,61 @@
       "capacity": "Indiquez un nombre entre 1 et 200.",
       "duplicateName": "Une autre classe porte déjà ce nom cette année."
     }
+  },
+  "attendance": {
+    "rollCall": {
+      "title": "Faire l'appel",
+      "hint": "Tout le monde est présent par défaut : touchez un élève pour le marquer absent, touchez encore pour « en retard ».",
+      "noClasses": "Aucune classe pour l'instant",
+      "noClassesHint": "Vos classes apparaîtront ici dès que la direction vous aura affecté à une classe.",
+      "students": "{count, plural, =0 {aucun élève} one {# élève} other {# élèves}}",
+      "homeroom": "Vous êtes professeur principal",
+      "slotTodo": "{slot} : à faire",
+      "slotPending": "{slot} : en attente d'envoi",
+      "slotDone": "{slot} : fait à {time}{absent, plural, =0 {} one { · # absent} other { · # absents}}{late, plural, =0 {} one { · # retard} other { · # retards}}",
+      "slotLabel": "Créneau de l'appel",
+      "summary": "{present, plural, one {# présent} other {# présents}} · {absent, plural, one {# absent} other {# absents}} · {late, plural, one {# en retard} other {# en retard}}",
+      "studentStatus": "{name} : {status}",
+      "allPresent": "Tous présents",
+      "notValidated": "Appel pas encore validé.",
+      "validate": "Valider l'appel",
+      "update": "Enregistrer les modifications",
+      "savedOffline": "Appel enregistré sur ce téléphone. Il partira dès le retour du réseau.",
+      "sending": "Envoi de l'appel…",
+      "sent": "Appel envoyé à {time}.",
+      "rejected": "Appel refusé : {error}",
+      "opLabel": "Appel de {className}, {slot} du {date}",
+      "rosterLabel": "Élèves de la classe",
+      "emptyRoster": "Aucun élève inscrit dans cette classe.",
+      "back": "Mes classes",
+      "cached": "hors ligne, liste gardée sur ce téléphone",
+      "waiting": "Pas de connexion. Ouvrez cette classe une première fois avec du réseau : vous pourrez ensuite faire l'appel même hors ligne."
+    },
+    "slots": {
+      "morning": "Matin",
+      "afternoon": "Après-midi"
+    },
+    "statuses": {
+      "present": "Présent",
+      "absent": "Absent",
+      "late": "En retard"
+    },
+    "errors": {
+      "unknownClass": "Cette classe n'existe plus pour l'année en cours.",
+      "dateOutOfRange": "Un appel ne peut être envoyé que pour les 7 derniers jours."
+    }
+  },
+  "sync": {
+    "pending": "{count, plural, one {# envoi en attente} other {# envois en attente}}",
+    "synced": "Synchronisé",
+    "rejected": "{count, plural, one {# envoi refusé} other {# envois refusés}}",
+    "rejectedTitle": "Envois refusés",
+    "rejectedHint": "Le serveur a refusé ces saisies faites sur ce téléphone. Refaites-les si besoin, puis retirez-les de la liste.",
+    "dismiss": "Retirer",
+    "problem": {
+      "offline": "Hors ligne : envoi dès le retour du réseau.",
+      "unauthenticated": "Reconnectez-vous pour envoyer vos saisies.",
+      "server": "Le serveur ne répond pas : nouvel essai dans un instant."
+    }
   }
 }

@@ -4,8 +4,16 @@ import { getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/brand/logo";
 import { NAVIGATION } from "@/config/navigation";
 import { Link } from "@/i18n/navigation";
+import { getCurrentUser } from "@/lib/auth/session";
 import type { Space } from "@/lib/auth/spaces";
+import { SyncIndicator } from "./sync-indicator";
 import { UserMenu, UserMenuSkeleton } from "./user-menu";
+
+/** Saisies faites hors ligne sur ce téléphone, propres au compte connecté. */
+async function SyncStatus() {
+  const user = await getCurrentUser();
+  return user ? <SyncIndicator userId={user.id} /> : null;
+}
 
 const iconButton =
   "relative inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-card ring-1 ring-line/70 transition-colors hover:bg-azure-50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
@@ -27,7 +35,10 @@ export async function Topbar({ space }: { space: Space }) {
         <form action={searchHref} role="search" className="hidden md:block">
           <label className="relative block">
             <span className="sr-only">{tCommon("search")}</span>
-            <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Search
+              className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
             <input
               type="search"
               name="q"
@@ -39,6 +50,9 @@ export async function Topbar({ space }: { space: Space }) {
       )}
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <Suspense fallback={null}>
+          <SyncStatus />
+        </Suspense>
         {messagesHref && (
           <Link href={messagesHref} className={iconButton} aria-label={tCommon("messages")}>
             <MessagesSquare className="size-[18px]" aria-hidden strokeWidth={1.75} />

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatInteger, formatXOF, initials } from "./format";
+import { formatDate, formatInteger, formatTime, formatXOF, initials } from "./format";
 
 // Intl insère des espaces insécables (fines ou non) : on les compare comme des espaces simples.
 const plain = (value: string) => value.replace(/[  ]/g, " ");
@@ -27,6 +27,13 @@ describe("formatInteger", () => {
 describe("formatDate", () => {
   it("affiche la date en français, fuseau de Dakar", () => {
     expect(formatDate("2026-10-05T23:30:00Z")).toBe("5 octobre 2026");
+  });
+});
+
+describe("formatTime", () => {
+  it("affiche l'heure de Dakar à la sénégalaise", () => {
+    expect(formatTime("2026-10-21T08:05:00Z")).toBe("8 h 05");
+    expect(formatTime("2026-10-21T17:30:00Z")).toBe("17 h 30");
   });
 });
 

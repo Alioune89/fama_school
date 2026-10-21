@@ -45,6 +45,100 @@ export type Database = {
           },
         ];
       };
+      attendance_records: {
+        Row: {
+          class_id: string;
+          created_at: string;
+          date: string;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["attendance_status"];
+          student_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          class_id: string;
+          created_at?: string;
+          date: string;
+          school_id: string;
+          session_id: string;
+          status: Database["public"]["Enums"]["attendance_status"];
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          class_id?: string;
+          created_at?: string;
+          date?: string;
+          school_id?: string;
+          session_id?: string;
+          status?: Database["public"]["Enums"]["attendance_status"];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_session_id_school_id_class_id_date_fkey";
+            columns: ["session_id", "school_id", "class_id", "date"];
+            isOneToOne: false;
+            referencedRelation: "attendance_sessions";
+            referencedColumns: ["id", "school_id", "class_id", "date"];
+          },
+          {
+            foreignKeyName: "attendance_records_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      attendance_sessions: {
+        Row: {
+          class_id: string;
+          created_at: string;
+          date: string;
+          id: string;
+          school_id: string;
+          slot: Database["public"]["Enums"]["attendance_slot"];
+          taken_at: string;
+          taken_by: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          class_id: string;
+          created_at?: string;
+          date: string;
+          id?: string;
+          school_id: string;
+          slot: Database["public"]["Enums"]["attendance_slot"];
+          taken_at: string;
+          taken_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          class_id?: string;
+          created_at?: string;
+          date?: string;
+          id?: string;
+          school_id?: string;
+          slot?: Database["public"]["Enums"]["attendance_slot"];
+          taken_at?: string;
+          taken_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attendance_sessions_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       audit_log: {
         Row: {
           action: string;
@@ -1043,10 +1137,23 @@ export type Database = {
       remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
+      submit_roll_call: {
+        Args: {
+          p_class_id: string;
+          p_date: string;
+          p_marks: Json;
+          p_operation_id: string;
+          p_slot: Database["public"]["Enums"]["attendance_slot"];
+          p_taken_at: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       app_locale: "fr" | "wo";
       app_role: "owner" | "director" | "censor" | "supervisor" | "accountant" | "secretary" | "teacher" | "parent" | "driver";
+      attendance_slot: "morning" | "afternoon";
+      attendance_status: "present" | "absent" | "late";
       cycle_code: "prescolaire" | "elementaire" | "moyen" | "secondaire";
       demo_request_status: "new" | "contacted" | "scheduled" | "closed";
       enrollment_status: "active" | "transferred" | "left" | "completed";
@@ -1169,6 +1276,8 @@ export const Constants = {
     Enums: {
       app_locale: ["fr", "wo"],
       app_role: ["owner", "director", "censor", "supervisor", "accountant", "secretary", "teacher", "parent", "driver"],
+      attendance_slot: ["morning", "afternoon"],
+      attendance_status: ["present", "absent", "late"],
       cycle_code: ["prescolaire", "elementaire", "moyen", "secondaire"],
       demo_request_status: ["new", "contacted", "scheduled", "closed"],
       enrollment_status: ["active", "transferred", "left", "completed"],

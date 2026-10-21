@@ -10,20 +10,24 @@ const staffFields = {
   email: optionalEmailField,
   title: optionalText(80),
   contract: z.enum(Constants.public.Enums.staff_contract).nullable(),
+  sex: z.enum(Constants.public.Enums.sex).nullable(),
+  /** Cycle d'enseignement (enseignants seulement). */
+  cycle: z.enum(Constants.public.Enums.cycle_code).nullable(),
 };
 
 export const staffMemberSchema = z
-  .object({ ...staffFields, role: z.enum(Constants.public.Enums.app_role).refine((role) => role !== "parent" && role !== "driver") })
+  .object({
+    ...staffFields,
+    role: z.enum(Constants.public.Enums.app_role).refine((role) => role !== "parent" && role !== "driver"),
+  })
   .superRefine((value, ctx) => {
     if (!value.phone && !value.email) ctx.addIssue({ code: "custom", path: ["phone"], message: "validation.phoneOrEmail" });
   });
 export type StaffMemberInput = z.input<typeof staffMemberSchema>;
 
-export const updateStaffMemberSchema = z
-  .object({ id: z.uuid(), ...staffFields })
-  .superRefine((value, ctx) => {
-    if (!value.phone && !value.email) ctx.addIssue({ code: "custom", path: ["phone"], message: "validation.phoneOrEmail" });
-  });
+export const updateStaffMemberSchema = z.object({ id: z.uuid(), ...staffFields }).superRefine((value, ctx) => {
+  if (!value.phone && !value.email) ctx.addIssue({ code: "custom", path: ["phone"], message: "validation.phoneOrEmail" });
+});
 export type UpdateStaffMemberInput = z.input<typeof updateStaffMemberSchema>;
 
 export const assignmentSchema = z.object({ staffId: z.uuid(), classId: z.uuid(), subjectId: z.uuid() });

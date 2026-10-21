@@ -20,32 +20,32 @@ function uniquePhone() {
   return `70 ${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)}`;
 }
 
-test.describe("Lot 1 — professeurs et personnel", () => {
+test.describe("Lot 1 — enseignants et personnel", () => {
   test.beforeEach(async ({ page }) => {
     await loginWithEmail(page, DEMO.director);
     await expect(page).toHaveURL(/\/direction$/);
   });
 
-  test("la liste des professeurs se cherche et se filtre par contrat", async ({ page }) => {
+  test("la liste des enseignants se cherche et se filtre par contrat", async ({ page }) => {
     await page.goto("/direction/professeurs");
-    await expect(page.getByRole("heading", { name: "Professeurs", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Enseignants", level: 1 })).toBeVisible();
     await expect(visibleText(page, "Ousmane Faye")).toBeVisible();
 
-    await page.getByPlaceholder("Rechercher un professeur…").fill("Ousmane");
+    await page.getByPlaceholder("Rechercher un enseignant…").fill("Ousmane");
     await expect(page).toHaveURL(/q=Ousmane/);
     await expect(page.getByText("1 personne").filter({ visible: true })).toBeVisible();
 
-    await page.getByPlaceholder("Rechercher un professeur…").fill("");
+    await page.getByPlaceholder("Rechercher un enseignant…").fill("");
     await page.getByRole("combobox", { name: "Contrat" }).selectOption("vacataire");
     await expect(page).toHaveURL(/contrat=vacataire/);
     await expect(visibleText(page, "Mariama Ba")).toBeVisible();
     await expect(page.getByText("Ousmane Faye").filter({ visible: true })).toHaveCount(0);
   });
 
-  test("ajouter un professeur, l'affecter et le nommer professeur principal", async ({ page }) => {
+  test("ajouter un enseignant, l'affecter et le nommer professeur principal", async ({ page }) => {
     const name = `Professeur Test ${Date.now().toString(36)}`;
     await page.goto("/direction/professeurs");
-    await page.getByRole("button", { name: "Ajouter un professeur" }).click();
+    await page.getByRole("button", { name: "Ajouter un enseignant" }).click();
     const sheet = page.getByRole("dialog");
     await sheet.getByLabel("Nom complet").fill(name);
     await sheet.getByLabel("Téléphone").fill(uniquePhone());
@@ -62,8 +62,32 @@ test.describe("Lot 1 — professeurs et personnel", () => {
     await page.getByRole("button", { name: "Affecter" }).click();
     await expect(page.getByRole("button", { name: "Retirer Mathématiques en 6e A" })).toBeVisible();
 
-    await selectByPrefix(page.getByLabel("Nommer professeur principal de"), "5e A");
-    await expect(page.getByRole("button", { name: "Ne plus être professeur principal de 5e A" })).toBeVisible();
+    await selectByPrefix(page.getByLabel("Nommer titulaire ou professeur principal de"), "5e A");
+    await expect(page.getByRole("button", { name: "Ne plus être titulaire ou professeur principal de 5e A" })).toBeVisible();
+  });
+
+  test("une institutrice : titre proposé, filtre par cycle et titulaire de sa classe", async ({ page }) => {
+    await page.goto("/direction/professeurs");
+    await page.getByRole("button", { name: "Ajouter un enseignant" }).click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByLabel("Genre").selectOption("F");
+    await sheet.getByLabel("Cycle d'enseignement").selectOption("elementaire");
+    await expect(sheet.getByLabel("Intitulé")).toHaveValue("Institutrice");
+    await sheet.getByLabel("Genre").selectOption("M");
+    await expect(sheet.getByLabel("Intitulé")).toHaveValue("Instituteur");
+    await sheet.getByRole("button", { name: "Annuler" }).click();
+
+    await page.getByRole("combobox", { name: "Cycle", exact: true }).selectOption("elementaire");
+    await expect(page).toHaveURL(/cycle=elementaire/);
+    await expect(visibleText(page, "Aïssatou Cissé")).toBeVisible();
+    await expect(visibleText(page, "Toutes les matières (CM2 A)")).toBeVisible();
+    await expect(page.getByText("Ousmane Faye").filter({ visible: true })).toHaveCount(0);
+
+    await page.goto("/direction/classes");
+    await page.getByRole("link", { name: /CM2 A/ }).click();
+    await expect(page.getByRole("heading", { name: "Titulaire de la classe" })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: "Titulaire de la classe" })).toHaveValue(/[0-9a-f-]{36}/);
+    await expect(page.getByRole("combobox", { name: /^Enseignant de / }).first()).toContainText("Le titulaire (Aïssatou Cissé)");
   });
 
   test("le personnel administratif s'ajoute avec sa fonction", async ({ page }) => {

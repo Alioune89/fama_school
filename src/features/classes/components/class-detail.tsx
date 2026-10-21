@@ -13,7 +13,7 @@ import { formatDate } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import { getClass } from "../queries";
 import { ClassFormSheet } from "./class-form-sheet";
-import { ClassTeaching } from "./class-teaching";
+import { ClassTeaching, ClassTitular } from "./class-teaching";
 
 /** Fiche classe (données de requête : sous <Suspense>). */
 export async function ClassDetailView({ id }: { id: string }) {
@@ -69,13 +69,16 @@ export async function ClassDetailView({ id }: { id: string }) {
             )}
             <span className="inline-flex items-center gap-1.5">
               <UserRound className="size-4" aria-hidden />
-              {klass.homeroomName ? t("detail.homeroom", { name: klass.homeroomName }) : t("list.noHomeroom")}
+              {klass.homeroomName
+                ? t(klass.hasClassTeacher ? "detail.titular" : "detail.homeroom", { name: klass.homeroomName })
+                : t(klass.hasClassTeacher ? "list.noTitular" : "list.noHomeroom")}
             </span>
           </div>
         </div>
         {canManageAcademics && (
           <ClassFormSheet
             klass={klass}
+            titularMode={klass.hasClassTeacher}
             teachers={teachers}
             trigger={
               <Button variant="outline">
@@ -137,9 +140,33 @@ export async function ClassDetailView({ id }: { id: string }) {
         </section>
 
         <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
-          <h2 className="text-lg font-semibold">{t("teaching.title")}</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{t("teaching.hint")}</p>
-          <ClassTeaching classId={klass.id} subjects={subjects} teachers={teachers} canEdit={canManageAcademics} />
+          {klass.hasClassTeacher ? (
+            <>
+              <h2 className="text-lg font-semibold">{t("teaching.titularTitle")}</h2>
+              <p className="mt-1 text-xs text-muted-foreground">{t("teaching.titularHint")}</p>
+              <ClassTitular
+                classId={klass.id}
+                titularId={klass.homeroomStaffId}
+                titularName={klass.homeroomName}
+                teachers={teachers}
+                canEdit={canManageAcademics}
+              />
+              <h3 className="mt-6 text-sm font-semibold">{t("teaching.exceptionsTitle")}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">{t("teaching.exceptionsHint")}</p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold">{t("teaching.title")}</h2>
+              <p className="mt-1 text-xs text-muted-foreground">{t("teaching.hint")}</p>
+            </>
+          )}
+          <ClassTeaching
+            classId={klass.id}
+            subjects={subjects}
+            teachers={teachers}
+            canEdit={canManageAcademics}
+            titularName={klass.hasClassTeacher ? klass.homeroomName : undefined}
+          />
         </section>
       </div>
     </>

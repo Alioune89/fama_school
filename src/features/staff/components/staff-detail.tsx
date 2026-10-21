@@ -8,7 +8,7 @@ import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
-import { getStaffMember } from "../queries";
+import { getStaffMember, listSchoolCycles } from "../queries";
 import { AssignmentsManager } from "./assignments-manager";
 import { StaffFormSheet } from "./staff-form-sheet";
 import { AccountPill, ContractPill } from "./staff-pills";
@@ -17,7 +17,7 @@ import { StaffStatusButton } from "./staff-status-button";
 /** Fiche d'un professeur ou d'un membre du personnel (données de requête : sous <Suspense>). */
 export async function StaffDetail({ id, kind }: { id: string; kind: "teacher" | "staff" }) {
   const { entry } = await requireSpace("direction");
-  const detail = await getStaffMember(entry.schoolId!, id);
+  const [detail, cycles] = await Promise.all([getStaffMember(entry.schoolId!, id), listSchoolCycles(entry.schoolId!)]);
   if (!detail || (kind === "teacher") !== (detail.member.role === "teacher")) notFound();
   const { member } = detail;
   const t = await getTranslations("staff");
@@ -40,7 +40,11 @@ export async function StaffDetail({ id, kind }: { id: string; kind: "teacher" | 
           <h1 className="text-2xl font-bold">{member.full_name}</h1>
           <p className="text-sm text-muted-foreground">{member.title ?? tRoles(member.role)}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {kind === "staff" && <span className="rounded-full bg-lavender-100 px-2.5 py-1 text-xs font-semibold text-lavender-700">{tRoles(member.role)}</span>}
+            {kind === "staff" && (
+              <span className="rounded-full bg-lavender-100 px-2.5 py-1 text-xs font-semibold text-lavender-700">
+                {tRoles(member.role)}
+              </span>
+            )}
             <ContractPill contract={member.contract} />
             <AccountPill linked={Boolean(member.user_id)} status={member.status} />
           </div>
@@ -74,7 +78,10 @@ export async function StaffDetail({ id, kind }: { id: string; kind: "teacher" | 
                 email: member.email,
                 title: member.title,
                 contract: member.contract,
+                sex: member.sex,
+                cycle: member.cycle,
               }}
+              cycles={cycles}
               trigger={
                 <Button variant="outline">
                   <Pencil aria-hidden />
@@ -89,7 +96,9 @@ export async function StaffDetail({ id, kind }: { id: string; kind: "teacher" | 
 
       {kind === "teacher" && (
         <>
-          {detail.yearLabel && <p className="mb-3 text-sm font-semibold text-ink-soft">{t("assignments.year", { year: detail.yearLabel })}</p>}
+          {detail.yearLabel && (
+            <p className="mb-3 text-sm font-semibold text-ink-soft">{t("assignments.year", { year: detail.yearLabel })}</p>
+          )}
           <AssignmentsManager
             staffId={member.id}
             assignments={detail.assignments}

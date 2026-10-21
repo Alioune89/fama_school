@@ -7,18 +7,78 @@ import { StatusPill } from "@/components/dashboard/status-pill";
 import { useMessage } from "@/components/forms/use-action-form";
 import { NativeSelect } from "@/components/ui/native-select";
 import type { ClassDetail } from "@/features/classes/queries";
-import { assignTeaching, removeTeaching } from "@/features/staff/actions";
+import { assignTeaching, removeTeaching, setHomeroom } from "@/features/staff/actions";
 
 type Props = {
   classId: string;
   subjects: ClassDetail["subjects"];
   teachers: ClassDetail["teachers"];
   canEdit: boolean;
+  /**
+   * Préscolaire et élémentaire : le titulaire (null s'il n'est pas encore choisi) enseigne
+   * chaque matière qui n'est pas confiée à un autre enseignant.
+   */
+  titularName?: string | null;
 };
 
-/** Matières du niveau et professeur de chacune dans la classe (affectation directe depuis la liste). */
-export function ClassTeaching({ classId, subjects, teachers, canEdit }: Props) {
+/** Titulaire d'une classe du préscolaire ou de l'élémentaire : il enseigne toutes les matières. */
+export function ClassTitular({
+  classId,
+  titularId,
+  titularName,
+  teachers,
+  canEdit,
+}: {
+  classId: string;
+  titularId: string | null;
+  titularName: string | null;
+  teachers: ClassDetail["teachers"];
+  canEdit: boolean;
+}) {
   const t = useTranslations("classes.teaching");
+  const message = useMessage();
+  const [pending, startTransition] = useTransition();
+
+  const change = (staffId: string) =>
+    startTransition(async () => {
+      const result = await setHomeroom({ classId, staffId: staffId || null });
+      if (result.ok) toast.success(staffId ? t("titularSet") : t("titularRemoved"));
+      else toast.error(message(result.error));
+    });
+
+  if (!canEdit) {
+    return titularName ? (
+      <p className="mt-3 font-semibold">{titularName}</p>
+    ) : (
+      <StatusPill tone="warning" className="mt-3">
+        {t("noTitular")}
+      </StatusPill>
+    );
+  }
+  return (
+    <NativeSelect
+      aria-label={t("titularTitle")}
+      value={titularId ?? ""}
+      disabled={pending}
+      onChange={(event) => change(event.target.value)}
+      className="mt-3 sm:w-72"
+    >
+      <option value="">{t("noTitular")}</option>
+      {titularId && !teachers.some((teacher) => teacher.id === titularId) && <option value={titularId}>{titularName}</option>}
+      {teachers.map((teacher) => (
+        <option key={teacher.id} value={teacher.id}>
+          {teacher.full_name}
+        </option>
+      ))}
+    </NativeSelect>
+  );
+}
+
+/** Matières du niveau et professeur de chacune dans la classe (affectation directe depuis la liste). */
+export function ClassTeaching({ classId, subjects, teachers, canEdit, titularName }: Props) {
+  const t = useTranslations("classes.teaching");
+  // Matière sans affectation : enseignée par le titulaire au préscolaire et à l'élémentaire.
+  const fallback = titularName === undefined ? null : titularName ? t("byTitular", { name: titularName }) : t("noTitular");
   const message = useMessage();
   const [pending, startTransition] = useTransition();
 
@@ -55,7 +115,7 @@ export function ClassTeaching({ classId, subjects, teachers, canEdit }: Props) {
               onChange={(event) => change(subject, event.target.value)}
               className="sm:w-60"
             >
-              <option value="">{t("unassignedOption")}</option>
+              <option value="">{fallback ?? t("unassignedOption")}</option>
               {subject.teacherId && !teachers.some((teacher) => teacher.id === subject.teacherId) && (
                 <option value={subject.teacherId}>{subject.teacherName}</option>
               )}
@@ -67,8 +127,10 @@ export function ClassTeaching({ classId, subjects, teachers, canEdit }: Props) {
             </NativeSelect>
           ) : subject.teacherName ? (
             <span className="text-sm text-ink-soft">{subject.teacherName}</span>
+          ) : fallback && titularName ? (
+            <span className="text-sm text-muted-foreground">{fallback}</span>
           ) : (
-            <StatusPill tone="warning">{t("unassignedOption")}</StatusPill>
+            <StatusPill tone="warning">{fallback ?? t("unassignedOption")}</StatusPill>
           )}
         </li>
       ))}

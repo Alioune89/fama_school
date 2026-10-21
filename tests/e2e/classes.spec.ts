@@ -25,7 +25,7 @@ test.describe("Lot 1 — classes et parcours des élèves", () => {
     await expect(page).toHaveURL(/\/direction$/);
   });
 
-  test("la liste des classes mène à la fiche, où l'on modifie la classe et affecte un professeur", async ({ page }) => {
+  test("la liste des classes mène à la fiche, où l'on modifie la classe et affecte un enseignant", async ({ page }) => {
     await page.goto("/direction/classes");
     await expect(page.getByRole("heading", { name: "Classes", level: 1 })).toBeVisible();
     await page.getByRole("link", { name: /^CM1 A/ }).click();
@@ -42,7 +42,7 @@ test.describe("Lot 1 — classes et parcours des élèves", () => {
     await expect(visibleText(page, room)).toBeVisible();
     await expect(visibleText(page, "/ 40 élèves")).toBeVisible();
 
-    const teacherSelect = page.getByRole("combobox", { name: /^Professeur de / }).first();
+    const teacherSelect = page.getByRole("combobox", { name: /^Enseignant de / }).first();
     const current = await teacherSelect.inputValue();
     const next = await teacherSelect.evaluate(
       (element, value) =>
@@ -50,7 +50,7 @@ test.describe("Lot 1 — classes et parcours des élèves", () => {
       current,
     );
     await teacherSelect.selectOption(next);
-    await expect(visibleText(page, "Professeur affecté.")).toBeVisible();
+    await expect(visibleText(page, "Enseignant affecté.")).toBeVisible();
     await expect(teacherSelect).toHaveValue(next);
   });
 

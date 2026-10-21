@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { addStaffMember, updateStaffMember } from "@/features/staff/actions";
+import type { SchoolCycle } from "@/features/staff/queries";
 import { useRouter } from "@/i18n/navigation";
 import type { AppRole } from "@/lib/auth/spaces";
+import { suggestedTeacherTitle } from "@/lib/domain/teaching";
 import { formatPhone } from "@/lib/phone";
 import type { Enums } from "@/lib/supabase/database.types";
 
@@ -23,21 +25,33 @@ type Member = {
   email: string | null;
   title: string | null;
   contract: Enums<"staff_contract"> | null;
+  sex: Enums<"sex"> | null;
+  cycle: Enums<"cycle_code"> | null;
 };
 
 type Props = {
   /** « teacher » : formulaire professeur (contrat) ; sinon choix du rôle parmi roleOptions. */
   kind: "teacher" | "staff";
   roleOptions?: AppRole[];
+  /** Cycles de l'école (enseignants : cycle d'enseignement). */
+  cycles?: SchoolCycle[];
   member?: Member;
   trigger: ReactNode;
 };
 
-export function StaffFormSheet({ kind, roleOptions = [], member, trigger }: Props) {
+export function StaffFormSheet({ kind, roleOptions = [], cycles = [], member, trigger }: Props) {
   const t = useTranslations("staff");
   const tRoles = useTranslations("roles");
   const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  // Titre proposé selon le cycle et le genre (Institutrice, Éducateur…), tant qu'il n'est pas saisi à la main.
+  const [sex, setSex] = useState<Enums<"sex"> | "">(member?.sex ?? "");
+  const [cycle, setCycle] = useState<Enums<"cycle_code"> | "">(member?.cycle ?? "");
+  const [title, setTitle] = useState(member?.title ?? "");
+  const [titleEdited, setTitleEdited] = useState(Boolean(member?.title));
+  const suggestion = kind === "teacher" ? suggestedTeacherTitle(cycle || null, sex || null) : null;
+  const shownTitle = titleEdited ? title : (suggestion ?? title);
 
   const add = useActionForm(addStaffMember, {
     onSuccess: ({ id }) => {
@@ -60,7 +74,10 @@ export function StaffFormSheet({ kind, roleOptions = [], member, trigger }: Prop
       phone: String(formData.get("phone") ?? ""),
       email: String(formData.get("email") ?? ""),
       title: String(formData.get("title") ?? ""),
-      contract: kind === "teacher" ? ((String(formData.get("contract") ?? "permanent") as Enums<"staff_contract">) ?? null) : null,
+      contract:
+        kind === "teacher" ? ((String(formData.get("contract") ?? "permanent") as Enums<"staff_contract">) ?? null) : null,
+      sex: sex || null,
+      cycle: kind === "teacher" ? cycle || null : null,
     };
     if (member) update.run({ id: member.id, ...common });
     else add.run({ ...common, role: kind === "teacher" ? "teacher" : (String(formData.get("role")) as AppRole) });
@@ -91,7 +108,14 @@ export function StaffFormSheet({ kind, roleOptions = [], member, trigger }: Prop
           )}
           <Field data-invalid={form.hasError("fullName") || undefined}>
             <FieldLabel htmlFor="fullName">{t("form.fullName")}</FieldLabel>
-            <Input id="fullName" name="fullName" defaultValue={member?.fullName} required autoComplete="off" aria-invalid={form.hasError("fullName") || undefined} />
+            <Input
+              id="fullName"
+              name="fullName"
+              defaultValue={member?.fullName}
+              required
+              autoComplete="off"
+              aria-invalid={form.hasError("fullName") || undefined}
+            />
             <FieldError>{form.fieldError("fullName")}</FieldError>
           </Field>
           <Field data-invalid={form.hasError("phone") || undefined}>
@@ -110,12 +134,72 @@ export function StaffFormSheet({ kind, roleOptions = [], member, trigger }: Prop
           </Field>
           <Field data-invalid={form.hasError("email") || undefined}>
             <FieldLabel htmlFor="email">{t("form.email")}</FieldLabel>
-            <Input id="email" name="email" type="email" inputMode="email" defaultValue={member?.email ?? ""} aria-invalid={form.hasError("email") || undefined} />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              inputMode="email"
+              defaultValue={member?.email ?? ""}
+              aria-invalid={form.hasError("email") || undefined}
+            />
             <FieldError>{form.fieldError("email")}</FieldError>
           </Field>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field>
+              <FieldLabel htmlFor="sex">{t("form.sex")}</FieldLabel>
+              <NativeSelect id="sex" value={sex} onChange={(event) => setSex(event.target.value as Enums<"sex"> | "")}>
+                <option value="">{t("form.notSpecified")}</option>
+                <option value="F">{t("form.sexF")}</option>
+                <option value="M">{t("form.sexM")}</option>
+              </NativeSelect>
+            </Field>
+            {kind === "teacher" && (
+              <Field>
+                <FieldLabel htmlFor="cycle">{t("form.cycle")}</FieldLabel>
+                <NativeSelect
+                  id="cycle"
+                  value={cycle}
+                  onChange={(event) => setCycle(event.target.value as Enums<"cycle_code"> | "")}
+                >
+                  <option value="">{t("form.notSpecified")}</option>
+                  {cycles.map((option) => (
+                    <option key={option.code} value={option.code}>
+                      {option.label}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
+            )}
+          </div>
           <Field>
             <FieldLabel htmlFor="title">{t("form.title")}</FieldLabel>
-            <Input id="title" name="title" defaultValue={member?.title ?? ""} placeholder={kind === "teacher" ? t("form.titlePlaceholderTeacher") : t("form.titlePlaceholderStaff")} />
+            <Input
+              id="title"
+              name="title"
+              value={shownTitle}
+              onChange={(event) => {
+                setTitle(event.target.value);
+                setTitleEdited(true);
+              }}
+              placeholder={kind === "teacher" ? t("form.titlePlaceholderTeacher") : t("form.titlePlaceholderStaff")}
+            />
+            {kind === "teacher" &&
+              (suggestion && titleEdited && title !== suggestion ? (
+                <FieldDescription>
+                  <button
+                    type="button"
+                    className="font-medium text-azure-700 underline-offset-2 hover:underline"
+                    onClick={() => {
+                      setTitle(suggestion);
+                      setTitleEdited(false);
+                    }}
+                  >
+                    {t("form.useSuggestion", { title: suggestion })}
+                  </button>
+                </FieldDescription>
+              ) : (
+                <FieldDescription>{t("form.titleHint")}</FieldDescription>
+              ))}
           </Field>
           {kind === "teacher" && (
             <Field>

@@ -15,10 +15,12 @@ import { updateClass } from "@/features/classes/actions";
 type Props = {
   klass: { id: string; name: string; room: string | null; capacity: number | null; homeroomStaffId: string | null };
   teachers: { id: string; full_name: string }[];
+  /** Préscolaire et élémentaire : on parle de titulaire, pas de professeur principal. */
+  titularMode?: boolean;
   trigger: ReactNode;
 };
 
-export function ClassFormSheet({ klass, teachers, trigger }: Props) {
+export function ClassFormSheet({ klass, teachers, titularMode = false, trigger }: Props) {
   const t = useTranslations("classes.form");
   const [open, setOpen] = useState(false);
   const form = useActionForm(updateClass, {
@@ -36,7 +38,7 @@ export function ClassFormSheet({ klass, teachers, trigger }: Props) {
       <SheetContent side="right" className="w-full gap-0 p-0 sm:max-w-md">
         <SheetHeader className="border-b border-line px-6 py-5">
           <SheetTitle className="text-lg font-bold">{t("title")}</SheetTitle>
-          <SheetDescription>{t("hint")}</SheetDescription>
+          <SheetDescription>{t(titularMode ? "titularFormHint" : "hint")}</SheetDescription>
         </SheetHeader>
         <form
           onSubmit={submitForm((formData) =>
@@ -76,7 +78,7 @@ export function ClassFormSheet({ klass, teachers, trigger }: Props) {
             </Field>
           </div>
           <Field data-invalid={form.hasError("homeroomStaffId") || undefined}>
-            <FieldLabel htmlFor="homeroomStaffId">{t("homeroom")}</FieldLabel>
+            <FieldLabel htmlFor="homeroomStaffId">{t(titularMode ? "titular" : "homeroom")}</FieldLabel>
             <NativeSelect {...field("homeroomStaffId")} defaultValue={klass.homeroomStaffId ?? ""}>
               <option value="">{t("noHomeroom")}</option>
               {teachers.map((teacher) => (
@@ -85,7 +87,7 @@ export function ClassFormSheet({ klass, teachers, trigger }: Props) {
                 </option>
               ))}
             </NativeSelect>
-            <FieldDescription>{t("homeroomHint")}</FieldDescription>
+            <FieldDescription>{t(titularMode ? "titularHint" : "homeroomHint")}</FieldDescription>
             <FieldError>{form.fieldError("homeroomStaffId")}</FieldError>
           </Field>
           <FormAlert message={form.formError} />

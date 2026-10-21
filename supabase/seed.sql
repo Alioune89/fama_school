@@ -149,17 +149,17 @@ begin
   where l.school_id = v_school;
 
   -- Professeurs et personnel (le répertoire crée les invitations)
-  insert into public.school_staff (school_id, full_name, phone, role, title, contract, created_by) values
-    (v_school, 'Awa Diop', '+221770000002', 'teacher', 'Professeure de français', 'permanent', v_director),
-    (v_school, 'Cheikh Ba', '+221770000003', 'censor', 'Censeur', null, v_director),
-    (v_school, 'Ousmane Faye', '+221770990001', 'teacher', 'Professeur de mathématiques', 'permanent', v_director),
-    (v_school, 'Mariama Ba', '+221770990002', 'teacher', 'Professeure d''anglais', 'vacataire', v_director),
-    (v_school, 'Ibrahima Sarr', '+221770990003', 'teacher', 'Professeur de SVT', 'permanent', v_director),
-    (v_school, 'Khady Ndiaye', '+221770990004', 'teacher', 'Professeure d''histoire-géographie', 'vacataire', v_director),
-    (v_school, 'Abdoulaye Diallo', '+221770990005', 'teacher', 'Professeur d''EPS', 'vacataire', v_director),
-    (v_school, 'Aïssatou Cissé', '+221770990006', 'teacher', 'Institutrice (CM2)', 'permanent', v_director),
-    (v_school, 'Bineta Gueye', '+221770990007', 'accountant', 'Comptable', null, v_director),
-    (v_school, 'Rokhaya Mbaye', '+221770990008', 'secretary', 'Secrétaire', null, v_director);
+  insert into public.school_staff (school_id, full_name, phone, role, title, contract, sex, cycle, created_by) values
+    (v_school, 'Awa Diop', '+221770000002', 'teacher', 'Professeure de français', 'permanent', 'F', 'moyen', v_director),
+    (v_school, 'Cheikh Ba', '+221770000003', 'censor', 'Censeur', null, 'M', null, v_director),
+    (v_school, 'Ousmane Faye', '+221770990001', 'teacher', 'Professeur de mathématiques', 'permanent', 'M', 'moyen', v_director),
+    (v_school, 'Mariama Ba', '+221770990002', 'teacher', 'Professeure d''anglais', 'vacataire', 'F', 'moyen', v_director),
+    (v_school, 'Ibrahima Sarr', '+221770990003', 'teacher', 'Professeur de SVT', 'permanent', 'M', 'moyen', v_director),
+    (v_school, 'Khady Ndiaye', '+221770990004', 'teacher', 'Professeure d''histoire-géographie', 'vacataire', 'F', 'moyen', v_director),
+    (v_school, 'Abdoulaye Diallo', '+221770990005', 'teacher', 'Professeur d''EPS', 'vacataire', 'M', 'moyen', v_director),
+    (v_school, 'Aïssatou Cissé', '+221770990006', 'teacher', 'Institutrice', 'permanent', 'F', 'elementaire', v_director),
+    (v_school, 'Bineta Gueye', '+221770990007', 'accountant', 'Comptable', null, 'F', null, v_director),
+    (v_school, 'Rokhaya Mbaye', '+221770990008', 'secretary', 'Secrétaire', null, 'F', null, v_director);
 
   -- Affectations
   insert into public.teaching_assignments (school_id, class_id, subject_id, staff_id)
@@ -270,6 +270,6 @@ end;
 $$;
 
 -- Al Amine : vide (mise en route à faire), avec son directeur et la vacataire -------
-insert into public.school_staff (school_id, full_name, phone, role, title, contract) values
-  ('b0000000-0000-4000-8000-000000000002', 'Ibrahima Fall', '+221770000004', 'director', 'Directeur', null),
-  ('b0000000-0000-4000-8000-000000000002', 'Awa Diop', '+221770000002', 'teacher', 'Vacataire', 'vacataire');
+insert into public.school_staff (school_id, full_name, phone, role, title, contract, sex, cycle) values
+  ('b0000000-0000-4000-8000-000000000002', 'Ibrahima Fall', '+221770000004', 'director', 'Directeur', null, 'M', null),
+  ('b0000000-0000-4000-8000-000000000002', 'Awa Diop', '+221770000002', 'teacher', 'Vacataire', 'vacataire', 'F', 'moyen');

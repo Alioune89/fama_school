@@ -24,7 +24,7 @@ test.describe("connexion et espaces", () => {
   test("un vacataire choisit son école parmi ses deux espaces", async ({ page }) => {
     await loginWithPhone(page, DEMO.teacherPhone);
     await expect(page).toHaveURL(/\/choisir-espace$/);
-    await expect(page.getByRole("button", { name: /Professeur/ })).toHaveCount(2);
+    await expect(page.getByRole("button", { name: /Enseignant/ })).toHaveCount(2);
     await page.getByRole("button", { name: /Institut Franco-Arabe Al Amine/ }).click();
     await expect(page).toHaveURL(/\/professeur$/);
     await expect(page.getByText("Bonjour Awa · Institut Franco-Arabe Al Amine")).toBeVisible();

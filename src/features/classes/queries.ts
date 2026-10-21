@@ -1,4 +1,5 @@
 import "server-only";
+import { hasClassTeacher } from "@/lib/domain/teaching";
 import { createClient } from "@/lib/supabase/server";
 
 const byName = (a: string, b: string) => a.localeCompare(b, "fr", { numeric: true });
@@ -24,7 +25,7 @@ export async function listClasses(schoolId: string) {
     supabase
       .from("classes")
       .select(
-        "id, name, room, capacity, level_id, homeroom:school_staff(full_name), level:levels(label, position, cycle:cycles(id, label, position)), enrollments!enrollments_class_id_school_id_fkey(status, student:students(sex)), teaching_assignments(subject_id)",
+        "id, name, room, capacity, level_id, homeroom:school_staff(full_name), level:levels(label, position, cycle:cycles(id, code, label, position)), enrollments!enrollments_class_id_school_id_fkey(status, student:students(sex)), teaching_assignments(subject_id)",
       )
       .eq("school_id", schoolId)
       .eq("academic_year_id", year.id),
@@ -50,11 +51,16 @@ export async function listClasses(schoolId: string) {
         position: c.level?.position ?? 0,
         cycle: c.level?.cycle ?? null,
         homeroomName: c.homeroom?.full_name ?? null,
+        hasClassTeacher: hasClassTeacher(c.level?.cycle?.code),
         count: active.length,
         girls: active.filter((e) => e.student?.sex === "F").length,
         boys: active.filter((e) => e.student?.sex === "M").length,
         subjects: subjectCount.get(c.level_id) ?? 0,
-        assigned: new Set(c.teaching_assignments.map((a) => a.subject_id)).size,
+        // Au préscolaire et à l'élémentaire, le titulaire couvre toutes les matières.
+        assigned:
+          hasClassTeacher(c.level?.cycle?.code) && c.homeroom
+            ? (subjectCount.get(c.level_id) ?? 0)
+            : new Set(c.teaching_assignments.map((a) => a.subject_id)).size,
       };
     })
     .sort((a, b) => a.position - b.position || byName(a.name, b.name));
@@ -82,7 +88,7 @@ export async function getClass(schoolId: string, classId: string) {
   const { data: klass } = await supabase
     .from("classes")
     .select(
-      "id, name, room, capacity, homeroom_staff_id, level_id, homeroom:school_staff(full_name), year:academic_years(label, is_current), level:levels(label, cycle:cycles(label))",
+      "id, name, room, capacity, homeroom_staff_id, level_id, homeroom:school_staff(full_name), year:academic_years(label, is_current), level:levels(label, cycle:cycles(code, label))",
     )
     .eq("school_id", schoolId)
     .eq("id", classId)
@@ -159,6 +165,7 @@ export async function getClass(schoolId: string, classId: string) {
       homeroomName: klass.homeroom?.full_name ?? null,
       levelLabel: klass.level?.label ?? "",
       cycleLabel: klass.level?.cycle?.label ?? "",
+      hasClassTeacher: hasClassTeacher(klass.level?.cycle?.code),
       yearLabel: klass.year?.label ?? "",
       isCurrent: klass.year?.is_current ?? false,
     },

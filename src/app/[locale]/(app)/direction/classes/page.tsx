@@ -79,7 +79,7 @@ async function ClassCard({ item }: { item: ClassSummary }) {
 
       <p className="flex items-center gap-1.5 text-sm text-ink-soft">
         <UserRound className="size-4 shrink-0" aria-hidden />
-        <span className="truncate">{item.homeroomName ?? t("noHomeroom")}</span>
+        <span className="truncate">{item.homeroomName ?? (item.hasClassTeacher ? t("noTitular") : t("noHomeroom"))}</span>
       </p>
     </Link>
   );

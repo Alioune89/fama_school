@@ -35,6 +35,8 @@ export async function addStaffMember(input: StaffMemberInput): Promise<ActionRes
       role: v.role,
       title: v.title,
       contract: v.role === "teacher" ? (v.contract ?? "permanent") : null,
+      sex: v.sex,
+      cycle: v.role === "teacher" ? v.cycle : null,
       created_by: ctx.user.id,
     })
     .select("id")
@@ -59,7 +61,15 @@ export async function updateStaffMember(input: UpdateStaffMemberInput): Promise<
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("school_staff")
-    .update({ full_name: v.fullName, phone: v.phone, email: v.email, title: v.title, contract: v.contract })
+    .update({
+      full_name: v.fullName,
+      phone: v.phone,
+      email: v.email,
+      title: v.title,
+      contract: v.contract,
+      sex: v.sex,
+      cycle: v.cycle,
+    })
     .eq("school_id", ctx.schoolId)
     .eq("id", v.id)
     .select("id");
@@ -97,10 +107,17 @@ export async function assignTeaching(input: AssignmentInput): Promise<ActionResu
   if (!parsed.success) return invalid(parsed.error);
 
   const supabase = await createClient();
-  const { error } = await supabase.from("teaching_assignments").upsert(
-    { school_id: ctx.schoolId, class_id: parsed.data.classId, subject_id: parsed.data.subjectId, staff_id: parsed.data.staffId },
-    { onConflict: "class_id,subject_id" },
-  );
+  const { error } = await supabase
+    .from("teaching_assignments")
+    .upsert(
+      {
+        school_id: ctx.schoolId,
+        class_id: parsed.data.classId,
+        subject_id: parsed.data.subjectId,
+        staff_id: parsed.data.staffId,
+      },
+      { onConflict: "class_id,subject_id" },
+    );
   if (error) return fail(error.code === "23503" ? "errors.notFound" : "errors.unknown");
   refresh();
   return ok(undefined);
@@ -113,7 +130,11 @@ export async function removeTeaching(input: { assignmentId: string }): Promise<A
   if (!parsed.success) return invalid(parsed.error);
 
   const supabase = await createClient();
-  const { error } = await supabase.from("teaching_assignments").delete().eq("school_id", ctx.schoolId).eq("id", parsed.data.assignmentId);
+  const { error } = await supabase
+    .from("teaching_assignments")
+    .delete()
+    .eq("school_id", ctx.schoolId)
+    .eq("id", parsed.data.assignmentId);
   if (error) return fail("errors.unknown");
   refresh();
   return ok(undefined);

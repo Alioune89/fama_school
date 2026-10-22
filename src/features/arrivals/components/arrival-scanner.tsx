@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { useLiveQuery } from "dexie-react-hooks";
 import { Camera, CameraOff, CircleAlert, CircleCheck, Clock, Search, WifiOff } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { todayInDakar } from "@/features/dashboard/calendar";
@@ -76,14 +77,16 @@ export function ArrivalScanner({
 
   const show = (value: Feedback) => setFeedback((previous) => ({ id: (previous?.id ?? 0) + 1, value }));
 
-  async function checkIn(badge: Badge) {
+  /** Scan : résultat sur l'image de la caméra. Recherche par le nom : notification (la caméra peut être hors écran). */
+  async function checkIn(badge: Badge, source: "scan" | "manual") {
     const known = arrivals[badge.studentId];
     if (known) {
       show({ kind: "already", badge, at: known });
       return;
     }
     const at = new Date().toISOString();
-    show({ kind: "arrived", badge, at });
+    if (source === "scan") show({ kind: "arrived", badge, at });
+    else toast.success(`${badge.firstName} ${badge.lastName} · ${t("arrivedAt", { time: formatTime(at) })}`);
     navigator.vibrate?.(60);
     const db = offlineDb();
     await db.transaction("rw", db.drafts, async () => {
@@ -109,7 +112,7 @@ export function ArrivalScanner({
       navigator.vibrate?.([40, 60, 40]);
       return;
     }
-    void checkIn(badge);
+    void checkIn(badge, "scan");
   });
 
   const matches = useMemo(() => {
@@ -141,7 +144,13 @@ export function ArrivalScanner({
         <div className="relative aspect-square overflow-hidden rounded-2xl bg-ink shadow-card">
           <video ref={videoRef} muted playsInline className={cn("size-full object-cover", !active && "invisible")} />
           {active ? (
-            <div aria-hidden className="pointer-events-none absolute inset-[18%] rounded-2xl ring-4 ring-white/80" />
+            <>
+              <div aria-hidden className="pointer-events-none absolute inset-[18%] rounded-2xl ring-4 ring-white/80" />
+              {/* Résultat par-dessus l'image : il reste visible sur un téléphone pendant le scan. */}
+              <div role="status" aria-live="polite" className="absolute inset-x-3 bottom-3">
+                {feedback && <FeedbackBanner key={feedback.id} feedback={feedback.value} />}
+              </div>
+            </>
           ) : (
             <div className="absolute inset-0 grid place-items-center p-6 text-center">
               <div className="space-y-4">
@@ -166,10 +175,6 @@ export function ArrivalScanner({
             {t("stop")}
           </Button>
         )}
-
-        <div role="status" aria-live="polite" className="min-h-20">
-          {feedback && <FeedbackBanner key={feedback.id} feedback={feedback.value} />}
-        </div>
       </div>
 
       <div className="space-y-6">
@@ -208,7 +213,7 @@ export function ArrivalScanner({
                       <Button
                         size="sm"
                         onClick={() => {
-                          void checkIn(badge);
+                          void checkIn(badge, "manual");
                           setQuery("");
                         }}
                         aria-label={t("checkInName", { name: `${badge.firstName} ${badge.lastName}` })}
@@ -252,7 +257,7 @@ function FeedbackBanner({ feedback }: { feedback: Feedback }) {
   const t = useTranslations("arrivals");
   if (feedback.kind === "unknown") {
     return (
-      <p className="flex items-center gap-3 rounded-xl bg-danger-50 p-4 font-semibold text-danger-700">
+      <p className="flex items-center gap-3 rounded-xl bg-danger-50 p-4 font-semibold text-danger-700 shadow-lg">
         <CircleAlert className="size-6 shrink-0" aria-hidden />
         {t("unknownCard")}
       </p>
@@ -264,7 +269,7 @@ function FeedbackBanner({ feedback }: { feedback: Feedback }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-xl p-4",
+        "flex items-center gap-3 rounded-xl p-4 shadow-lg",
         arrived ? "bg-success-50 text-success-700" : "bg-warning-50 text-warning-700",
       )}
     >

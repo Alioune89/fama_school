@@ -30,7 +30,7 @@ test.describe("Pointage des arrivées", () => {
     const checkIn = match.getByRole("button", { name: "Pointer l'arrivée de Mariama Sow" });
     if (await checkIn.isVisible()) {
       await checkIn.click();
-      await expect(director.getByRole("status").getByText(/6e A · arrivé·e à \d{1,2} h \d{2}/)).toBeVisible();
+      await expect(director.getByText(/^Mariama Sow · arrivé·e à \d{1,2} h \d{2}$/)).toBeVisible();
     }
     await expect(director.getByRole("list", { name: "Derniers passages" }).getByText("Mariama Sow")).toBeVisible();
 

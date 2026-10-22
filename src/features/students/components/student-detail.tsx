@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
+import { StudentBadge } from "@/features/arrivals/components/student-badge";
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
 import { getStudent, listClassOptions } from "../queries";
@@ -158,6 +159,8 @@ export async function StudentDetailView({ id }: { id: string }) {
               ))}
             </ol>
           </section>
+
+          <StudentBadge studentId={student.id} name={fullName} canRenew={canEdit} />
 
           {(student.medical_notes || student.nationality) && (
             <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">

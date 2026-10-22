@@ -37,7 +37,7 @@ test.describe("Présences côté direction", () => {
       .or(page.getByRole("listitem", { name: "3e A" }))
       .filter({ visible: true });
     await expect(row.getByText("1 absent")).toBeVisible();
-    await expect(row.getByText("Moussa Ndiaye")).toBeVisible();
+    await expect(row.getByText("Moussa Ndiaye").first()).toBeVisible();
     await expect(page.getByRole("region", { name: /Absents et retards/ }).getByText(name)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Absences répétées" })).toBeVisible();
 

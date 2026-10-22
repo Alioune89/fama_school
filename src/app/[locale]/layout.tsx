@@ -22,7 +22,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale: hasLocale(routing.locales, locale) ? locale : routing.defaultLocale, namespace: "metadata" });
+  const t = await getTranslations({
+    locale: hasLocale(routing.locales, locale) ? locale : routing.defaultLocale,
+    namespace: "metadata",
+  });
   return {
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
@@ -46,7 +49,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   return (
     <html lang={locale} className={`${jakarta.variable} h-full antialiased`}>
-      <body className="min-h-full">
+      <body className="min-h-full print:bg-white">
         <NextIntlClientProvider>
           <AppProviders>
             <TooltipProvider>

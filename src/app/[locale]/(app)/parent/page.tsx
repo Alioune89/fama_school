@@ -6,6 +6,7 @@ import { StatusPill } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { PersonAvatar } from "@/components/people/person-avatar";
+import { listArrivals } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import {
   countRecentReports,
@@ -15,6 +16,7 @@ import {
   parentWindowStart,
 } from "@/features/parent/queries";
 import { Link } from "@/i18n/navigation";
+import { formatTime } from "@/lib/format";
 import { requireSpace } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,10 +39,15 @@ async function Children() {
   const t = await getTranslations("parentSpace");
   const tHome = await getTranslations("parentHome");
   const tSlots = await getTranslations("attendance.slots");
+  const tArrivals = await getTranslations("arrivals");
   if (children.length === 0) return <EmptyState icon={UsersRound} title={tHome("title")} body={tHome("empty")} />;
 
   const ids = children.map((c) => c.id);
-  const [absences, reports] = await Promise.all([listChildrenAbsences(ids, from), countRecentReports(ids, from)]);
+  const [absences, reports, arrivals] = await Promise.all([
+    listChildrenAbsences(ids, from),
+    countRecentReports(ids, from),
+    listArrivals({ studentIds: ids }, today),
+  ]);
 
   return (
     <ul className="grid gap-4 md:grid-cols-2">
@@ -64,8 +71,13 @@ async function Children() {
                 </span>
                 <ChevronRight className="size-5 text-ink-soft" aria-hidden />
               </div>
-              {todayMarks.length > 0 && (
+              {(todayMarks.length > 0 || arrivals.has(child.id)) && (
                 <div className="flex flex-wrap gap-2">
+                  {arrivals.has(child.id) && (
+                    <StatusPill tone="success">
+                      {tArrivals("parentArrived", { time: formatTime(arrivals.get(child.id)!) })}
+                    </StatusPill>
+                  )}
                   {todayMarks.map((mark) => (
                     <StatusPill key={mark.slot ?? "jour"} tone={mark.status === "absent" ? "danger" : "warning"}>
                       {t(mark.status === "absent" ? "absentToday" : "lateToday", {

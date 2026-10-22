@@ -1041,6 +1041,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      student_arrivals: {
+        Row: {
+          date: string;
+          id: string;
+          received_at: string;
+          scanned_at: string;
+          scanned_by: string | null;
+          school_id: string;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          date: string;
+          id: string;
+          received_at?: string;
+          scanned_at: string;
+          scanned_by?: string | null;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          date?: string;
+          id?: string;
+          received_at?: string;
+          scanned_at?: string;
+          scanned_by?: string | null;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_arrivals_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       student_documents: {
         Row: {
           created_at: string;
@@ -1196,6 +1235,7 @@ export type Database = {
       students: {
         Row: {
           address: string | null;
+          badge_token: string;
           birth_date: string | null;
           birth_place: string | null;
           created_at: string;
@@ -1215,6 +1255,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           address?: string | null;
+          badge_token?: string;
           birth_date?: string | null;
           birth_place?: string | null;
           created_at?: string;
@@ -1233,6 +1274,7 @@ export type Database = {
         };
         Update: {
           address?: string | null;
+          badge_token?: string;
           birth_date?: string | null;
           birth_place?: string | null;
           created_at?: string;
@@ -1377,11 +1419,13 @@ export type Database = {
         }[];
       };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
+      record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       register_student: {
         Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };
         Returns: string;
       };
       remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
+      renew_student_badge: { Args: { p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
       review_absence_justification: {
         Args: { p_id: string; p_note?: string; p_status: Database["public"]["Enums"]["justification_status"] };

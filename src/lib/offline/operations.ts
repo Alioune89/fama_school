@@ -38,9 +38,18 @@ export const studentReportPayloadSchema = z.object({
 
 export type StudentReportPayload = z.infer<typeof studentReportPayloadSchema>;
 
+export const arrivalPayloadSchema = z.object({
+  studentId: z.uuid(),
+  /** Heure du scan de la carte sur le téléphone : le premier passage de la journée compte. */
+  scannedAt: z.iso.datetime(),
+});
+
+export type ArrivalPayload = z.infer<typeof arrivalPayloadSchema>;
+
 export const operationSchema = z.discriminatedUnion("kind", [
   z.object({ id: z.uuid(), kind: z.literal("attendance.rollCall"), payload: rollCallPayloadSchema }),
   z.object({ id: z.uuid(), kind: z.literal("student.report"), payload: studentReportPayloadSchema }),
+  z.object({ id: z.uuid(), kind: z.literal("checkin.arrival"), payload: arrivalPayloadSchema }),
 ]);
 
 export type Operation = z.infer<typeof operationSchema>;

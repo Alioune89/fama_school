@@ -1384,5 +1384,64 @@
       "tooLarge": "Fichier trop lourd (5 Mo au plus).",
       "failed": "L'envoi de la photo a échoué. Vérifiez la connexion et réessayez."
     }
+  },
+  "arrivals": {
+    "title": "Pointage des arrivées",
+    "hint": "Scannez la carte de chaque élève à l'entrée. Les parents voient l'heure d'arrivée ; ça marche aussi sans réseau.",
+    "action": "Pointer les arrivées",
+    "cards": "Cartes d'élève",
+    "start": "Démarrer le scan",
+    "stop": "Arrêter la caméra",
+    "cameraHint": "Présentez la carte de l'élève devant la caméra arrière du téléphone.",
+    "camera": {
+      "denied": "La caméra est bloquée. Autorisez-la dans les réglages du navigateur pour ce site, puis réessayez.",
+      "unavailable": "Aucune caméra disponible sur cet appareil. Pointez les élèves en les cherchant par leur nom.",
+      "insecure": "La caméra n'est disponible que sur une connexion sécurisée (https)."
+    },
+    "unknownCard": "Carte non reconnue : ce n'est pas une carte de cette école, ou elle a été remplacée.",
+    "arrivedAt": "arrivé·e à {time}",
+    "alreadyAt": "déjà pointé·e à {time}",
+    "count": "{count, plural, =0 {Aucun élève pointé} one {# élève pointé} other {# élèves pointés}} sur {total} aujourd'hui",
+    "manualLabel": "Carte oubliée ? Cherchez l'élève",
+    "manualPlaceholder": "Nom ou prénom",
+    "matchesLabel": "Élèves trouvés",
+    "checkIn": "Pointer",
+    "checkInName": "Pointer l'arrivée de {name}",
+    "recentTitle": "Derniers passages",
+    "recentEmpty": "Aucun élève pointé pour l'instant aujourd'hui.",
+    "opLabel": "Arrivée de {name}",
+    "fromCache": "Pas de réseau : cartes gardées sur ce téléphone. Les arrivées seront envoyées au retour de la connexion.",
+    "waiting": "Pas de réseau. Ouvrez cette page une fois connecté pour pouvoir ensuite pointer sans réseau.",
+    "forbiddenTitle": "Pointage réservé",
+    "forbiddenBody": "Le pointage des arrivées est réservé à la direction, au censeur et au surveillant général.",
+    "todayArrivals": "{count, plural, =0 {Aucune arrivée pointée} one {# arrivée pointée} other {# arrivées pointées}} à l'entrée",
+    "parentArrived": "Arrivé·e à {time}",
+    "parentArrivedToday": "Arrivé·e à l'école aujourd'hui à {time}",
+    "cardsPage": {
+      "title": "Cartes d'élève",
+      "hint": "Imprimez les cartes de pointage (10 par feuille A4), ou enregistrez-les en PDF depuis la fenêtre d'impression.",
+      "classFilter": "Classe",
+      "allClasses": "Toutes les classes",
+      "count": "{count, plural, one {# carte} other {# cartes}}",
+      "print": "Imprimer",
+      "empty": "Aucune carte à imprimer",
+      "emptyHint": "Les cartes apparaissent dès que des élèves sont inscrits dans une classe de l'année en cours.",
+      "listLabel": "Cartes d'élève",
+      "cardTitle": "Carte de pointage",
+      "classLine": "Classe : {className}",
+      "qrLabel": "QR code de pointage de {name}"
+    },
+    "badge": {
+      "title": "Carte d'élève",
+      "hint": "Carte avec le QR code scanné à l'entrée de l'école.",
+      "print": "Imprimer la carte",
+      "renew": "Carte perdue : nouvelle carte",
+      "renewConfirm": "Créer une nouvelle carte ? L'ancienne carte ne fonctionnera plus.",
+      "renewed": "Nouvelle carte créée. Imprimez-la pour l'élève."
+    },
+    "errors": {
+      "unknownStudent": "Cet élève n'est pas inscrit cette année.",
+      "dateOutOfRange": "Un pointage ne peut être envoyé que pour les 7 derniers jours."
+    }
   }
 }

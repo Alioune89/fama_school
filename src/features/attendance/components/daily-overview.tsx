@@ -1,10 +1,11 @@
-import { ChevronRight, ClipboardCheck, FileCheck, PartyPopper, Phone } from "lucide-react";
+import { ChevronRight, ClipboardCheck, FileCheck, PartyPopper, Phone, ScanQrCode } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { buttonVariants } from "@/components/ui/button";
+import { listArrivals } from "@/features/arrivals/queries";
 import { countPendingJustifications } from "@/features/justifications/queries";
 import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
@@ -84,12 +85,14 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
   const { entry } = await requireSpace("direction");
   const canTake = permissions.takeAttendance(entry.roles) && date === today;
   const canReview = permissions.reviewAbsences(entry.roles);
-  const [day, repeated, pendingJustifications, t, tSlots] = await Promise.all([
+  const [day, repeated, pendingJustifications, arrivals, t, tSlots, tArrivals] = await Promise.all([
     getDailyAttendance(entry.schoolId!, date),
     getRepeatedAbsences(entry.schoolId!, today),
     canReview ? countPendingJustifications(entry.schoolId!) : 0,
+    listArrivals({ schoolId: entry.schoolId! }, date),
     getTranslations("attendance.direction"),
     getTranslations("attendance.slots"),
+    getTranslations("arrivals"),
   ]);
   const { totals } = day;
   const rate = attendanceRate(totals.marks, totals.absentMarks);
@@ -116,6 +119,13 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
         <KpiCard label={t("lateStudents")} value={totals.lateStudents} tone="sun" />
         <KpiCard label={t("classesWithoutRollCall")} value={totals.classesWithoutRollCall} tone="white" />
       </div>
+
+      {arrivals.size > 0 && (
+        <p className="flex items-center gap-2 text-sm text-ink-soft">
+          <ScanQrCode className="size-4 text-azure-700" aria-hidden />
+          {tArrivals("todayArrivals", { count: arrivals.size })}
+        </p>
+      )}
 
       <section className={card} aria-labelledby="presence-classes">
         <h2 id="presence-classes" className="text-lg font-semibold">

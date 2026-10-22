@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft, FileCheck } from "lucide-react";
+import { ChevronLeft, CircleCheck, FileCheck } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
+import { listArrivals } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import { JustificationList } from "@/features/justifications/components/justification-list";
 import { listStudentJustifications } from "@/features/justifications/queries";
@@ -12,6 +13,7 @@ import { listChildrenAbsences, listMyChildren, PARENT_WINDOW_DAYS, parentWindowS
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
 import { Link } from "@/i18n/navigation";
+import { formatTime } from "@/lib/format";
 import { requireSpace } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,12 +31,15 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [reports, absences, justifications, t] = await Promise.all([
+  const [reports, absences, justifications, arrivals, t, tArrivals] = await Promise.all([
     listStudentReports(child.id),
     listChildrenAbsences([child.id], from),
     listStudentJustifications([child.id], from),
+    listArrivals({ studentIds: [child.id] }, today),
     getTranslations("parentSpace"),
+    getTranslations("arrivals"),
   ]);
+  const arrivedAt = arrivals.get(child.id);
   const name = `${child.firstName} ${child.lastName}`;
 
   return (
@@ -44,6 +49,12 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
         <div className="min-w-0">
           <h1 className="text-2xl font-bold">{name}</h1>
           <p className="text-sm text-muted-foreground">{[child.className, child.schoolName].filter(Boolean).join(" · ")}</p>
+          {arrivedAt && (
+            <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-success-700">
+              <CircleCheck className="size-4" aria-hidden />
+              {tArrivals("parentArrivedToday", { time: formatTime(arrivedAt) })}
+            </p>
+          )}
         </div>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">

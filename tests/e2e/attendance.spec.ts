@@ -62,8 +62,11 @@ test.describe("Présences côté direction", () => {
     await expect(change.getByText("Absent")).toBeVisible();
     await expect(change.getByText("En retard")).toBeVisible();
 
-    await page.getByRole("link", { name: "Grille du mois" }).click();
-    await page.getByRole("combobox", { name: "Classe" }).selectOption({ label: "3e A" });
+    // La page Historique reste montée (masquée) : attendre la grille avant de choisir la classe.
+    await page.getByRole("link", { name: "Grille du mois" }).filter({ visible: true }).click();
+    await expect(page).toHaveURL(/\/direction\/presences\/grille$/);
+    await expect(page.getByText("Présence de chaque élève, jour par jour, sur un mois.")).toBeVisible();
+    await page.getByRole("combobox", { name: "Classe" }).filter({ visible: true }).selectOption({ label: "3e A" });
     await expect(page).toHaveURL(new RegExp(`classe=${classId}`));
     await expect(page.getByRole("img", { name: new RegExp(`^${name}, .* : .*en retard`) }).first()).toBeVisible();
   });

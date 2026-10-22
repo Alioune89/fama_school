@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import { CircleCheck, Printer } from "lucide-react";
+import { CircleCheck, LogOut, Printer } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { buttonVariants } from "@/components/ui/button";
 import { todayInDakar } from "@/features/dashboard/calendar";
@@ -7,21 +7,23 @@ import { Link } from "@/i18n/navigation";
 import { formatTime } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import { badgeText } from "../badge";
-import { listArrivals } from "../queries";
+import { listArrivals, listDepartures } from "../queries";
 import { RenewBadgeButton } from "./renew-badge-button";
 
-/** Carte d'élève sur sa fiche : QR code, arrivée du jour, impression et remplacement d'une carte perdue. */
+/** Carte d'élève sur sa fiche : QR code, arrivée et sortie du jour, impression et remplacement d'une carte perdue. */
 export async function StudentBadge({ studentId, name, canRenew }: { studentId: string; name: string; canRenew: boolean }) {
   const supabase = await createClient();
-  const [{ data: student }, arrivals, t, tArrivals] = await Promise.all([
+  const [{ data: student }, arrivals, departures, t, tArrivals] = await Promise.all([
     supabase.from("students").select("badge_token").eq("id", studentId).maybeSingle(),
     listArrivals({ studentIds: [studentId] }, todayInDakar()),
+    listDepartures({ studentIds: [studentId] }, todayInDakar()),
     getTranslations("arrivals.badge"),
     getTranslations("arrivals"),
   ]);
   if (!student) return null;
   const svg = await QRCode.toString(badgeText(student.badge_token), { type: "svg", margin: 0, errorCorrectionLevel: "M" });
   const arrivedAt = arrivals.get(studentId);
+  const leftAt = departures.get(studentId);
 
   return (
     <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70" aria-labelledby="student-badge">
@@ -41,6 +43,12 @@ export async function StudentBadge({ studentId, name, canRenew }: { studentId: s
             <p className="flex items-center gap-1.5 text-sm font-medium text-success-700">
               <CircleCheck className="size-4" aria-hidden />
               {tArrivals("parentArrivedToday", { time: formatTime(arrivedAt) })}
+            </p>
+          )}
+          {leftAt && (
+            <p className="flex items-center gap-1.5 text-sm font-medium text-azure-700">
+              <LogOut className="size-4" aria-hidden />
+              {tArrivals("parentLeftToday", { time: formatTime(leftAt) })}
             </p>
           )}
           <Link

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Camera, CameraOff, CircleAlert, CircleCheck, Clock, Search, WifiOff } from "lucide-react";
+import { Camera, CameraOff, CircleAlert, CircleCheck, Clock, LogIn, LogOut, Search, WifiOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,36 @@ export type ArrivalSnapshot = {
   badges: Badge[];
   /** Heure d'arrivée (ISO) par élève, connue du serveur au chargement. */
   arrivals: Record<string, string>;
+  /** Heure de sortie (ISO) par élève (absent des cartes gardées avant l'ajout des sorties). */
+  departures?: Record<string, string>;
 };
 
 /** Cartes gardées sur le téléphone pour pointer sans réseau. */
 export const ARRIVAL_SNAPSHOT_KEY = "snapshot:arrivals";
-const localArrivalsKey = (schoolId: string, date: string) => `arrivals:${schoolId}:${date}`;
+
+export type CheckInMode = "arrival" | "departure";
+
+/** Entrée ou sortie : opération envoyée, passages gardés sur le téléphone, libellés. */
+const MODES = {
+  arrival: {
+    kind: "checkin.arrival",
+    local: "arrivals",
+    doneAt: "arrivedAt",
+    alreadyAt: "alreadyAt",
+    count: "count",
+    opLabel: "opLabel",
+    recentEmpty: "recentEmpty",
+  },
+  departure: {
+    kind: "checkin.departure",
+    local: "departures",
+    doneAt: "leftAt",
+    alreadyAt: "alreadyLeftAt",
+    count: "countDepartures",
+    opLabel: "opLabelDeparture",
+    recentEmpty: "recentEmptyDepartures",
+  },
+} as const;
 
 const noSubscription = () => () => {};
 const normalize = (value: string) =>
@@ -36,11 +61,13 @@ const normalize = (value: string) =>
     .toLowerCase();
 
 type Feedback =
-  { kind: "arrived"; badge: Badge; at: string } | { kind: "already"; badge: Badge; at: string } | { kind: "unknown" };
+  | { kind: "done"; mode: CheckInMode; badge: Badge; at: string }
+  | { kind: "already"; mode: CheckInMode; badge: Badge; at: string }
+  | { kind: "unknown" };
 
 /**
- * Pointage à l'entrée : la caméra lit les cartes, l'arrivée est enregistrée sur le téléphone puis envoyée
- * (hors ligne compris). Une carte oubliée se pointe en cherchant l'élève par son nom.
+ * Pointage à l'entrée et à la sortie : la caméra lit les cartes, le passage est enregistré sur le téléphone
+ * puis envoyé (hors ligne compris). Une carte oubliée se pointe en cherchant l'élève par son nom.
  */
 export function ArrivalScanner({
   userId,
@@ -55,6 +82,8 @@ export function ArrivalScanner({
   const date = useSyncExternalStore(noSubscription, todayInDakar, () => snapshot.date);
   const [feedback, setFeedback] = useState<{ id: number; value: Feedback } | null>(null);
   const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<CheckInMode>("arrival");
+  const config = MODES[mode];
   const lastScan = useRef<{ token: string; at: number } | null>(null);
 
   useEffect(() => {
@@ -62,15 +91,17 @@ export function ArrivalScanner({
     void offlineDb().drafts.put({ key: ARRIVAL_SNAPSHOT_KEY, userId, data: snapshot, updatedAt: new Date().toISOString() });
   }, [fromCache, snapshot, userId]);
 
-  const key = localArrivalsKey(snapshot.schoolId, date);
+  const key = `${config.local}:${snapshot.schoolId}:${date}`;
   const localRow = useLiveQuery(() => offlineDb().drafts.get(key), [key]);
-  const arrivals = useMemo(() => {
-    const merged: Record<string, string> = date === snapshot.date ? { ...snapshot.arrivals } : {};
+  /** Heure de passage par élève pour le mode choisi : connue du serveur, plus les scans du téléphone. */
+  const passages = useMemo(() => {
+    const server = mode === "arrival" ? snapshot.arrivals : (snapshot.departures ?? {});
+    const merged: Record<string, string> = date === snapshot.date ? { ...server } : {};
     for (const [studentId, at] of Object.entries((localRow?.data as Record<string, string> | undefined) ?? {})) {
       if (!merged[studentId] || at < merged[studentId]) merged[studentId] = at;
     }
     return merged;
-  }, [date, localRow, snapshot]);
+  }, [date, localRow, mode, snapshot]);
 
   const byToken = useMemo(() => new Map(snapshot.badges.map((b) => [b.token, b])), [snapshot.badges]);
   const byStudent = useMemo(() => new Map(snapshot.badges.map((b) => [b.studentId, b])), [snapshot.badges]);
@@ -79,14 +110,14 @@ export function ArrivalScanner({
 
   /** Scan : résultat sur l'image de la caméra. Recherche par le nom : notification (la caméra peut être hors écran). */
   async function checkIn(badge: Badge, source: "scan" | "manual") {
-    const known = arrivals[badge.studentId];
+    const known = passages[badge.studentId];
     if (known) {
-      show({ kind: "already", badge, at: known });
+      show({ kind: "already", mode, badge, at: known });
       return;
     }
     const at = new Date().toISOString();
-    if (source === "scan") show({ kind: "arrived", badge, at });
-    else toast.success(`${badge.firstName} ${badge.lastName} · ${t("arrivedAt", { time: formatTime(at) })}`);
+    if (source === "scan") show({ kind: "done", mode, badge, at });
+    else toast.success(`${badge.firstName} ${badge.lastName} · ${t(config.doneAt, { time: formatTime(at) })}`);
     navigator.vibrate?.(60);
     const db = offlineDb();
     await db.transaction("rw", db.drafts, async () => {
@@ -96,8 +127,8 @@ export function ArrivalScanner({
     });
     await enqueue(
       userId,
-      { id: crypto.randomUUID(), kind: "checkin.arrival", payload: { studentId: badge.studentId, scannedAt: at } },
-      { ref: `arrival:${badge.studentId}:${date}`, label: t("opLabel", { name: `${badge.firstName} ${badge.lastName}` }) },
+      { id: crypto.randomUUID(), kind: config.kind, payload: { studentId: badge.studentId, scannedAt: at } },
+      { ref: `${mode}:${badge.studentId}:${date}`, label: t(config.opLabel, { name: `${badge.firstName} ${badge.lastName}` }) },
     );
   }
 
@@ -123,18 +154,46 @@ export function ArrivalScanner({
       .slice(0, 8);
   }, [query, snapshot.badges]);
 
-  const recent = Object.entries(arrivals)
+  const recent = Object.entries(passages)
     .sort(([, a], [, b]) => b.localeCompare(a))
     .slice(0, 15)
     .flatMap(([studentId, at]) => {
       const badge = byStudent.get(studentId);
       return badge ? [{ badge, at }] : [];
     });
-  const arrivedCount = Object.keys(arrivals).filter((id) => byStudent.has(id)).length;
+  const passedCount = Object.keys(passages).filter((id) => byStudent.has(id)).length;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,28rem)_1fr]">
       <div className="space-y-4">
+        <div
+          role="radiogroup"
+          aria-label={t("modeLabel")}
+          className="grid grid-cols-2 gap-1 rounded-full bg-white p-1 shadow-card ring-1 ring-line/70"
+        >
+          {(["arrival", "departure"] as const).map((value) => {
+            const Icon = value === "arrival" ? LogIn : LogOut;
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={mode === value}
+                onClick={() => {
+                  setMode(value);
+                  setFeedback(null);
+                }}
+                className={cn(
+                  "inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold transition-colors",
+                  mode === value ? "bg-azure-100 text-ink" : "text-ink-soft hover:text-ink",
+                )}
+              >
+                <Icon className="size-4" aria-hidden />
+                {t(`modes.${value}`)}
+              </button>
+            );
+          })}
+        </div>
         {fromCache && (
           <p className="flex items-start gap-2 rounded-xl bg-sun-200/60 p-4 text-sm text-ink">
             <WifiOff className="mt-0.5 size-4 shrink-0" aria-hidden />
@@ -179,7 +238,7 @@ export function ArrivalScanner({
 
       <div className="space-y-6">
         <section className="rounded-xl bg-white p-5 shadow-card ring-1 ring-line/70">
-          <p className="text-sm text-ink-soft">{t("count", { count: arrivedCount, total: snapshot.badges.length })}</p>
+          <p className="text-sm text-ink-soft">{t(config.count, { count: passedCount, total: snapshot.badges.length })}</p>
           <label htmlFor="arrival-search" className="mt-4 block text-sm font-medium">
             {t("manualLabel")}
           </label>
@@ -198,7 +257,7 @@ export function ArrivalScanner({
           {matches.length > 0 && (
             <ul className="mt-3 divide-y divide-line" aria-label={t("matchesLabel")}>
               {matches.map((badge) => {
-                const at = arrivals[badge.studentId];
+                const at = passages[badge.studentId];
                 return (
                   <li key={badge.studentId} className="flex items-center gap-3 py-2">
                     <span className="min-w-0 flex-1">
@@ -208,7 +267,7 @@ export function ArrivalScanner({
                       <span className="block text-xs text-muted-foreground">{badge.className}</span>
                     </span>
                     {at ? (
-                      <span className="text-xs font-medium text-success-700">{t("arrivedAt", { time: formatTime(at) })}</span>
+                      <span className="text-xs font-medium text-success-700">{t(config.doneAt, { time: formatTime(at) })}</span>
                     ) : (
                       <Button
                         size="sm"
@@ -216,7 +275,9 @@ export function ArrivalScanner({
                           void checkIn(badge, "manual");
                           setQuery("");
                         }}
-                        aria-label={t("checkInName", { name: `${badge.firstName} ${badge.lastName}` })}
+                        aria-label={t(mode === "arrival" ? "checkInName" : "checkOutName", {
+                          name: `${badge.firstName} ${badge.lastName}`,
+                        })}
                       >
                         {t("checkIn")}
                       </Button>
@@ -233,7 +294,7 @@ export function ArrivalScanner({
             {t("recentTitle")}
           </h2>
           {recent.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">{t("recentEmpty")}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{t(config.recentEmpty)}</p>
           ) : (
             <ul className="mt-3 divide-y divide-line" aria-label={t("recentTitle")}>
               {recent.map(({ badge, at }) => (
@@ -264,21 +325,21 @@ function FeedbackBanner({ feedback }: { feedback: Feedback }) {
     );
   }
   const name = `${feedback.badge.firstName} ${feedback.badge.lastName}`;
-  const arrived = feedback.kind === "arrived";
-  const Icon = arrived ? CircleCheck : Clock;
+  const done = feedback.kind === "done";
+  const Icon = done ? CircleCheck : Clock;
+  const labels = MODES[feedback.mode];
   return (
     <div
       className={cn(
         "flex items-center gap-3 rounded-xl p-4 shadow-lg",
-        arrived ? "bg-success-50 text-success-700" : "bg-warning-50 text-warning-700",
+        done ? "bg-success-50 text-success-700" : "bg-warning-50 text-warning-700",
       )}
     >
       <Icon className="size-7 shrink-0" aria-hidden />
       <div className="min-w-0">
         <p className="truncate text-lg font-bold text-ink">{name}</p>
         <p className="text-sm font-medium">
-          {feedback.badge.className} ·{" "}
-          {arrived ? t("arrivedAt", { time: formatTime(feedback.at) }) : t("alreadyAt", { time: formatTime(feedback.at) })}
+          {feedback.badge.className} · {t(done ? labels.doneAt : labels.alreadyAt, { time: formatTime(feedback.at) })}
         </p>
       </div>
     </div>

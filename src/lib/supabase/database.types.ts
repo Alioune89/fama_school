@@ -1154,6 +1154,45 @@ export type Database = {
           },
         ];
       };
+      student_departures: {
+        Row: {
+          date: string;
+          id: string;
+          received_at: string;
+          scanned_at: string;
+          scanned_by: string | null;
+          school_id: string;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          date: string;
+          id: string;
+          received_at?: string;
+          scanned_at: string;
+          scanned_by?: string | null;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          date?: string;
+          id?: string;
+          received_at?: string;
+          scanned_at?: string;
+          scanned_by?: string | null;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_departures_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       student_documents: {
         Row: {
           created_at: string;
@@ -1494,6 +1533,7 @@ export type Database = {
       };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
+      record_departure: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       register_student: {
         Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };
         Returns: string;

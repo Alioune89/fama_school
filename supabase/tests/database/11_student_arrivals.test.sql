@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(14);
+select plan(18);
 
 insert into public.schools (id, name, slug) values ('38000000-0000-4000-8000-00000000000f', 'École Test L', 'ecole-test-l');
 insert into auth.users (id, aud, role, email) values
@@ -92,6 +92,23 @@ select throws_ok(
   'une arrivée ne s''écrit pas directement'
 );
 
+-- Sorties : mêmes règles que les arrivées.
+select is(
+  public.record_departure('e8000000-0000-4000-8000-000000000011', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '2 minutes'),
+  'applied',
+  'le surveillant pointe la sortie de Coumba'
+);
+select is(
+  public.record_departure('e8000000-0000-4000-8000-000000000011', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '2 minutes'),
+  'duplicate',
+  'une sortie renvoyée par le téléphone n''est comptée qu''une fois'
+);
+select is(
+  public.record_departure('e8000000-0000-4000-8000-000000000012', 'a8000000-0000-4000-8000-0000000000f1', now()),
+  'stale',
+  'un second passage à la sortie ne change pas l''heure'
+);
+
 -- Un enseignant ne pointe pas et ne renouvelle pas les cartes.
 select set_config('request.jwt.claims', '{"sub": "48000000-0000-4000-8000-0000000000f2", "role": "authenticated"}', true);
 select throws_ok(
@@ -99,13 +116,18 @@ select throws_ok(
   'P0001', 'forbidden',
   'un enseignant ne pointe pas les arrivées'
 );
+select throws_ok(
+  $$ select public.record_departure(gen_random_uuid(), 'a8000000-0000-4000-8000-0000000000f2', now()) $$,
+  'P0001', 'forbidden',
+  'ni les sorties'
+);
 
 -- Le parent voit l'arrivée de son enfant, pas celle des autres.
 select set_config('request.jwt.claims', '{"sub": "48000000-0000-4000-8000-0000000000f4", "role": "authenticated"}', true);
 select results_eq(
-  $$ select student_id from public.student_arrivals $$,
-  $$ values ('a8000000-0000-4000-8000-0000000000f1'::uuid) $$,
-  'le parent ne voit que l''arrivée de son enfant'
+  $$ select student_id from public.student_arrivals union all select student_id from public.student_departures $$,
+  $$ values ('a8000000-0000-4000-8000-0000000000f1'::uuid), ('a8000000-0000-4000-8000-0000000000f1'::uuid) $$,
+  'le parent ne voit que l''arrivée et la sortie de son enfant'
 );
 
 -- Carte perdue : le directeur la renouvelle.

@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrivalScanner } from "@/features/arrivals/components/arrival-scanner";
 import { ArrivalScannerFallback } from "@/features/arrivals/components/arrival-scanner-fallback";
-import { listArrivals, listBadges } from "@/features/arrivals/queries";
+import { listArrivals, listBadges, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
@@ -26,11 +26,20 @@ async function Scanner() {
   }
   const schoolId = entry.schoolId!;
   const date = todayInDakar();
-  const [badges, arrivals] = await Promise.all([listBadges(schoolId), listArrivals({ schoolId }, date)]);
-  return <ArrivalScanner userId={user.id} snapshot={{ schoolId, date, badges, arrivals: Object.fromEntries(arrivals) }} />;
+  const [badges, arrivals, departures] = await Promise.all([
+    listBadges(schoolId),
+    listArrivals({ schoolId }, date),
+    listDepartures({ schoolId }, date),
+  ]);
+  return (
+    <ArrivalScanner
+      userId={user.id}
+      snapshot={{ schoolId, date, badges, arrivals: Object.fromEntries(arrivals), departures: Object.fromEntries(departures) }}
+    />
+  );
 }
 
-/** Pointage à l'entrée de l'école : scan des cartes d'élève avec la caméra du téléphone. */
+/** Pointage à l'entrée et à la sortie de l'école : scan des cartes d'élève avec la caméra du téléphone. */
 export default async function ArrivalsPage() {
   const t = await getTranslations("arrivals");
   const tDirection = await getTranslations("attendance.direction");

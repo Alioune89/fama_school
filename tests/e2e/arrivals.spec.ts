@@ -2,7 +2,9 @@ import { expect, test } from "@playwright/test";
 import { DEMO, loginWithEmail, loginWithPhone } from "./helpers";
 
 test.describe("Pointage des arrivées", () => {
-  test("la direction imprime les cartes, pointe une élève ; le parent voit l'heure d'arrivée", async ({ browser }, testInfo) => {
+  test("la direction imprime les cartes, pointe l'arrivée et la sortie d'une élève ; le parent voit les heures", async ({
+    browser,
+  }, testInfo) => {
     const baseURL = testInfo.project.use.baseURL;
 
     const directorContext = await browser.newContext({ ...testInfo.project.use, baseURL });
@@ -23,7 +25,7 @@ test.describe("Pointage des arrivées", () => {
 
     // Pointage : carte oubliée, l'élève est cherchée par son nom.
     await director.goto("/direction/presences/pointage");
-    await expect(director.getByRole("heading", { name: "Pointage des arrivées", level: 1 })).toBeVisible();
+    await expect(director.getByRole("heading", { name: "Pointage des arrivées et des sorties", level: 1 })).toBeVisible();
     await expect(director.getByRole("button", { name: "Démarrer le scan" })).toBeVisible();
     await director.getByLabel("Carte oubliée ? Cherchez l'élève").fill("mariama");
     const match = director.getByRole("list", { name: "Élèves trouvés" }).getByRole("listitem").filter({ hasText: "Mariama Sow" });
@@ -33,6 +35,17 @@ test.describe("Pointage des arrivées", () => {
       await expect(director.getByText(/^Mariama Sow · arrivé·e à \d{1,2} h \d{2}$/)).toBeVisible();
     }
     await expect(director.getByRole("list", { name: "Derniers passages" }).getByText("Mariama Sow")).toBeVisible();
+
+    // Sortie : même recherche, mode « Sorties ».
+    await director.getByRole("radio", { name: "Sorties" }).click();
+    await director.getByLabel("Carte oubliée ? Cherchez l'élève").fill("mariama");
+    const checkOut = match.getByRole("button", { name: "Pointer la sortie de Mariama Sow" });
+    if (await checkOut.isVisible()) {
+      await checkOut.click();
+      await expect(director.getByText(/^Mariama Sow · sorti·e à \d{1,2} h \d{2}$/)).toBeVisible();
+    }
+    await expect(director.getByRole("list", { name: "Derniers passages" }).getByText("Mariama Sow")).toBeVisible();
+    await director.getByRole("radio", { name: "Arrivées" }).click();
 
     // Une fois envoyée, l'arrivée est connue du serveur : la page rechargée la montre encore.
     await expect(async () => {
@@ -50,6 +63,7 @@ test.describe("Pointage des arrivées", () => {
     await expect(parent.getByRole("link", { name: /Mariama Sow/ }).getByText(/^Arrivé·e à \d{1,2} h \d{2}$/)).toBeVisible();
     await parent.getByRole("link", { name: /Mariama Sow/ }).click();
     await expect(parent.getByText(/^Arrivé·e à l'école aujourd'hui à \d{1,2} h \d{2}$/)).toBeVisible();
+    await expect(parent.getByText(/^Sorti·e de l'école aujourd'hui à \d{1,2} h \d{2}$/)).toBeVisible();
     await parentContext.close();
   });
 });

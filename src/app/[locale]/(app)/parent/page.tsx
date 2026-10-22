@@ -6,7 +6,7 @@ import { StatusPill } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { PersonAvatar } from "@/components/people/person-avatar";
-import { listArrivals } from "@/features/arrivals/queries";
+import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import {
   countRecentReports,
@@ -43,10 +43,11 @@ async function Children() {
   if (children.length === 0) return <EmptyState icon={UsersRound} title={tHome("title")} body={tHome("empty")} />;
 
   const ids = children.map((c) => c.id);
-  const [absences, reports, arrivals] = await Promise.all([
+  const [absences, reports, arrivals, departures] = await Promise.all([
     listChildrenAbsences(ids, from),
     countRecentReports(ids, from),
     listArrivals({ studentIds: ids }, today),
+    listDepartures({ studentIds: ids }, today),
   ]);
 
   return (
@@ -71,11 +72,16 @@ async function Children() {
                 </span>
                 <ChevronRight className="size-5 text-ink-soft" aria-hidden />
               </div>
-              {(todayMarks.length > 0 || arrivals.has(child.id)) && (
+              {(todayMarks.length > 0 || arrivals.has(child.id) || departures.has(child.id)) && (
                 <div className="flex flex-wrap gap-2">
                   {arrivals.has(child.id) && (
                     <StatusPill tone="success">
                       {tArrivals("parentArrived", { time: formatTime(arrivals.get(child.id)!) })}
+                    </StatusPill>
+                  )}
+                  {departures.has(child.id) && (
+                    <StatusPill tone="info">
+                      {tArrivals("parentLeft", { time: formatTime(departures.get(child.id)!) })}
                     </StatusPill>
                   )}
                   {todayMarks.map((mark) => (

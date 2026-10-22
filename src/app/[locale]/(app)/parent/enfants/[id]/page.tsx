@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft, CircleCheck, FileCheck } from "lucide-react";
+import { ChevronLeft, CircleCheck, FileCheck, LogOut } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
-import { listArrivals } from "@/features/arrivals/queries";
+import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import { JustificationList } from "@/features/justifications/components/justification-list";
 import { listStudentJustifications } from "@/features/justifications/queries";
@@ -31,15 +31,17 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [reports, absences, justifications, arrivals, t, tArrivals] = await Promise.all([
+  const [reports, absences, justifications, arrivals, departures, t, tArrivals] = await Promise.all([
     listStudentReports(child.id),
     listChildrenAbsences([child.id], from),
     listStudentJustifications([child.id], from),
     listArrivals({ studentIds: [child.id] }, today),
+    listDepartures({ studentIds: [child.id] }, today),
     getTranslations("parentSpace"),
     getTranslations("arrivals"),
   ]);
   const arrivedAt = arrivals.get(child.id);
+  const leftAt = departures.get(child.id);
   const name = `${child.firstName} ${child.lastName}`;
 
   return (
@@ -53,6 +55,12 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
             <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-success-700">
               <CircleCheck className="size-4" aria-hidden />
               {tArrivals("parentArrivedToday", { time: formatTime(arrivedAt) })}
+            </p>
+          )}
+          {leftAt && (
+            <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-azure-700">
+              <LogOut className="size-4" aria-hidden />
+              {tArrivals("parentLeftToday", { time: formatTime(leftAt) })}
             </p>
           )}
         </div>

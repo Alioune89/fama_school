@@ -5,7 +5,7 @@ import { StatusPill } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { buttonVariants } from "@/components/ui/button";
-import { listArrivals } from "@/features/arrivals/queries";
+import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { countPendingJustifications } from "@/features/justifications/queries";
 import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
@@ -85,11 +85,12 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
   const { entry } = await requireSpace("direction");
   const canTake = permissions.takeAttendance(entry.roles) && date === today;
   const canReview = permissions.reviewAbsences(entry.roles);
-  const [day, repeated, pendingJustifications, arrivals, t, tSlots, tArrivals] = await Promise.all([
+  const [day, repeated, pendingJustifications, arrivals, departures, t, tSlots, tArrivals] = await Promise.all([
     getDailyAttendance(entry.schoolId!, date),
     getRepeatedAbsences(entry.schoolId!, today),
     canReview ? countPendingJustifications(entry.schoolId!) : 0,
     listArrivals({ schoolId: entry.schoolId! }, date),
+    listDepartures({ schoolId: entry.schoolId! }, date),
     getTranslations("attendance.direction"),
     getTranslations("attendance.slots"),
     getTranslations("arrivals"),
@@ -124,6 +125,7 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
         <p className="flex items-center gap-2 text-sm text-ink-soft">
           <ScanQrCode className="size-4 text-azure-700" aria-hidden />
           {tArrivals("todayArrivals", { count: arrivals.size })}
+          {departures.size > 0 && ` · ${tArrivals("todayDepartures", { count: departures.size })}`}
         </p>
       )}
 

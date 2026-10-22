@@ -3,7 +3,8 @@
 import { createClient } from "@/lib/supabase/client";
 import { DOCUMENT_MAX_BYTES, DOCUMENT_MIME_TYPES } from "./schemas";
 
-const BUCKET = "student-documents";
+/** Buckets privés rangés par élève : dossier scolaire, justificatifs d'absence envoyés par les parents. */
+type StudentBucket = "student-documents" | "absence-justifications";
 
 type UploadedFile = { path: string; mimeType: (typeof DOCUMENT_MIME_TYPES)[number]; sizeBytes: number };
 
@@ -31,7 +32,12 @@ async function shrinkImage(file: File, maxSide: number): Promise<Blob | null> {
 /** Envoie un fichier dans le dossier privé de l'élève (<école>/<élève>/<uuid>.<ext>). */
 export async function uploadStudentFile(
   file: File,
-  { schoolId, studentId, maxImageSide = 2000 }: { schoolId: string; studentId: string; maxImageSide?: number },
+  {
+    schoolId,
+    studentId,
+    maxImageSide = 2000,
+    bucket = "student-documents",
+  }: { schoolId: string; studentId: string; maxImageSide?: number; bucket?: StudentBucket },
 ): Promise<UploadedFile | { error: UploadError }> {
   let body: Blob = file;
   let mimeType = file.type;
@@ -48,7 +54,7 @@ export async function uploadStudentFile(
 
   const extension = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "application/pdf": "pdf" }[mimeType]!;
   const path = `${schoolId}/${studentId}/${crypto.randomUUID()}.${extension}`;
-  const { error } = await createClient().storage.from(BUCKET).upload(path, body, { contentType: mimeType, upsert: false });
+  const { error } = await createClient().storage.from(bucket).upload(path, body, { contentType: mimeType, upsert: false });
   if (error) return { error: "failed" };
   return { path, mimeType: mimeType as UploadedFile["mimeType"], sizeBytes: body.size };
 }

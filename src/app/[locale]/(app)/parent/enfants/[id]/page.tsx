@@ -1,10 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, FileCheck } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { todayInDakar } from "@/features/dashboard/calendar";
+import { JustificationList } from "@/features/justifications/components/justification-list";
+import { listStudentJustifications } from "@/features/justifications/queries";
 import { AbsenceList } from "@/features/parent/components/absence-list";
 import { listChildrenAbsences, listMyChildren, PARENT_WINDOW_DAYS, parentWindowStart } from "@/features/parent/queries";
 import { ReportList } from "@/features/reports/components/report-list";
@@ -19,16 +21,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const card = "rounded-xl bg-white p-5 shadow-card ring-1 ring-line/70 sm:p-6";
 
-/** Fiche d'un enfant pour son parent : signalements des enseignants, absences et retards. */
+/** Fiche d'un enfant pour son parent : signalements des enseignants, absences, retards et justificatifs. */
 async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enfants/[id]">["params"] }) {
   const [{ id }, { user }] = await Promise.all([params, requireSpace("parent")]);
   const child = (await listMyChildren(user.id)).find((c) => c.id === id);
   if (!child) notFound();
 
   const today = todayInDakar();
-  const [reports, absences, t] = await Promise.all([
+  const from = parentWindowStart(today);
+  const [reports, absences, justifications, t] = await Promise.all([
     listStudentReports(child.id),
-    listChildrenAbsences([child.id], parentWindowStart(today)),
+    listChildrenAbsences([child.id], from),
+    listStudentJustifications([child.id], from),
     getTranslations("parentSpace"),
   ]);
   const name = `${child.firstName} ${child.lastName}`;
@@ -51,10 +55,35 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
           <ReportList reports={reports} emptyLabel={t("reportsEmpty", { name: child.firstName })} />
         </section>
         <section className={card} aria-labelledby="child-absences">
-          <h2 id="child-absences" className="text-lg font-semibold">
-            {t("absencesTitle", { days: PARENT_WINDOW_DAYS })}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 id="child-absences" className="text-lg font-semibold">
+              {t("absencesTitle", { days: PARENT_WINDOW_DAYS })}
+            </h2>
+            <Link
+              href={`/parent/enfants/${child.id}/justifier`}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-azure-700 hover:underline"
+            >
+              <FileCheck className="size-4" aria-hidden />
+              {t("justifyNew")}
+            </Link>
+          </div>
+          <AbsenceList
+            childId={child.id}
+            absences={absences.get(child.id) ?? []}
+            justifications={justifications}
+            emptyLabel={t("absencesEmpty", { name: child.firstName })}
+          />
+        </section>
+        <section className={`${card} lg:col-span-2`} aria-labelledby="child-justifications">
+          <h2 id="child-justifications" className="text-lg font-semibold">
+            {t("justificationsTitle")}
           </h2>
-          <AbsenceList absences={absences.get(child.id) ?? []} emptyLabel={t("absencesEmpty", { name: child.firstName })} />
+          <p className="mt-1 text-xs text-muted-foreground">{t("justificationsHint")}</p>
+          <JustificationList
+            justifications={justifications}
+            userId={user.id}
+            emptyLabel={t("justificationsEmpty", { name: child.firstName })}
+          />
         </section>
       </div>
     </>

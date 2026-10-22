@@ -3,6 +3,75 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      absence_justifications: {
+        Row: {
+          comment: string | null;
+          created_at: string;
+          file_path: string | null;
+          from_date: string;
+          id: string;
+          mime_type: string | null;
+          reason: Database["public"]["Enums"]["justification_reason"];
+          review_note: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          reviewed_by_name: string | null;
+          school_id: string;
+          status: Database["public"]["Enums"]["justification_status"];
+          student_id: string;
+          submitted_by: string | null;
+          submitted_by_name: string;
+          to_date: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          comment?: string | null;
+          created_at?: string;
+          file_path?: string | null;
+          from_date: string;
+          id?: string;
+          mime_type?: string | null;
+          reason: Database["public"]["Enums"]["justification_reason"];
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          reviewed_by_name?: string | null;
+          school_id: string;
+          status?: Database["public"]["Enums"]["justification_status"];
+          student_id: string;
+          submitted_by?: string | null;
+          submitted_by_name: string;
+          to_date: string;
+        };
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          file_path?: string | null;
+          from_date?: string;
+          id?: string;
+          mime_type?: string | null;
+          reason?: Database["public"]["Enums"]["justification_reason"];
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          reviewed_by_name?: string | null;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["justification_status"];
+          student_id?: string;
+          submitted_by?: string | null;
+          submitted_by_name?: string;
+          to_date?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "absence_justifications_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       academic_years: {
         Row: {
           created_at: string;
@@ -1300,6 +1369,7 @@ export type Database = {
           absences: number;
           class_name: string;
           first_name: string;
+          justified: number;
           last_absence: string;
           last_name: string;
           lates: number;
@@ -1313,7 +1383,23 @@ export type Database = {
       };
       remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
+      review_absence_justification: {
+        Args: { p_id: string; p_note?: string; p_status: Database["public"]["Enums"]["justification_status"] };
+        Returns: undefined;
+      };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
+      submit_absence_justification: {
+        Args: {
+          p_comment?: string;
+          p_file_path?: string;
+          p_from: string;
+          p_mime_type?: string;
+          p_reason: Database["public"]["Enums"]["justification_reason"];
+          p_student_id: string;
+          p_to: string;
+        };
+        Returns: string;
+      };
       submit_roll_call: {
         Args: {
           p_class_id: string;
@@ -1336,6 +1422,7 @@ export type Database = {
         };
         Returns: string;
       };
+      withdraw_absence_justification: { Args: { p_id: string }; Returns: string };
     };
     Enums: {
       app_locale: "fr" | "wo";
@@ -1347,6 +1434,8 @@ export type Database = {
       enrollment_status: "active" | "transferred" | "left" | "completed";
       grading_scale: "appreciation" | "ten" | "twenty";
       guardian_relationship: "father" | "mother" | "guardian" | "grandparent" | "uncle" | "aunt" | "sibling" | "other";
+      justification_reason: "illness" | "medical" | "family" | "other";
+      justification_status: "pending" | "accepted" | "refused";
       membership_status: "invited" | "active" | "suspended";
       period_kind: "semester" | "trimester";
       person_status: "active" | "inactive";
@@ -1472,6 +1561,8 @@ export const Constants = {
       enrollment_status: ["active", "transferred", "left", "completed"],
       grading_scale: ["appreciation", "ten", "twenty"],
       guardian_relationship: ["father", "mother", "guardian", "grandparent", "uncle", "aunt", "sibling", "other"],
+      justification_reason: ["illness", "medical", "family", "other"],
+      justification_status: ["pending", "accepted", "refused"],
       membership_status: ["invited", "active", "suspended"],
       period_kind: ["semester", "trimester"],
       person_status: ["active", "inactive"],

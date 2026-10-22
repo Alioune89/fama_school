@@ -1194,7 +1194,10 @@
       "backToDay": "Présences du jour",
       "classesWithoutRollCall": "Classes sans appel ce jour-là",
       "tabHistory": "Historique",
-      "history": "Historique"
+      "history": "Historique",
+      "tabJustifications": "Justificatifs",
+      "pendingJustifications": "{count, plural, one {# justificatif à traiter} other {# justificatifs à traiter}}",
+      "justifiedCount": "dont {count, plural, one {# justifiée} other {# justifiées}}"
     },
     "history": {
       "hint": "Chaque appel envoyé, premier appel ou correction : qui l'a fait, à quelle heure, et quels élèves sont concernés.",
@@ -1285,6 +1288,99 @@
     "absencesTitle": "Absences et retards ({days} derniers jours)",
     "absencesLabel": "Absences et retards",
     "absencesEmpty": "{name} n'a eu ni absence ni retard.",
-    "rollCallAt": "{className} · appel de {time}"
+    "rollCallAt": "{className} · appel de {time}",
+    "justify": "Justifier",
+    "justifyAbsence": "Justifier l'absence du {date}",
+    "justifyNew": "Justifier une absence",
+    "justificationsTitle": "Justificatifs envoyés",
+    "justificationsHint": "Mot des parents, certificat médical : la direction l'accepte ou le refuse.",
+    "justificationsEmpty": "Aucun justificatif envoyé pour {name}."
+  },
+  "justifications": {
+    "title": "Justifier une absence",
+    "hint": "Envoyez le mot ou le certificat médical en photo. La direction l'examine et vous voyez sa décision ici.",
+    "listLabel": "Justificatifs",
+    "period": "du {from} au {to}",
+    "reasons": {
+      "illness": "Maladie",
+      "medical": "Rendez-vous médical",
+      "family": "Raison familiale",
+      "other": "Autre motif"
+    },
+    "statuses": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "refused": "Refusée"
+    },
+    "absenceState": {
+      "pending": "Justificatif en attente",
+      "accepted": "Justifiée",
+      "refused": "Justificatif refusé"
+    },
+    "sentBy": "Envoyé par {name} le {date} à {time}",
+    "reviewedBy": "{status} par {name} le {date}",
+    "reviewNote": "Remarque de l'école : {note}",
+    "viewPhoto": "Voir la photo",
+    "viewFile": "Ouvrir le document",
+    "photoOf": "Justificatif de {name}",
+    "withdraw": "Retirer",
+    "withdrawConfirm": "Retirer ce justificatif ? La direction ne le verra plus.",
+    "withdrawn": "Justificatif retiré.",
+    "form": {
+      "from": "Premier jour d'absence",
+      "to": "Dernier jour d'absence",
+      "periodHint": "Jusqu'à 30 jours en arrière, ou une absence prévue dans les 7 prochains jours.",
+      "reason": "Motif",
+      "chooseReason": "Choisissez le motif de l'absence.",
+      "comment": "Explication (facultatif si vous joignez une photo)",
+      "commentPlaceholder": "Ex. : fièvre, consultation au poste de santé ; il reprend lundi.",
+      "photo": "Photo du mot ou du certificat",
+      "photoHint": "Photo prise avec le téléphone ou PDF, 5 Mo au plus.",
+      "takePhoto": "Prendre ou choisir une photo",
+      "changePhoto": "Changer de photo",
+      "removePhoto": "Retirer la photo",
+      "pdfSelected": "Document PDF : {name}",
+      "submit": "Envoyer le justificatif",
+      "sending": "Envoi…",
+      "sent": "Justificatif envoyé. La direction va l'examiner.",
+      "offline": "Pas de connexion : l'envoi d'une photo demande Internet. Réessayez une fois connecté."
+    },
+    "review": {
+      "hint": "Justificatifs envoyés par les parents : vérifiez la photo et les absences relevées, puis acceptez ou refusez.",
+      "filterLabel": "Justificatifs",
+      "pending": "À traiter",
+      "reviewed": "Traités",
+      "empty": "Aucun justificatif à traiter.",
+      "emptyReviewed": "Aucun justificatif traité pour l'instant.",
+      "absences": "{count, plural, =0 {aucune absence relevée par l'appel} one {# demi-journée d'absence relevée} other {# demi-journées d'absence relevées}}",
+      "accept": "Accepter",
+      "refuse": "Refuser",
+      "refuseTitle": "Refuser le justificatif",
+      "note": "Remarque pour la famille (facultatif)",
+      "notePlaceholder": "Ex. : merci d'apporter le certificat original au secrétariat.",
+      "confirmRefuse": "Refuser",
+      "cancel": "Annuler",
+      "accepted": "Justificatif accepté.",
+      "refused": "Justificatif refusé.",
+      "change": "Changer la décision",
+      "noPhoto": "Sans photo"
+    },
+    "errors": {
+      "toBeforeFrom": "Le dernier jour doit suivre le premier.",
+      "tooOld": "Une absence se justifie dans les 30 jours.",
+      "tooFar": "Une absence prévue se justifie au plus 7 jours à l'avance.",
+      "tooLong": "Un justificatif couvre 15 jours au plus.",
+      "notFound": "Ce justificatif n'existe plus.",
+      "invalidDates": "Ces dates ne peuvent pas être justifiées.",
+      "invalidComment": "L'explication est trop longue (500 caractères au plus).",
+      "invalidFile": "La photo n'a pas été reçue. Réessayez.",
+      "missingProof": "Joignez une photo ou écrivez une explication.",
+      "invalidDecision": "Décision inconnue.",
+      "invalidNote": "La remarque est trop longue (300 caractères au plus).",
+      "alreadyReviewed": "Ce justificatif a déjà été traité par l'école.",
+      "unsupported": "Format non accepté : photo (JPEG, PNG, WebP) ou PDF.",
+      "tooLarge": "Fichier trop lourd (5 Mo au plus).",
+      "failed": "L'envoi de la photo a échoué. Vérifiez la connexion et réessayez."
+    }
   }
 }

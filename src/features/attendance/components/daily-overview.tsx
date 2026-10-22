@@ -1,10 +1,11 @@
-import { ClipboardCheck, PartyPopper, Phone } from "lucide-react";
+import { ChevronRight, ClipboardCheck, FileCheck, PartyPopper, Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { buttonVariants } from "@/components/ui/button";
+import { countPendingJustifications } from "@/features/justifications/queries";
 import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
@@ -82,9 +83,11 @@ async function SlotSummary({
 export async function DailyOverview({ date, today }: { date: string; today: string }) {
   const { entry } = await requireSpace("direction");
   const canTake = permissions.takeAttendance(entry.roles) && date === today;
-  const [day, repeated, t, tSlots] = await Promise.all([
+  const canReview = permissions.reviewAbsences(entry.roles);
+  const [day, repeated, pendingJustifications, t, tSlots] = await Promise.all([
     getDailyAttendance(entry.schoolId!, date),
     getRepeatedAbsences(entry.schoolId!, today),
+    canReview ? countPendingJustifications(entry.schoolId!) : 0,
     getTranslations("attendance.direction"),
     getTranslations("attendance.slots"),
   ]);
@@ -97,6 +100,16 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
 
   return (
     <div className="space-y-6">
+      {pendingJustifications > 0 && (
+        <Link
+          href="/direction/presences/justificatifs"
+          className="flex items-center gap-3 rounded-xl bg-azure-50 px-4 py-3 text-sm font-semibold text-ink ring-1 ring-azure-500/30 hover:bg-azure-100"
+        >
+          <FileCheck className="size-5 shrink-0 text-azure-700" aria-hidden />
+          <span className="flex-1">{t("pendingJustifications", { count: pendingJustifications })}</span>
+          <ChevronRight className="size-4 text-ink-soft" aria-hidden />
+        </Link>
+      )}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <KpiCard label={t("rate")} value={rate === null ? null : `${rate} %`} tone="azure" />
         <KpiCard label={t("absentStudents")} value={totals.absentStudents} tone="lavender" />
@@ -231,6 +244,7 @@ export async function DailyOverview({ date, today }: { date: string; today: stri
                     </span>
                   </Link>
                   <StatusPill tone="danger">{t("halfDays", { count: row.absences })}</StatusPill>
+                  {row.justified > 0 && <StatusPill tone="success">{t("justifiedCount", { count: row.justified })}</StatusPill>}
                   {row.lates > 0 && <StatusPill tone="warning">{t("lateCount", { count: row.lates })}</StatusPill>}
                   {row.guardian?.phone && (
                     <a

@@ -10,6 +10,7 @@ export type Child = {
   id: string;
   firstName: string;
   lastName: string;
+  schoolId: string;
   schoolName: string;
   className: string | null;
 };
@@ -20,7 +21,7 @@ export const listMyChildren = cache(async (userId: string): Promise<Child[]> => 
   const { data, error } = await supabase
     .from("guardians")
     .select(
-      "student_guardians(student:students(id, first_name, last_name, school:schools(name), enrollments(status, class:classes!enrollments_class_id_school_id_fkey(name, year:academic_years(is_current)))))",
+      "student_guardians(student:students(id, first_name, last_name, school_id, school:schools(name), enrollments(status, class:classes!enrollments_class_id_school_id_fkey(name, year:academic_years(is_current)))))",
     )
     .eq("user_id", userId);
   if (error) throw error;
@@ -35,6 +36,7 @@ export const listMyChildren = cache(async (userId: string): Promise<Child[]> => 
         id: student.id,
         firstName: student.first_name,
         lastName: student.last_name,
+        schoolId: student.school_id,
         schoolName: student.school?.name ?? "",
         className: current?.class?.name ?? null,
       });

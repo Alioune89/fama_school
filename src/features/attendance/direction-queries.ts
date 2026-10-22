@@ -160,6 +160,7 @@ export async function getRepeatedAbsences(schoolId: string, today: string) {
     absences: row.absences,
     lates: row.lates,
     lastAbsence: row.last_absence,
+    justified: row.justified,
     guardian: contact.get(row.student_id) ?? null,
   }));
 }

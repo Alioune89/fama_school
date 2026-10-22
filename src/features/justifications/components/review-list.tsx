@@ -5,9 +5,10 @@ import { Link } from "@/i18n/navigation";
 import { formatDate, formatTime } from "@/lib/format";
 import type { ReviewFilter, ReviewItem } from "../queries";
 import { formatPeriod, JustificationStatusPill } from "./justification-status";
+import { PhotoViewer } from "./photo-viewer";
 import { ReviewActions } from "./review-actions";
 
-/** Vignette de la photo (lien vers l'original), ou icône du PDF. */
+/** Vignette de la photo (ouverte par-dessus la page), ou icône du PDF (nouvel onglet). */
 async function Proof({ item }: { item: ReviewItem }) {
   const t = await getTranslations("justifications");
   const box = "grid size-24 shrink-0 place-items-center overflow-hidden rounded-lg bg-azure-50 ring-1 ring-line sm:size-28";
@@ -19,19 +20,20 @@ async function Proof({ item }: { item: ReviewItem }) {
       </span>
     );
   }
-  const isPdf = item.mimeType === "application/pdf";
+  if (item.mimeType === "application/pdf") {
+    return (
+      <a href={item.fileUrl} target="_blank" rel="noreferrer" className={`${box} hover:ring-azure-500`}>
+        <FileText className="size-8 text-azure-700" aria-hidden />
+        <span className="sr-only">{t("viewFile")}</span>
+      </a>
+    );
+  }
+  const title = t("photoOf", { name: item.studentName });
   return (
-    <a href={item.fileUrl} target="_blank" rel="noreferrer" className={`${box} hover:ring-azure-500`}>
-      {isPdf ? (
-        <>
-          <FileText className="size-8 text-azure-700" aria-hidden />
-          <span className="sr-only">{t("viewFile")}</span>
-        </>
-      ) : (
-        // eslint-disable-next-line @next/next/no-img-element -- lien temporaire du stockage privé
-        <img src={item.fileUrl} alt={t("photoOf", { name: item.studentName })} className="size-full object-cover" />
-      )}
-    </a>
+    <PhotoViewer url={item.fileUrl} title={title} className={`${box} hover:ring-azure-500`}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- lien temporaire du stockage privé */}
+      <img src={item.fileUrl} alt={title} className="size-full object-cover" />
+    </PhotoViewer>
   );
 }
 

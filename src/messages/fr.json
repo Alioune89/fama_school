@@ -1323,6 +1323,8 @@
     "viewPhoto": "Voir la photo",
     "viewFile": "Ouvrir le document",
     "photoOf": "Justificatif de {name}",
+    "close": "Fermer",
+    "openOriginal": "Ouvrir l'original",
     "withdraw": "Retirer",
     "withdrawConfirm": "Retirer ce justificatif ? La direction ne le verra plus.",
     "withdrawn": "Justificatif retiré.",

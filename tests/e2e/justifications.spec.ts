@@ -40,7 +40,11 @@ test.describe("Justificatifs d'absence", () => {
     const sent = parent.getByRole("list", { name: "Justificatifs" }).getByRole("listitem").filter({ hasText: comment });
     await expect(sent.getByText("En attente")).toBeVisible();
     await expect(sent.getByText("Maladie")).toBeVisible();
-    await expect(sent.getByRole("link", { name: "Voir la photo" })).toBeVisible();
+    await sent.getByRole("button", { name: "Voir la photo" }).click();
+    const viewer = parent.getByRole("dialog", { name: "Voir la photo" });
+    await expect(viewer.getByRole("img", { name: "Voir la photo" })).toBeVisible();
+    await viewer.getByRole("button", { name: "Fermer" }).first().click();
+    await expect(viewer).toHaveCount(0);
     await expect(sent.getByRole("button", { name: "Retirer" })).toBeVisible();
 
     // La direction le trouve dans Présences › Justificatifs et l'accepte.
@@ -57,7 +61,11 @@ test.describe("Justificatifs d'absence", () => {
     await expect(item.getByRole("link", { name: "Mariama Sow", exact: true })).toBeVisible();
     await expect(item.getByText("6e A")).toBeVisible();
     await expect(item.getByText(/Envoyé par Fatou Sow le \d{1,2} \S+ à \d{1,2} h \d{2}/)).toBeVisible();
-    await expect(item.getByRole("img", { name: "Justificatif de Mariama Sow" })).toBeVisible();
+    await item.getByRole("button", { name: "Justificatif de Mariama Sow" }).click();
+    const photo = director.getByRole("dialog", { name: "Justificatif de Mariama Sow" });
+    await expect(photo.getByRole("link", { name: "Ouvrir l'original" })).toBeVisible();
+    await photo.getByRole("button", { name: "Fermer" }).first().click();
+    await expect(photo).toHaveCount(0);
     await item.getByRole("button", { name: "Accepter" }).click();
     await expect(director.getByText("Justificatif accepté.")).toBeVisible();
     await expect(item).toHaveCount(0);

@@ -569,6 +569,80 @@ export type Database = {
           },
         ];
       };
+      evaluations: {
+        Row: {
+          class_id: string;
+          created_at: string;
+          created_by: string | null;
+          held_on: string;
+          id: string;
+          kind: Database["public"]["Enums"]["evaluation_kind"];
+          max_score: number | null;
+          period_id: string;
+          published_at: string | null;
+          school_id: string;
+          subject_id: string;
+          title: string;
+          updated_at: string;
+          weight: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          class_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          held_on: string;
+          id?: string;
+          kind: Database["public"]["Enums"]["evaluation_kind"];
+          max_score?: number | null;
+          period_id: string;
+          published_at?: string | null;
+          school_id: string;
+          subject_id: string;
+          title: string;
+          updated_at?: string;
+          weight?: number;
+        };
+        Update: {
+          class_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          held_on?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["evaluation_kind"];
+          max_score?: number | null;
+          period_id?: string;
+          published_at?: string | null;
+          school_id?: string;
+          subject_id?: string;
+          title?: string;
+          updated_at?: string;
+          weight?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "evaluations_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "evaluations_period_id_school_id_fkey";
+            columns: ["period_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "periods";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "evaluations_subject_id_school_id_fkey";
+            columns: ["subject_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       guardians: {
         Row: {
           address: string | null;
@@ -1476,6 +1550,7 @@ export type Database = {
       cycle_code: "prescolaire" | "elementaire" | "moyen" | "secondaire";
       demo_request_status: "new" | "contacted" | "scheduled" | "closed";
       enrollment_status: "active" | "transferred" | "left" | "completed";
+      evaluation_kind: "devoir" | "interrogation" | "composition";
       grading_scale: "appreciation" | "ten" | "twenty";
       guardian_relationship: "father" | "mother" | "guardian" | "grandparent" | "uncle" | "aunt" | "sibling" | "other";
       justification_reason: "illness" | "medical" | "family" | "other";
@@ -1603,6 +1678,7 @@ export const Constants = {
       cycle_code: ["prescolaire", "elementaire", "moyen", "secondaire"],
       demo_request_status: ["new", "contacted", "scheduled", "closed"],
       enrollment_status: ["active", "transferred", "left", "completed"],
+      evaluation_kind: ["devoir", "interrogation", "composition"],
       grading_scale: ["appreciation", "ten", "twenty"],
       guardian_relationship: ["father", "mother", "guardian", "grandparent", "uncle", "aunt", "sibling", "other"],
       justification_reason: ["illness", "medical", "family", "other"],

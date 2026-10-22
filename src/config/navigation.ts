@@ -88,7 +88,7 @@ const direction: SpaceNavigation = {
     { label: "staff", href: "/direction/personnel", icon: "staff" },
     { label: "classes", href: "/direction/classes", icon: "classes" },
     { label: "attendance", href: "/direction/presences", icon: "attendance" },
-    { label: "grades", href: "/direction/notes", icon: "grades", soon: true },
+    { label: "grades", href: "/direction/notes", icon: "grades" },
     {
       label: "finance",
       href: "/direction/finances",
@@ -119,7 +119,7 @@ const professeur: SpaceNavigation = {
     { label: "myClasses", href: "/professeur/classes", icon: "classes", soon: true },
     { label: "rollCall", href: "/professeur/appel", icon: "rollCall" },
     { label: "reports", href: "/professeur/signalements", icon: "reports" },
-    { label: "gradeEntry", href: "/professeur/notes", icon: "grades", soon: true },
+    { label: "gradeEntry", href: "/professeur/notes", icon: "grades" },
     { label: "programme", href: "/professeur/programme", icon: "programme", soon: true },
     { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework", soon: true },
     { label: "messages", href: "/professeur/messages", icon: "messages", soon: true },

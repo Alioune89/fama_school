@@ -1,6 +1,6 @@
-import { Eye, Lock, Plus } from "lucide-react";
+import { Calculator, Eye, Lock, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,7 @@ export async function ClassGradebook({
   basePath: "/professeur/notes" | "/direction/notes";
 }) {
   const t = await getTranslations("evaluations");
+  const tAverages = await getTranslations("grades.averages");
   const editable = !period.locked;
   const scaleLabel = klass.scale === "appreciation" ? t("scales.appreciation") : t(`scales.${klass.scale}`);
 
@@ -64,22 +65,34 @@ export async function ClassGradebook({
                       {t("coefficient", { value: subject.coefficient })}
                     </span>
                   </h3>
-                  {editable && (
-                    <EvaluationFormSheet
-                      classId={klass.id}
-                      subjectId={subject.id}
-                      context={context}
-                      scale={klass.scale}
-                      periods={periods}
-                      periodId={period.id}
-                      trigger={
-                        <Button size="sm" variant="outline" aria-label={t("newFor", { context })}>
-                          <Plus aria-hidden />
-                          {t("new")}
-                        </Button>
-                      }
-                    />
-                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {items.length > 0 && (
+                      <Link
+                        href={`${basePath}/moyennes?classe=${klass.id}&matiere=${subject.id}&periode=${period.id}`}
+                        aria-label={tAverages("openFor", { context })}
+                        className={buttonVariants({ size: "sm", variant: "ghost" })}
+                      >
+                        <Calculator aria-hidden />
+                        {tAverages("open")}
+                      </Link>
+                    )}
+                    {editable && (
+                      <EvaluationFormSheet
+                        classId={klass.id}
+                        subjectId={subject.id}
+                        context={context}
+                        scale={klass.scale}
+                        periods={periods}
+                        periodId={period.id}
+                        trigger={
+                          <Button size="sm" variant="outline" aria-label={t("newFor", { context })}>
+                            <Plus aria-hidden />
+                            {t("new")}
+                          </Button>
+                        }
+                      />
+                    )}
+                  </div>
                 </div>
                 {items.length === 0 ? (
                   <p className="mt-2 text-sm text-muted-foreground">{t("emptySubject")}</p>

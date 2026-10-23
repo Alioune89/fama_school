@@ -1,14 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { round2 } from "@/lib/domain/grading";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { KIND_STYLE } from "../../evaluations/kind-style";
 import type { ChildGrade, ChildGrades as ChildGradesData } from "../queries";
-import { formatScore } from "../sheet";
-
-/** Moyenne affichée comme sur un bulletin : 12,50. */
-const formatAverage = (value: number) =>
-  round2(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+import { formatAverage, formatScore } from "../sheet";
 
 const SCALE_MAX = { ten: 10, twenty: 20 } as const;
 

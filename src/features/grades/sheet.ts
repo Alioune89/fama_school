@@ -30,6 +30,10 @@ export function parseScore(text: string, max: number): number | null | undefined
   return score <= max ? score : undefined;
 }
 
+/** Moyenne affichée comme sur un bulletin : 12,50. */
+export const formatAverage = (value: number) =>
+  round2(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 /** 12.5 → « 12,5 ». */
 export const formatScore = (score: number) => String(round2(score)).replace(".", ",");
 

@@ -4,7 +4,7 @@ import { DEMO, loginWithPhone } from "./helpers";
 const today = () => new Date().toISOString().slice(0, 10);
 
 test.describe("Saisie des notes", () => {
-  test("l'enseignante saisit les notes, hors ligne compris, les publie ; le parent les voit", async ({
+  test("l'enseignante saisit les notes, hors ligne compris, les publie ; le parent les voit ; moyennes et appréciations", async ({
     page,
     context,
     browser,
@@ -74,6 +74,25 @@ test.describe("Saisie des notes", () => {
     const line = grades.getByRole("listitem").filter({ hasText: title, hasNot: parent.getByRole("list") });
     await expect(line.getByText("15/20")).toBeVisible();
     await parentContext.close();
+
+    // Moyennes de la matière : rang, moyenne, appréciation proposée selon la moyenne.
+    await page.getByRole("link", { name: "Retour aux évaluations" }).click();
+    await page.getByRole("link", { name: "Moyennes et appréciations : 6e A · Français" }).click();
+    await expect(page.getByRole("heading", { name: "Moyennes et appréciations", level: 1 })).toBeVisible();
+    const averages = page.getByRole("list", { name: "Moyennes des élèves" });
+    const mariamaRow = averages.getByRole("listitem").filter({ hasText: "Sow Mariama" });
+    await expect(mariamaRow.getByText("15,00")).toBeVisible();
+    await expect(mariamaRow.getByText("1er")).toBeVisible();
+    await mariamaRow.getByRole("button", { name: "Choisir « Bon travail. » pour Mariama Sow" }).click();
+    const appreciation = mariamaRow.getByRole("textbox", { name: "Appréciation de Mariama Sow" });
+    await expect(appreciation).toHaveValue("Bon travail.");
+    await page.getByRole("button", { name: "Enregistrer les appréciations" }).click();
+    await expect(page.getByText("Appréciations enregistrées.").first()).toBeVisible();
+    await page.reload();
+    await expect(appreciation).toHaveValue("Bon travail.");
+    await appreciation.fill("");
+    await page.getByRole("button", { name: "Enregistrer les appréciations" }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Appréciations enregistrées." })).toBeVisible();
 
     // Ménage : l'évaluation et ses notes.
     await page.getByRole("link", { name: "Retour aux évaluations" }).click();

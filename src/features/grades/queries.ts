@@ -1,9 +1,18 @@
 import "server-only";
-import { acquisitionSummary, generalAverage, subjectAverage } from "@/lib/domain/grading";
+import {
+  acquisitionSummary,
+  classStats,
+  generalAverage,
+  ranks,
+  subjectAverage,
+  type ClassStats,
+  type EvaluationWeights,
+  type Rank,
+} from "@/lib/domain/grading";
 import { parseSchoolSettings } from "@/lib/domain/school-settings";
 import type { Enums } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
-import { listPeriods, pickPeriod } from "../evaluations/queries";
+import { listPeriods, listSchoolGradebooks, pickPeriod } from "../evaluations/queries";
 import type { EvaluationKind } from "../evaluations/schemas";
 import type { Marks, ServerSheet } from "./sheet";
 
@@ -198,5 +207,152 @@ export async function listChildGrades(studentId: string, schoolId: string, today
     scale,
     subjects,
     general: scale === "appreciation" ? null : generalAverage(subjects),
+  };
+}
+
+export type AverageRow = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  /** Note de chaque évaluation de la matière, dans l'ordre de `evaluations`. */
+  marks: (Marks[string] | null)[];
+  /** Moyenne au barème du cycle (null au préscolaire ou sans note qui compte). */
+  average: number | null;
+  rank: Rank | null;
+  /** Préscolaire : niveau le plus fréquent. */
+  summary: Enums<"acquisition_level"> | null;
+  appreciation: string;
+};
+
+export type SubjectAverages = {
+  classId: string;
+  className: string;
+  subjectId: string;
+  subjectName: string;
+  coefficient: number;
+  periodId: string;
+  periodLabel: string;
+  locked: boolean;
+  scale: Enums<"grading_scale">;
+  /** Poids des devoirs, interrogations et compositions dans la moyenne (réglages de l'école). */
+  weights: EvaluationWeights;
+  evaluations: { id: string; title: string; kind: EvaluationKind; maxScore: number | null }[];
+  rows: AverageRow[];
+  stats: ClassStats | null;
+};
+
+/**
+ * Moyennes d'une classe dans une matière sur une période, avec le rang et l'appréciation de chaque élève
+ * (règles de src/lib/domain/grading.ts, poids des réglages de l'école). Toutes les évaluations comptent,
+ * publiées ou non. Null si la classe, la matière ou la période n'existe pas pour l'année en cours.
+ */
+export async function getSubjectAverages(
+  schoolId: string,
+  classId: string,
+  subjectId: string,
+  periodId: string,
+): Promise<SubjectAverages | null> {
+  const supabase = await createClient();
+  const [gradebooks, periods] = await Promise.all([listSchoolGradebooks(schoolId), listPeriods(schoolId)]);
+  const klass = gradebooks.find((c) => c.id === classId);
+  const subject = klass?.subjects.find((s) => s.id === subjectId);
+  const period = periods.find((p) => p.id === periodId);
+  if (!klass || !subject || !period) return null;
+
+  const [evaluationsResult, enrollmentsResult, appreciationsResult, schoolResult] = await Promise.all([
+    supabase
+      .from("evaluations")
+      .select("id, title, kind, held_on, max_score, weight, grades(student_id, status, score, acquisition)")
+      .eq("class_id", classId)
+      .eq("subject_id", subjectId)
+      .eq("period_id", periodId)
+      .order("held_on")
+      .order("created_at"),
+    supabase
+      .from("enrollments")
+      .select("student:students(id, first_name, last_name)")
+      .eq("class_id", classId)
+      .eq("status", "active"),
+    supabase.from("subject_appreciations").select("student_id, text").eq("subject_id", subjectId).eq("period_id", periodId),
+    supabase.from("schools").select("settings").eq("id", schoolId).maybeSingle(),
+  ]);
+  if (evaluationsResult.error) throw evaluationsResult.error;
+  if (enrollmentsResult.error) throw enrollmentsResult.error;
+
+  const scale = klass.scale;
+  const weights = parseSchoolSettings(schoolResult.data?.settings).evaluationWeights;
+  const evaluations = evaluationsResult.data ?? [];
+  const texts = new Map((appreciationsResult.data ?? []).map((a) => [a.student_id, a.text]));
+  const roster = (enrollmentsResult.data ?? [])
+    .flatMap((e) => (e.student ? [e.student] : []))
+    .sort((a, b) => byName(a.last_name, b.last_name) || byName(a.first_name, b.first_name));
+
+  const rows = roster.map((student) => {
+    const grades = evaluations.map((evaluation) => {
+      const grade = evaluation.grades.find((g) => g.student_id === student.id);
+      return grade ? { evaluation, grade } : null;
+    });
+    const marks = grades.map((item) => {
+      if (!item) return null;
+      const { status, score, acquisition } = item.grade;
+      if (status !== "graded") return { status };
+      if (score !== null) return { status, score: Number(score) };
+      return acquisition ? { status, acquisition } : null;
+    });
+    const average =
+      scale === "appreciation"
+        ? null
+        : subjectAverage(
+            grades.flatMap((item) =>
+              item && item.evaluation.max_score !== null
+                ? [
+                    {
+                      kind: item.evaluation.kind,
+                      score: item.grade.score === null ? null : Number(item.grade.score),
+                      maxScore: Number(item.evaluation.max_score),
+                      status: item.grade.status,
+                      weight: Number(item.evaluation.weight),
+                    },
+                  ]
+                : [],
+            ),
+            scale,
+            weights,
+          );
+    const summary =
+      scale === "appreciation"
+        ? acquisitionSummary(grades.flatMap((item) => (item?.grade.acquisition ? [item.grade.acquisition] : [])))
+        : null;
+    return {
+      id: student.id,
+      firstName: student.first_name,
+      lastName: student.last_name,
+      marks,
+      average,
+      summary,
+      appreciation: texts.get(student.id) ?? "",
+    };
+  });
+  const rankMap = ranks(rows);
+
+  return {
+    classId,
+    className: klass.name,
+    subjectId,
+    subjectName: subject.name,
+    coefficient: subject.coefficient,
+    periodId,
+    periodLabel: period.label,
+    locked: period.locked,
+    scale,
+    weights,
+    evaluations: evaluations.map((e) => ({
+      id: e.id,
+      title: e.title,
+      kind: e.kind,
+      maxScore: e.max_score === null ? null : Number(e.max_score),
+    })),
+    rows: rows.map((row) => ({ ...row, rank: rankMap.get(row.id) ?? null })),
+    stats: classStats(rows.map((row) => row.average)),
   };
 }

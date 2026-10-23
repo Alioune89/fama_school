@@ -3,8 +3,11 @@ import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/layout/page-header";
 import { Link } from "@/i18n/navigation";
 
-/** Retour aux évaluations (sur la classe et la période de la feuille quand on les connaît), puis le titre. */
-export function SheetHeading({ backHref }: { backHref: string }) {
+/**
+ * Retour aux évaluations (sur la classe et la période quand on les connaît), puis le titre de la page :
+ * la saisie des notes par défaut.
+ */
+export function SheetHeading({ backHref, title, description }: { backHref: string; title?: string; description?: string }) {
   const t = useTranslations("grades");
   return (
     <>
@@ -12,7 +15,7 @@ export function SheetHeading({ backHref }: { backHref: string }) {
         <ChevronLeft className="size-4" aria-hidden />
         {t("back")}
       </Link>
-      <PageHeader title={t("title")} />
+      <PageHeader title={title ?? t("title")} description={description} />
     </>
   );
 }

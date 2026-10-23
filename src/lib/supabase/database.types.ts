@@ -1466,6 +1466,69 @@ export type Database = {
           },
         ];
       };
+      subject_appreciations: {
+        Row: {
+          class_id: string;
+          period_id: string;
+          school_id: string;
+          student_id: string;
+          subject_id: string;
+          text: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          class_id: string;
+          period_id: string;
+          school_id: string;
+          student_id: string;
+          subject_id: string;
+          text: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          class_id?: string;
+          period_id?: string;
+          school_id?: string;
+          student_id?: string;
+          subject_id?: string;
+          text?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subject_appreciations_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "subject_appreciations_period_id_school_id_fkey";
+            columns: ["period_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "periods";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "subject_appreciations_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "subject_appreciations_subject_id_school_id_fkey";
+            columns: ["subject_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       subjects: {
         Row: {
           active: boolean;
@@ -1595,6 +1658,10 @@ export type Database = {
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
       review_absence_justification: {
         Args: { p_id: string; p_note?: string; p_status: Database["public"]["Enums"]["justification_status"] };
+        Returns: undefined;
+      };
+      save_subject_appreciations: {
+        Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };
         Returns: undefined;
       };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };

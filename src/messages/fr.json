@@ -1596,7 +1596,10 @@
     "errors": {
       "unknownEvaluation": "Cette évaluation n'existe plus ou ne vous est plus confiée.",
       "periodLocked": "La période est verrouillée : les notes ne peuvent plus être modifiées.",
-      "invalidGrade": "Une note est invalide (au-dessus du barème ?). Corrigez-la puis enregistrez de nouveau."
+      "invalidGrade": "Une note est invalide (au-dessus du barème ?). Corrigez-la puis enregistrez de nouveau.",
+      "periodMismatch": "Cette période n'est pas celle de l'année de la classe.",
+      "subjectNotInLevel": "Cette matière n'est pas enseignée à ce niveau.",
+      "unknownStudent": "Un élève n'est plus inscrit dans cette classe. Rechargez la page."
     },
     "parentTitle": "Notes · {period}",
     "parentTitleNoPeriod": "Notes",
@@ -1606,6 +1609,79 @@
     "parentSubjectAverage": "Moyenne provisoire :",
     "parentCoefficient": "coef. {value}",
     "parentAbsent": "Absent (0)",
-    "parentExcused": "Absent excusé"
+    "parentExcused": "Absent excusé",
+    "averages": {
+      "title": "Moyennes et appréciations",
+      "description": "Moyenne de chaque élève dans la matière, rang et appréciation reprise sur le bulletin.",
+      "open": "Moyennes et appréciations",
+      "openFor": "Moyennes et appréciations : {context}",
+      "coefficient": "coef. {value}",
+      "evaluationCount": "{count, plural, =0 {aucune évaluation} one {# évaluation} other {# évaluations}}",
+      "formula": "Moyenne = moyenne des devoirs × {devoir} + des interrogations × {interrogation} + des compositions × {composition}, divisée par la somme des poids. Absent : 0 ; excusé : ne compte pas.",
+      "classAverage": "Moyenne de la classe",
+      "highest": "Plus forte",
+      "lowest": "Plus faible",
+      "hint": "Choisissez une phrase proposée selon la moyenne, modifiez-la ou écrivez la vôtre.",
+      "fillEmpty": "{count, plural, one {Proposer l'appréciation manquante} other {Proposer les # appréciations manquantes}}",
+      "listLabel": "Moyennes des élèves",
+      "rank": "{rank, selectordinal, one {#er} other {#e}}",
+      "rankExAequo": "{rank, selectordinal, one {#er} other {#e}} ex æquo",
+      "noAverage": "Pas de note",
+      "appreciationLabel": "Appréciation de {name}",
+      "appreciationPlaceholder": "Appréciation (reprise sur le bulletin)",
+      "noAppreciation": "Pas d'appréciation",
+      "useSuggestion": "Choisir « {phrase} » pour {name}",
+      "unsaved": "{count, plural, one {# appréciation modifiée, pas encore enregistrée.} other {# appréciations modifiées, pas encore enregistrées.}}",
+      "upToDate": "Appréciations enregistrées.",
+      "offline": "Pas de réseau : les appréciations s'enregistrent dès le retour du réseau.",
+      "save": "Enregistrer les appréciations",
+      "saved": "Appréciations enregistrées.",
+      "suggestions": {
+        "excellent": {
+          "a": "Excellent travail, félicitations.",
+          "b": "Travail remarquable, continuez ainsi."
+        },
+        "tresBien": {
+          "a": "Très bon travail.",
+          "b": "Très bons résultats, continuez ainsi."
+        },
+        "bien": {
+          "a": "Bon travail.",
+          "b": "Bons résultats, poursuivez vos efforts."
+        },
+        "assezBien": {
+          "a": "Assez bien, peut encore progresser.",
+          "b": "Résultats satisfaisants, persévérez."
+        },
+        "passable": {
+          "a": "Résultats justes, il faut fournir plus d'efforts.",
+          "b": "Passable, doit travailler davantage."
+        },
+        "insuffisant": {
+          "a": "Insuffisant, un travail plus régulier est nécessaire.",
+          "b": "En dessous de la moyenne, des efforts s'imposent."
+        },
+        "faible": {
+          "a": "Faible, doit se ressaisir.",
+          "b": "Résultats faibles, les leçons sont à revoir."
+        },
+        "tresFaible": {
+          "a": "Très faible, un sérieux sursaut est nécessaire.",
+          "b": "Grandes difficultés, un accompagnement est conseillé."
+        },
+        "acquired": {
+          "a": "Compétences acquises, bravo.",
+          "b": "Très bons progrès, continue ainsi."
+        },
+        "in_progress": {
+          "a": "En bonne voie, à consolider.",
+          "b": "Des progrès, encore un effort."
+        },
+        "not_acquired": {
+          "a": "Compétences pas encore acquises, à retravailler.",
+          "b": "Besoin d'accompagnement pour progresser."
+        }
+      }
+    }
   }
 }

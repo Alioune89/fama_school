@@ -19,7 +19,13 @@ export async function loginWithPhone(page: Page, phone: string, code: string = D
   await page.goto("/connexion");
   await page.getByLabel("Numéro de téléphone").fill(phone);
   await page.getByRole("button", { name: "Recevoir le code" }).click();
-  await expect(page).toHaveURL(/\/connexion\/code/);
+  // Un SMS toutes les 5 s par numéro (supabase/config.toml) : deux tests qui se suivent réessaient une fois.
+  try {
+    await expect(page).toHaveURL(/\/connexion\/code/, { timeout: 7_000 });
+  } catch {
+    await page.getByRole("button", { name: "Recevoir le code" }).click();
+    await expect(page).toHaveURL(/\/connexion\/code/);
+  }
   await page.getByLabel("Code de vérification").fill(code);
 }
 

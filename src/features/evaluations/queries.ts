@@ -127,6 +127,8 @@ export type Evaluation = {
   maxScore: number | null;
   weight: number;
   published: boolean;
+  /** Élèves dont la note (ou l'absence) est saisie. */
+  gradedCount: number;
 };
 
 /** Évaluations d'une période, pour quelques classes ou toute l'école, par date. */
@@ -139,7 +141,7 @@ export async function listEvaluations(
   const supabase = await createClient();
   let query = supabase
     .from("evaluations")
-    .select("id, class_id, subject_id, period_id, kind, title, held_on, max_score, weight, published_at")
+    .select("id, class_id, subject_id, period_id, kind, title, held_on, max_score, weight, published_at, grades(count)")
     .eq("school_id", schoolId)
     .eq("period_id", periodId)
     .order("held_on")
@@ -160,5 +162,6 @@ export async function listEvaluations(
     maxScore: e.max_score === null ? null : Number(e.max_score),
     weight: Number(e.weight),
     published: e.published_at !== null,
+    gradedCount: e.grades[0]?.count ?? 0,
   }));
 }

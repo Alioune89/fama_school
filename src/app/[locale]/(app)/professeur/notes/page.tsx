@@ -55,7 +55,7 @@ async function TeacherEvaluations({ searchParams }: { searchParams: SearchParams
           ))}
         </nav>
       )}
-      <ClassGradebook klass={klass} evaluations={evaluations} periods={periods} period={period} />
+      <ClassGradebook klass={klass} evaluations={evaluations} periods={periods} period={period} basePath="/professeur/notes" />
     </div>
   );
 }

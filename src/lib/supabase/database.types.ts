@@ -574,6 +574,8 @@ export type Database = {
           class_id: string;
           created_at: string;
           created_by: string | null;
+          grades_entered_at: string | null;
+          grades_entered_by: string | null;
           held_on: string;
           id: string;
           kind: Database["public"]["Enums"]["evaluation_kind"];
@@ -591,6 +593,8 @@ export type Database = {
           class_id: string;
           created_at?: string;
           created_by?: string | null;
+          grades_entered_at?: string | null;
+          grades_entered_by?: string | null;
           held_on: string;
           id?: string;
           kind: Database["public"]["Enums"]["evaluation_kind"];
@@ -607,6 +611,8 @@ export type Database = {
           class_id?: string;
           created_at?: string;
           created_by?: string | null;
+          grades_entered_at?: string | null;
+          grades_entered_by?: string | null;
           held_on?: string;
           id?: string;
           kind?: Database["public"]["Enums"]["evaluation_kind"];
@@ -639,6 +645,52 @@ export type Database = {
             columns: ["subject_id", "school_id"];
             isOneToOne: false;
             referencedRelation: "subjects";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      grades: {
+        Row: {
+          acquisition: Database["public"]["Enums"]["acquisition_level"] | null;
+          evaluation_id: string;
+          school_id: string;
+          score: number | null;
+          status: Database["public"]["Enums"]["grade_status"];
+          student_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          acquisition?: Database["public"]["Enums"]["acquisition_level"] | null;
+          evaluation_id: string;
+          school_id: string;
+          score?: number | null;
+          status: Database["public"]["Enums"]["grade_status"];
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          acquisition?: Database["public"]["Enums"]["acquisition_level"] | null;
+          evaluation_id?: string;
+          school_id?: string;
+          score?: number | null;
+          status?: Database["public"]["Enums"]["grade_status"];
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "grades_evaluation_id_school_id_fkey";
+            columns: ["evaluation_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "evaluations";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "grades_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
             referencedColumns: ["id", "school_id"];
           },
         ];
@@ -1558,6 +1610,10 @@ export type Database = {
         };
         Returns: string;
       };
+      submit_grades: {
+        Args: { p_entered_at: string; p_evaluation_id: string; p_marks: Json; p_operation_id: string };
+        Returns: string;
+      };
       submit_roll_call: {
         Args: {
           p_class_id: string;
@@ -1583,6 +1639,7 @@ export type Database = {
       withdraw_absence_justification: { Args: { p_id: string }; Returns: string };
     };
     Enums: {
+      acquisition_level: "acquired" | "in_progress" | "not_acquired";
       app_locale: "fr" | "wo";
       app_role: "owner" | "director" | "censor" | "supervisor" | "accountant" | "secretary" | "teacher" | "parent" | "driver";
       attendance_slot: "morning" | "afternoon";
@@ -1591,6 +1648,7 @@ export type Database = {
       demo_request_status: "new" | "contacted" | "scheduled" | "closed";
       enrollment_status: "active" | "transferred" | "left" | "completed";
       evaluation_kind: "devoir" | "interrogation" | "composition";
+      grade_status: "graded" | "absent" | "excused";
       grading_scale: "appreciation" | "ten" | "twenty";
       guardian_relationship: "father" | "mother" | "guardian" | "grandparent" | "uncle" | "aunt" | "sibling" | "other";
       justification_reason: "illness" | "medical" | "family" | "other";
@@ -1711,6 +1769,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      acquisition_level: ["acquired", "in_progress", "not_acquired"],
       app_locale: ["fr", "wo"],
       app_role: ["owner", "director", "censor", "supervisor", "accountant", "secretary", "teacher", "parent", "driver"],
       attendance_slot: ["morning", "afternoon"],
@@ -1719,6 +1778,7 @@ export const Constants = {
       demo_request_status: ["new", "contacted", "scheduled", "closed"],
       enrollment_status: ["active", "transferred", "left", "completed"],
       evaluation_kind: ["devoir", "interrogation", "composition"],
+      grade_status: ["graded", "absent", "excused"],
       grading_scale: ["appreciation", "ten", "twenty"],
       guardian_relationship: ["father", "mother", "guardian", "grandparent", "uncle", "aunt", "sibling", "other"],
       justification_reason: ["illness", "medical", "family", "other"],

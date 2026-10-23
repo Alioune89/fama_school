@@ -6,6 +6,8 @@ import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
+import { ChildGrades } from "@/features/grades/components/child-grades";
+import { listChildGrades } from "@/features/grades/queries";
 import { JustificationList } from "@/features/justifications/components/justification-list";
 import { listStudentJustifications } from "@/features/justifications/queries";
 import { AbsenceList } from "@/features/parent/components/absence-list";
@@ -23,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const card = "rounded-xl bg-white p-5 shadow-card ring-1 ring-line/70 sm:p-6";
 
-/** Fiche d'un enfant pour son parent : signalements des enseignants, absences, retards et justificatifs. */
+/** Fiche d'un enfant pour son parent : notes publiées, signalements des enseignants, absences, retards et justificatifs. */
 async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enfants/[id]">["params"] }) {
   const [{ id }, { user }] = await Promise.all([params, requireSpace("parent")]);
   const child = (await listMyChildren(user.id)).find((c) => c.id === id);
@@ -31,7 +33,8 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [reports, absences, justifications, arrivals, departures, t, tArrivals] = await Promise.all([
+  const [grades, reports, absences, justifications, arrivals, departures, t, tArrivals] = await Promise.all([
+    listChildGrades(child.id, child.schoolId, today),
     listStudentReports(child.id),
     listChildrenAbsences([child.id], from),
     listStudentJustifications([child.id], from),
@@ -66,6 +69,9 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
         </div>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">
+        <section className={`${card} lg:col-span-2`} aria-labelledby="child-grades">
+          <ChildGrades data={grades} firstName={child.firstName} />
+        </section>
         <section className={card} aria-labelledby="child-reports">
           <h2 id="child-reports" className="text-lg font-semibold">
             {t("reportsTitle")}

@@ -46,11 +46,34 @@ export const arrivalPayloadSchema = z.object({
 
 export type ArrivalPayload = z.infer<typeof arrivalPayloadSchema>;
 
+export const ACQUISITION_LEVELS = ["acquired", "in_progress", "not_acquired"] as const;
+export type AcquisitionLevel = (typeof ACQUISITION_LEVELS)[number];
+
+/** Note d'un élève : chiffrée, niveau d'acquisition (préscolaire), absent ou absent excusé. */
+export const gradeMarkSchema = z.union([
+  z.object({ status: z.literal("graded"), score: z.number().min(0).max(100) }),
+  z.object({ status: z.literal("graded"), acquisition: z.enum(ACQUISITION_LEVELS) }),
+  z.object({ status: z.enum(["absent", "excused"]) }),
+]);
+
+export type GradeMark = z.infer<typeof gradeMarkSchema>;
+
+export const gradesPayloadSchema = z.object({
+  evaluationId: z.uuid(),
+  /** Heure de la saisie sur le téléphone : la plus récente l'emporte. */
+  enteredAt: z.iso.datetime(),
+  /** Toute la feuille : un élève absent de la liste n'a pas (ou plus) de note. */
+  marks: z.record(z.uuid(), gradeMarkSchema),
+});
+
+export type GradesPayload = z.infer<typeof gradesPayloadSchema>;
+
 export const operationSchema = z.discriminatedUnion("kind", [
   z.object({ id: z.uuid(), kind: z.literal("attendance.rollCall"), payload: rollCallPayloadSchema }),
   z.object({ id: z.uuid(), kind: z.literal("student.report"), payload: studentReportPayloadSchema }),
   z.object({ id: z.uuid(), kind: z.literal("checkin.arrival"), payload: arrivalPayloadSchema }),
   z.object({ id: z.uuid(), kind: z.literal("checkin.departure"), payload: arrivalPayloadSchema }),
+  z.object({ id: z.uuid(), kind: z.literal("grades.entry"), payload: gradesPayloadSchema }),
 ]);
 
 export type Operation = z.infer<typeof operationSchema>;

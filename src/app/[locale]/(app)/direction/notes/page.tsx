@@ -45,7 +45,13 @@ async function Evaluations({ searchParams }: { searchParams: SearchParams }) {
         <ClassPicker label={t("class")} value={klass.id} classes={classes} />
         <PeriodTabs periods={periods} active={period.id} basePath="/direction/notes" params={{ classe: klass.id }} />
       </div>
-      <ClassGradebook klass={klass} evaluations={evaluations} periods={periods} period={readOnlyPeriod} />
+      <ClassGradebook
+        klass={klass}
+        evaluations={evaluations}
+        periods={periods}
+        period={readOnlyPeriod}
+        basePath="/direction/notes"
+      />
     </div>
   );
 }

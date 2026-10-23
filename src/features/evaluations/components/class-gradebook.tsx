@@ -1,19 +1,14 @@
-import { Lock, Plus } from "lucide-react";
+import { Eye, Lock, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Evaluation, GradebookClass, Period } from "../queries";
+import { KIND_STYLE } from "../kind-style";
 import type { EvaluationKind } from "../schemas";
 import { EvaluationFormSheet } from "./evaluation-form-sheet";
 import { EvaluationRowActions } from "./evaluation-row-actions";
-
-/** Type d'évaluation : libellé toujours écrit, couleur en complément. */
-const KIND_STYLE: Record<EvaluationKind, string> = {
-  devoir: "bg-azure-50 text-azure-700",
-  interrogation: "bg-lavender-50 text-lavender-700",
-  composition: "bg-warning-50 text-warning-700",
-};
 
 export async function KindBadge({ kind }: { kind: EvaluationKind }) {
   const t = await getTranslations("evaluations.kinds");
@@ -22,18 +17,20 @@ export async function KindBadge({ kind }: { kind: EvaluationKind }) {
 
 /**
  * Évaluations d'une classe sur une période, matière par matière, avec ajout, modification et suppression.
- * Une période verrouillée est en lecture seule.
+ * Une période verrouillée est en lecture seule. Chaque évaluation ouvre sa feuille de notes (`basePath/<id>`).
  */
 export async function ClassGradebook({
   klass,
   evaluations,
   periods,
   period,
+  basePath,
 }: {
   klass: GradebookClass;
   evaluations: Evaluation[];
   periods: Period[];
   period: Period;
+  basePath: "/professeur/notes" | "/direction/notes";
 }) {
   const t = await getTranslations("evaluations");
   const editable = !period.locked;
@@ -92,18 +89,31 @@ export async function ClassGradebook({
                       items.map(async (evaluation) => (
                         <li key={evaluation.id} className="flex items-center gap-3 py-2.5">
                           <KindBadge kind={evaluation.kind} />
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-sm font-medium text-ink">{evaluation.title}</span>
+                          <Link
+                            href={`${basePath}/${evaluation.id}`}
+                            aria-label={t("enterGrades", { title: evaluation.title })}
+                            className="group min-w-0 flex-1 rounded-md"
+                          >
+                            <span className="block truncate text-sm font-medium text-ink group-hover:text-azure-700 group-hover:underline">
+                              {evaluation.title}
+                            </span>
                             <span className="block text-xs text-muted-foreground">
                               {[
                                 formatDate(evaluation.heldOn, { weekday: "short", day: "numeric", month: "short" }),
                                 evaluation.maxScore !== null && t("onMax", { max: evaluation.maxScore }),
                                 evaluation.weight !== 1 && t("coefficient", { value: evaluation.weight }),
+                                t("gradedCount", { count: evaluation.gradedCount }),
                               ]
                                 .filter(Boolean)
                                 .join(" · ")}
                             </span>
-                          </span>
+                          </Link>
+                          {evaluation.published && (
+                            <span className="hidden items-center gap-1 rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-semibold text-success-700 sm:inline-flex">
+                              <Eye className="size-3.5" aria-hidden />
+                              {t("publishedBadge")}
+                            </span>
+                          )}
                           {editable && (
                             <EvaluationRowActions
                               evaluation={evaluation}

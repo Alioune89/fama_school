@@ -151,7 +151,7 @@ export function classStats(averages: readonly (number | null)[]): ClassStats | n
 }
 
 /** Préscolaire : niveau d'acquisition d'une compétence. */
-export type AcquisitionLevel = "acquired" | "inProgress" | "notAcquired";
+export type AcquisitionLevel = "acquired" | "in_progress" | "not_acquired";
 
 /**
  * Bilan d'une matière au préscolaire : le niveau le plus fréquent ; à égalité, le plus récent

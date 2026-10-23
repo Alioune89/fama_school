@@ -16,13 +16,21 @@ import {
   type UpdateEvaluationInput,
 } from "./schemas";
 
-/** Codes du déclencheur private.check_evaluation (voir la migration evaluations). */
-const EVALUATION_CODES = ["periodMismatch", "subjectNotInLevel", "dateOutsidePeriod", "periodLocked"] as const;
+/** Codes des déclencheurs private.check_evaluation et private.check_evaluation_scores (migrations evaluations, grades). */
+const EVALUATION_CODES = ["periodMismatch", "subjectNotInLevel", "dateOutsidePeriod", "periodLocked", "maxBelowScores"] as const;
+
+/** Erreur rattachée à un champ du formulaire. */
+const FIELD_CODES: Partial<Record<(typeof EVALUATION_CODES)[number], string>> = {
+  dateOutsidePeriod: "heldOn",
+  maxBelowScores: "maxScore",
+};
 
 function evaluationError(error: { code?: string; message?: string }) {
   if (error.code === "P0001" && (EVALUATION_CODES as readonly string[]).includes(error.message ?? "")) {
-    const key = `evaluations.errors.${error.message}`;
-    return error.message === "dateOutsidePeriod" ? fail("validation.form", { heldOn: key }) : fail(key);
+    const code = error.message as (typeof EVALUATION_CODES)[number];
+    const key = `evaluations.errors.${code}`;
+    const field = FIELD_CODES[code];
+    return field ? fail("validation.form", { [field]: key }) : fail(key);
   }
   // Index evaluations_one_composition : une composition par classe, matière et période.
   if (error.code === "23505") return fail("evaluations.errors.compositionExists");
@@ -118,4 +126,22 @@ export async function scheduleComposition(input: ScheduleCompositionInput): Prom
   if (error) return evaluationError(error);
   refresh();
   return ok({ count: new Set(v.classIds).size });
+}
+
+/** Publier les notes d'une évaluation aux parents, ou retirer la publication. */
+export async function publishEvaluation(input: { id: string; published: boolean }): Promise<ActionResult> {
+  if (!(await getCurrentUser())) return fail("errors.forbidden");
+  const parsed = z.object({ id: z.uuid(), published: z.boolean() }).safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("evaluations")
+    .update({ published_at: parsed.data.published ? new Date().toISOString() : null })
+    .eq("id", parsed.data.id)
+    .select("id");
+  if (error) return evaluationError(error);
+  if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
 }

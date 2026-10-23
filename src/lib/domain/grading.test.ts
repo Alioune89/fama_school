@@ -211,12 +211,12 @@ describe("classStats", () => {
 
 describe("acquisitionSummary (préscolaire)", () => {
   it("le niveau le plus fréquent", () => {
-    expect(acquisitionSummary(["acquired", "inProgress", "acquired"])).toBe("acquired");
+    expect(acquisitionSummary(["acquired", "in_progress", "acquired"])).toBe("acquired");
   });
 
   it("à égalité, le plus récent", () => {
-    expect(acquisitionSummary(["notAcquired", "inProgress"])).toBe("inProgress");
-    expect(acquisitionSummary(["inProgress", "acquired", "acquired", "inProgress"])).toBe("inProgress");
+    expect(acquisitionSummary(["not_acquired", "in_progress"])).toBe("in_progress");
+    expect(acquisitionSummary(["in_progress", "acquired", "acquired", "in_progress"])).toBe("in_progress");
   });
 
   it("sans évaluation : pas de bilan", () => {

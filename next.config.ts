@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   reactCompiler: true,
   poweredByHeader: false,
+  // Bulletins PDF (src/features/report-cards/pdf.ts) : Chromium et ses binaires restent hors du bundle.
+  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
+  outputFileTracingIncludes: {
+    "/api/bulletins": ["./public/fonts/report-card/*", "./node_modules/@sparticuz/chromium/bin/**"],
+    "/api/bulletins/*": ["./public/fonts/report-card/*", "./node_modules/@sparticuz/chromium/bin/**"],
+  },
   experimental: {
     // Navigations et Server Actions restent en attente hors ligne puis repartent au retour du réseau.
     useOffline: true,

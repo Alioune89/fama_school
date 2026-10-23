@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft, CircleCheck, FileCheck, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleCheck, FileCheck, FileText, LogOut } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
@@ -12,10 +12,11 @@ import { JustificationList } from "@/features/justifications/components/justific
 import { listStudentJustifications } from "@/features/justifications/queries";
 import { AbsenceList } from "@/features/parent/components/absence-list";
 import { listChildrenAbsences, listMyChildren, PARENT_WINDOW_DAYS, parentWindowStart } from "@/features/parent/queries";
+import { listStudentReportCards } from "@/features/report-cards/queries";
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
 import { Link } from "@/i18n/navigation";
-import { formatTime } from "@/lib/format";
+import { formatDate, formatTime } from "@/lib/format";
 import { requireSpace } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +34,8 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [grades, reports, absences, justifications, arrivals, departures, t, tArrivals] = await Promise.all([
+  const [reportCards, grades, reports, absences, justifications, arrivals, departures, t, tArrivals] = await Promise.all([
+    listStudentReportCards(child.id),
     listChildGrades(child.id, child.schoolId, today),
     listStudentReports(child.id),
     listChildrenAbsences([child.id], from),
@@ -69,6 +71,38 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
         </div>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">
+        <section className={`${card} lg:col-span-2`} aria-labelledby="child-report-cards">
+          <h2 id="child-report-cards" className="text-lg font-semibold">
+            {t("reportCardsTitle")}
+          </h2>
+          {reportCards.length === 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">{t("reportCardsEmpty", { name: child.firstName })}</p>
+          ) : (
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {reportCards.map((reportCard) => (
+                <li key={reportCard.id}>
+                  <Link
+                    href={`/parent/enfants/${child.id}/bulletins/${reportCard.id}`}
+                    className="flex items-center gap-3 rounded-lg bg-azure-50/60 px-4 py-3 ring-1 ring-line/70 hover:bg-azure-50"
+                  >
+                    <FileText className="size-5 shrink-0 text-azure-700" aria-hidden />
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-semibold text-ink">
+                        {t("reportCardOpen", { period: reportCard.data.periodLabel })}
+                      </span>
+                      <span className="block text-xs text-muted-foreground">
+                        {t("reportCardPublished", {
+                          date: formatDate(reportCard.publishedAt!, { day: "numeric", month: "long" }),
+                        })}
+                      </span>
+                    </span>
+                    <ChevronRight className="size-4 text-ink-soft" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-grades">
           <ChildGrades data={grades} firstName={child.firstName} />
         </section>

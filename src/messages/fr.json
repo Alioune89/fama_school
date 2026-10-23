@@ -1294,7 +1294,12 @@
     "justifyNew": "Justifier une absence",
     "justificationsTitle": "Justificatifs envoyés",
     "justificationsHint": "Mot des parents, certificat médical : la direction l'accepte ou le refuse.",
-    "justificationsEmpty": "Aucun justificatif envoyé pour {name}."
+    "justificationsEmpty": "Aucun justificatif envoyé pour {name}.",
+    "reportCardsTitle": "Bulletins",
+    "reportCardsEmpty": "Aucun bulletin publié pour {name} pour l'instant.",
+    "reportCardOpen": "Bulletin du {period}",
+    "reportCardPublished": "publié le {date}",
+    "reportCardBack": "Retour à la fiche de {name}"
   },
   "justifications": {
     "title": "Justifier une absence",
@@ -1542,7 +1547,8 @@
     "gradedCount": "{count, plural, =0 {Aucune note saisie} one {# note saisie} other {# notes saisies}}",
     "publishedBadge": "Publiée aux parents",
     "enterGrades": "Saisir les notes : {title}",
-    "tabCouncil": "Conseil de classe"
+    "tabCouncil": "Conseil de classe",
+    "tabReportCards": "Bulletins"
   },
   "grades": {
     "title": "Saisie des notes",
@@ -1721,6 +1727,93 @@
       "unlockConfirm": "Rouvrir le {label} ? Les enseignants pourront de nouveau modifier les notes, et les bulletins déjà édités ne correspondront peut-être plus.",
       "lockedToast": "{label} verrouillé.",
       "unlocked": "{label} rouvert."
+    }
+  },
+  "reportCards": {
+    "title": "Bulletin de notes",
+    "year": "Année scolaire {year}",
+    "student": "Élève",
+    "matricule": "Matricule",
+    "class": "Classe",
+    "classSize": "{count, plural, one {# élève} other {# élèves}}",
+    "birth": "Naissance",
+    "born": "Né(e) le {date}",
+    "bornAt": "Né(e) le {date} à {place}",
+    "subject": "Matière",
+    "coefficient": "Coef.",
+    "averageOn": "Moy. /{max}",
+    "points": "Moy. × coef.",
+    "rankHeader": "Rang",
+    "classAverage": "Moy. classe",
+    "appreciation": "Appréciation",
+    "level": "Niveau atteint",
+    "levels": {
+      "acquired": "Acquis",
+      "in_progress": "En cours d'acquisition",
+      "not_acquired": "Non acquis"
+    },
+    "total": "Total",
+    "rank": "{rank, selectordinal, one {#er} other {#e}}",
+    "rankExAequo": "{rank, selectordinal, one {#er} other {#e}} ex æquo",
+    "rankOf": "Rang : {rank, selectordinal, one {#er} other {#e}} sur {count}",
+    "rankOfExAequo": "Rang : {rank, selectordinal, one {#er} other {#e}} ex æquo sur {count}",
+    "results": "Résultats",
+    "general": "Moyenne générale",
+    "sectionAverages": "Programme français : {french} · programme arabe : {arabic}",
+    "classStats": "Moyenne de la classe {average} · plus forte {highest} · plus faible {lowest}",
+    "absences": "Absences : {absent, plural, =0 {aucune} one {# demi-journée} other {# demi-journées}} · retards : {late, plural, =0 {aucun} other {#}}",
+    "council": "Décision du conseil de classe",
+    "mentions": {
+      "felicitations": "Félicitations",
+      "encouragements": "Encouragements",
+      "tableauHonneur": "Tableau d'honneur"
+    },
+    "sanctions": {
+      "warning": "Avertissement",
+      "blame": "Blâme"
+    },
+    "noDecision": "Aucune mention ni sanction.",
+    "mentionWithheld": "Mention refusée par le conseil de classe.",
+    "homeroomTeacher": "Le professeur principal",
+    "director": "Le chef d'établissement",
+    "parent": "Le parent ou tuteur",
+    "verifyTitle": "Bulletin authentique ?",
+    "verifyHint": "Scannez le QR code ou ouvrez",
+    "code": "Code de vérification :"
+  },
+  "reportCardsAdmin": {
+    "title": "Bulletins",
+    "description": "Bulletins de la période : génération une fois les notes verrouillées, publication aux parents et impression.",
+    "notLocked": "Les bulletins se génèrent sur des notes définitives : verrouillez d'abord le {label}.",
+    "goToCouncil": "Aller au conseil de classe",
+    "status": "{generated} bulletin(s) généré(s) sur {rosterSize, plural, one {# élève} other {# élèves}} · {published} publié(s) aux parents.",
+    "progress": "Génération : {done} classe(s) sur {total} — en cours : {className}…",
+    "generate": "Générer les bulletins de la classe",
+    "regenerate": "Régénérer les bulletins de la classe",
+    "regenerateHint": "Régénérer recalcule les bulletins (après une réouverture de la période, par exemple). Le code de vérification de chaque bulletin ne change pas.",
+    "generateAll": "Générer pour les {count} classes",
+    "generated": "{count, plural, =0 {Aucun élève dans la classe.} one {# bulletin généré.} other {# bulletins générés.}}",
+    "generatedAll": "{count} bulletins générés pour {classes} classes.",
+    "generateAllFailed": "Génération arrêtée à la classe {className} : {error}",
+    "publish": "Publier aux parents",
+    "unpublish": "Retirer la publication",
+    "unpublishConfirm": "Retirer la publication des bulletins de la {className} ? Les parents ne les verront plus.",
+    "publishedToast": "Bulletins de la {className} publiés aux parents.",
+    "unpublishedToast": "Publication des bulletins de la {className} retirée.",
+    "downloadClass": "Télécharger la classe (PDF)",
+    "listLabel": "Bulletins de la {className}",
+    "published": "Publié",
+    "notPublished": "Non publié",
+    "missing": "Pas encore de bulletin",
+    "preview": "Aperçu",
+    "previewFor": "Aperçu du bulletin de {name}",
+    "downloadFor": "Télécharger le bulletin de {name} (PDF)",
+    "download": "Télécharger le PDF",
+    "back": "Retour aux bulletins",
+    "errors": {
+      "periodNotLocked": "La période n'est pas verrouillée : verrouillez-la avant de générer les bulletins.",
+      "periodMismatch": "Cette période n'est pas celle de l'année de la classe.",
+      "unknownStudent": "Un élève n'est plus inscrit dans cette classe. Rechargez la page."
     }
   }
 }

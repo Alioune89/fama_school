@@ -1048,6 +1048,68 @@ export type Database = {
         };
         Relationships: [];
       };
+      report_cards: {
+        Row: {
+          class_id: string;
+          code: string;
+          data: NonNullable<Json>;
+          generated_at: string;
+          generated_by: string | null;
+          id: string;
+          period_id: string;
+          published_at: string | null;
+          school_id: string;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          class_id: string;
+          code?: string;
+          data: NonNullable<Json>;
+          generated_at?: string;
+          generated_by?: string | null;
+          id?: string;
+          period_id: string;
+          published_at?: string | null;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          class_id?: string;
+          code?: string;
+          data?: NonNullable<Json>;
+          generated_at?: string;
+          generated_by?: string | null;
+          id?: string;
+          period_id?: string;
+          published_at?: string | null;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "report_cards_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "report_cards_period_id_school_id_fkey";
+            columns: ["period_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "periods";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "report_cards_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       school_memberships: {
         Row: {
           created_at: string;
@@ -1720,6 +1782,7 @@ export type Database = {
         Returns: undefined;
       };
       save_council_decisions: { Args: { p_class_id: string; p_items: Json; p_period_id: string }; Returns: undefined };
+      save_report_cards: { Args: { p_cards: Json; p_class_id: string; p_period_id: string }; Returns: number };
       save_subject_appreciations: {
         Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };
         Returns: undefined;

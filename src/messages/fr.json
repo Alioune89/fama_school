@@ -1541,7 +1541,8 @@
     },
     "gradedCount": "{count, plural, =0 {Aucune note saisie} one {# note saisie} other {# notes saisies}}",
     "publishedBadge": "Publiée aux parents",
-    "enterGrades": "Saisir les notes : {title}"
+    "enterGrades": "Saisir les notes : {title}",
+    "tabCouncil": "Conseil de classe"
   },
   "grades": {
     "title": "Saisie des notes",
@@ -1682,6 +1683,44 @@
           "b": "Besoin d'accompagnement pour progresser."
         }
       }
+    },
+    "council": {
+      "title": "Conseil de classe",
+      "description": "Moyennes générales, rangs et mentions de la classe ; décisions du conseil et verrouillage des notes de la période.",
+      "generalHint": "{count, plural, one {Moyenne générale sur # matière, pondérée par son coefficient.} other {Moyenne générale sur # matières, pondérées par leur coefficient.}} La mention suit les seuils des paramètres de l'école ; le conseil peut la refuser.",
+      "levelsHint": "Préscolaire : niveau d'acquisition de chaque domaine, sans moyenne ni rang.",
+      "locked": "{label} est verrouillé : les décisions du conseil ne peuvent plus être modifiées.",
+      "emptyRoster": "Aucun élève inscrit dans cette classe.",
+      "listLabel": "Élèves de la classe, par rang",
+      "sanctionLabel": "Décision du conseil pour {name}",
+      "sanctions": {
+        "none": "Aucune",
+        "warning": "Avertissement",
+        "blame": "Blâme"
+      },
+      "withholdMention": "Refuser la mention",
+      "appreciationLabel": "Appréciation générale de {name}",
+      "appreciationPlaceholder": "Appréciation générale (bulletin)",
+      "unsaved": "{count, plural, one {# élève modifié, pas encore enregistré.} other {# élèves modifiés, pas encore enregistrés.}}",
+      "upToDate": "Décisions enregistrées.",
+      "offline": "Pas de réseau : les décisions s'enregistrent dès le retour du réseau.",
+      "save": "Enregistrer le conseil",
+      "saved": "Décisions du conseil enregistrées."
+    },
+    "lock": {
+      "openTitle": "{label} : notes ouvertes",
+      "openHint": "Les enseignants saisissent et corrigent encore les notes et les appréciations. Verrouillez la période après le conseil de classe, avant d'éditer les bulletins.",
+      "lockedTitle": "{label} verrouillé le {date}",
+      "lockedHint": "Plus aucune note, appréciation ni décision du conseil ne peut changer. Seuls le fondateur et le directeur peuvent rouvrir la période.",
+      "incomplete": "{count, plural, one {# évaluation a encore des notes manquantes :} other {# évaluations ont encore des notes manquantes :}}",
+      "missing": "({count, plural, one {# note manquante} other {# notes manquantes}})",
+      "more": "{count, plural, one {et # autre} other {et # autres}}",
+      "lock": "Verrouiller le {label}",
+      "unlock": "Rouvrir le {label}",
+      "lockConfirm": "Verrouiller le {label} pour toute l'école ? Plus aucune note, appréciation ni décision du conseil ne pourra être modifiée.",
+      "unlockConfirm": "Rouvrir le {label} ? Les enseignants pourront de nouveau modifier les notes, et les bulletins déjà édités ne correspondront peut-être plus.",
+      "lockedToast": "{label} verrouillé.",
+      "unlocked": "{label} rouvert."
     }
   }
 }

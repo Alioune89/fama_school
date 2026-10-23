@@ -35,7 +35,7 @@ async function TeacherAverages({ searchParams }: { searchParams: SearchParams })
         title={t("title")}
         description={t("description")}
       />
-      <SubjectAveragesBoard data={data} editable />
+      <SubjectAveragesBoard key={`${classId}:${subjectId}:${periodId}`} data={data} editable />
     </>
   );
 }

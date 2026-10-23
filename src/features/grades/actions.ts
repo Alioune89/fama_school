@@ -3,11 +3,21 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { fail, invalid, ok, type ActionResult } from "@/lib/action-result";
+import { permissions } from "@/lib/auth/permissions";
+import { getSchoolContext } from "@/lib/auth/school-context";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-/** Codes de public.save_subject_appreciations et de son déclencheur (migration subject_appreciations). */
-const APPRECIATION_CODES = ["periodLocked", "periodMismatch", "subjectNotInLevel", "unknownStudent"] as const;
+/** Codes des fonctions d'enregistrement et de leurs déclencheurs (migrations subject_appreciations, class_council). */
+const GRADES_CODES = ["periodLocked", "periodMismatch", "subjectNotInLevel", "unknownStudent"] as const;
+
+function gradesError(error: { code?: string; message?: string }) {
+  if (error.code === "P0001" && (GRADES_CODES as readonly string[]).includes(error.message ?? "")) {
+    return fail(`grades.errors.${error.message}`);
+  }
+  if (error.code === "P0001" && error.message === "forbidden") return fail("errors.forbidden");
+  return fail("errors.unknown");
+}
 
 const appreciationsSchema = z.object({
   classId: z.uuid(),
@@ -32,13 +42,54 @@ export async function saveAppreciations(input: AppreciationsInput): Promise<Acti
     p_period_id: v.periodId,
     p_items: v.items,
   });
-  if (error) {
-    if (error.code === "P0001" && (APPRECIATION_CODES as readonly string[]).includes(error.message)) {
-      return fail(`grades.errors.${error.message}`);
-    }
-    if (error.code === "P0001" && error.message === "forbidden") return fail("errors.forbidden");
-    return fail("errors.unknown");
-  }
+  if (error) return gradesError(error);
+  refresh();
+  return ok(undefined);
+}
+
+const councilSchema = z.object({
+  classId: z.uuid(),
+  periodId: z.uuid(),
+  /** Décision par élève ; une décision vide (rien de posé) efface celle enregistrée. */
+  items: z.record(
+    z.uuid(),
+    z.object({
+      sanction: z.enum(["warning", "blame"]).nullable(),
+      withholdMention: z.boolean(),
+      appreciation: z.string().max(400, "validation.tooLong"),
+    }),
+  ),
+});
+export type CouncilInput = z.input<typeof councilSchema>;
+
+/** Décisions du conseil de classe (droits vérifiés par la base : private.can_hold_council). */
+export async function saveCouncilDecisions(input: CouncilInput): Promise<ActionResult> {
+  if (!(await getCurrentUser())) return fail("errors.forbidden");
+  const parsed = councilSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const v = parsed.data;
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_council_decisions", {
+    p_class_id: v.classId,
+    p_period_id: v.periodId,
+    p_items: v.items,
+  });
+  if (error) return gradesError(error);
+  refresh();
+  return ok(undefined);
+}
+
+/** Verrouiller une période (direction pédagogique) ou la déverrouiller (fondateur, directeur). */
+export async function setPeriodLock(input: { periodId: string; locked: boolean }): Promise<ActionResult> {
+  const ctx = await getSchoolContext("direction");
+  if (!ctx || !permissions.manageAcademics(ctx.roles)) return fail("errors.forbidden");
+  const parsed = z.object({ periodId: z.uuid(), locked: z.boolean() }).safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_period_lock", { p_period_id: parsed.data.periodId, p_lock: parsed.data.locked });
+  if (error) return gradesError(error);
   refresh();
   return ok(undefined);
 }

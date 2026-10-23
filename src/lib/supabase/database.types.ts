@@ -419,6 +419,65 @@ export type Database = {
           },
         ];
       };
+      council_decisions: {
+        Row: {
+          class_id: string;
+          general_appreciation: string | null;
+          period_id: string;
+          sanction: Database["public"]["Enums"]["council_sanction"] | null;
+          school_id: string;
+          student_id: string;
+          updated_at: string;
+          updated_by: string | null;
+          withhold_mention: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          class_id: string;
+          general_appreciation?: string | null;
+          period_id: string;
+          sanction?: Database["public"]["Enums"]["council_sanction"] | null;
+          school_id: string;
+          student_id: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          withhold_mention?: boolean;
+        };
+        Update: {
+          class_id?: string;
+          general_appreciation?: string | null;
+          period_id?: string;
+          sanction?: Database["public"]["Enums"]["council_sanction"] | null;
+          school_id?: string;
+          student_id?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          withhold_mention?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "council_decisions_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "council_decisions_period_id_school_id_fkey";
+            columns: ["period_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "periods";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "council_decisions_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       cycles: {
         Row: {
           code: Database["public"]["Enums"]["cycle_code"];
@@ -1660,10 +1719,12 @@ export type Database = {
         Args: { p_id: string; p_note?: string; p_status: Database["public"]["Enums"]["justification_status"] };
         Returns: undefined;
       };
+      save_council_decisions: { Args: { p_class_id: string; p_items: Json; p_period_id: string }; Returns: undefined };
       save_subject_appreciations: {
         Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };
         Returns: undefined;
       };
+      set_period_lock: { Args: { p_lock: boolean; p_period_id: string }; Returns: undefined };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       submit_absence_justification: {
         Args: {
@@ -1711,6 +1772,7 @@ export type Database = {
       app_role: "owner" | "director" | "censor" | "supervisor" | "accountant" | "secretary" | "teacher" | "parent" | "driver";
       attendance_slot: "morning" | "afternoon";
       attendance_status: "present" | "absent" | "late";
+      council_sanction: "warning" | "blame";
       cycle_code: "prescolaire" | "elementaire" | "moyen" | "secondaire";
       demo_request_status: "new" | "contacted" | "scheduled" | "closed";
       enrollment_status: "active" | "transferred" | "left" | "completed";
@@ -1841,6 +1903,7 @@ export const Constants = {
       app_role: ["owner", "director", "censor", "supervisor", "accountant", "secretary", "teacher", "parent", "driver"],
       attendance_slot: ["morning", "afternoon"],
       attendance_status: ["present", "absent", "late"],
+      council_sanction: ["warning", "blame"],
       cycle_code: ["prescolaire", "elementaire", "moyen", "secondaire"],
       demo_request_status: ["new", "contacted", "scheduled", "closed"],
       enrollment_status: ["active", "transferred", "left", "completed"],

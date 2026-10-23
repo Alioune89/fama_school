@@ -241,6 +241,66 @@ export type SubjectAverages = {
   stats: ClassStats | null;
 };
 
+type EvaluationWithGrades = {
+  kind: EvaluationKind;
+  max_score: number | null;
+  weight: number;
+  grades: {
+    student_id: string;
+    status: Enums<"grade_status">;
+    score: number | null;
+    acquisition: Enums<"acquisition_level"> | null;
+  }[];
+};
+
+/**
+ * Résultat d'un élève sur des évaluations d'une même matière : sa note à chacune, sa moyenne
+ * (au barème du cycle) et, au préscolaire, son niveau d'acquisition le plus fréquent.
+ */
+export function studentResult(
+  evaluations: readonly EvaluationWithGrades[],
+  studentId: string,
+  scale: Enums<"grading_scale">,
+  weights: EvaluationWeights,
+): { marks: AverageRow["marks"]; average: number | null; summary: Enums<"acquisition_level"> | null } {
+  const grades = evaluations.map((evaluation) => {
+    const grade = evaluation.grades.find((g) => g.student_id === studentId);
+    return grade ? { evaluation, grade } : null;
+  });
+  const marks = grades.map((item) => {
+    if (!item) return null;
+    const { status, score, acquisition } = item.grade;
+    if (status !== "graded") return { status };
+    if (score !== null) return { status, score: Number(score) };
+    return acquisition ? { status, acquisition } : null;
+  });
+  if (scale === "appreciation") {
+    return {
+      marks,
+      average: null,
+      summary: acquisitionSummary(grades.flatMap((item) => (item?.grade.acquisition ? [item.grade.acquisition] : []))),
+    };
+  }
+  const average = subjectAverage(
+    grades.flatMap((item) =>
+      item && item.evaluation.max_score !== null
+        ? [
+            {
+              kind: item.evaluation.kind,
+              score: item.grade.score === null ? null : Number(item.grade.score),
+              maxScore: Number(item.evaluation.max_score),
+              status: item.grade.status,
+              weight: Number(item.evaluation.weight),
+            },
+          ]
+        : [],
+    ),
+    scale,
+    weights,
+  );
+  return { marks, average, summary: null };
+}
+
 /**
  * Moyennes d'une classe dans une matière sur une période, avec le rang et l'appréciation de chaque élève
  * (règles de src/lib/domain/grading.ts, poids des réglages de l'école). Toutes les évaluations comptent,
@@ -288,41 +348,7 @@ export async function getSubjectAverages(
     .sort((a, b) => byName(a.last_name, b.last_name) || byName(a.first_name, b.first_name));
 
   const rows = roster.map((student) => {
-    const grades = evaluations.map((evaluation) => {
-      const grade = evaluation.grades.find((g) => g.student_id === student.id);
-      return grade ? { evaluation, grade } : null;
-    });
-    const marks = grades.map((item) => {
-      if (!item) return null;
-      const { status, score, acquisition } = item.grade;
-      if (status !== "graded") return { status };
-      if (score !== null) return { status, score: Number(score) };
-      return acquisition ? { status, acquisition } : null;
-    });
-    const average =
-      scale === "appreciation"
-        ? null
-        : subjectAverage(
-            grades.flatMap((item) =>
-              item && item.evaluation.max_score !== null
-                ? [
-                    {
-                      kind: item.evaluation.kind,
-                      score: item.grade.score === null ? null : Number(item.grade.score),
-                      maxScore: Number(item.evaluation.max_score),
-                      status: item.grade.status,
-                      weight: Number(item.evaluation.weight),
-                    },
-                  ]
-                : [],
-            ),
-            scale,
-            weights,
-          );
-    const summary =
-      scale === "appreciation"
-        ? acquisitionSummary(grades.flatMap((item) => (item?.grade.acquisition ? [item.grade.acquisition] : [])))
-        : null;
+    const { marks, average, summary } = studentResult(evaluations, student.id, scale, weights);
     return {
       id: student.id,
       firstName: student.first_name,

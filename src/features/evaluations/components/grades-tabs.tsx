@@ -3,11 +3,12 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /** Onglets de la rubrique Notes côté direction. */
-export async function GradesTabs({ active }: { active: "evaluations" | "compositions" }) {
+export async function GradesTabs({ active }: { active: "evaluations" | "compositions" | "council" }) {
   const t = await getTranslations("evaluations");
   const tabs = [
     { key: "evaluations", href: "/direction/notes", label: t("tabEvaluations") },
     { key: "compositions", href: "/direction/notes/compositions", label: t("tabCompositions") },
+    { key: "council", href: "/direction/notes/conseil", label: t("tabCouncil") },
   ] as const;
   return (
     <nav

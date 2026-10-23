@@ -57,6 +57,24 @@ test.describe("Bulletins", () => {
     await expect(row.locator("td").nth(2)).toHaveText("15,00");
     await expect(page.getByText(/Code de vérification :/).first()).toBeVisible();
 
+    // Vérification publique, par un visiteur sans compte (adresse distincte : limites d'essais par visiteur).
+    const code = (await page.locator(".rc-footer .rc-code").nth(1).textContent())!.trim();
+    const visitor = await browser.newContext({
+      ...testInfo.project.use,
+      baseURL,
+      extraHTTPHeaders: { "x-forwarded-for": `198.51.100.${Math.floor(Math.random() * 250)}` },
+    });
+    const anonymous = await visitor.newPage();
+    await anonymous.goto("/verifier");
+    await anonymous.getByLabel("Code de vérification").fill(`${code.slice(0, 5).toLowerCase()}-${code.slice(5)}`);
+    await anonymous.getByRole("button", { name: "Vérifier" }).click();
+    await expect(anonymous.getByRole("heading", { name: "Bulletin authentique" })).toBeVisible();
+    await expect(anonymous.getByText("Mariama SOW")).toBeVisible();
+    await expect(anonymous.getByText("15,00 / 20")).toBeVisible();
+    await anonymous.goto("/verifier/AAAAAAAAAA");
+    await expect(anonymous.getByRole("heading", { name: "Aucun bulletin ne correspond" })).toBeVisible();
+    await visitor.close();
+
     // Le PDF se télécharge.
     const bulletinId = page.url().split("/").at(-1)!;
     const pdf = await page.request.get(`/api/bulletins/${bulletinId}`);

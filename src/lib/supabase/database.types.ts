@@ -1827,6 +1827,7 @@ export type Database = {
         };
         Returns: string;
       };
+      verify_report_card: { Args: { p_client: string; p_code: string }; Returns: Json };
       withdraw_absence_justification: { Args: { p_id: string }; Returns: string };
     };
     Enums: {

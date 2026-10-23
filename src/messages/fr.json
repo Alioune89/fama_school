@@ -1815,5 +1815,28 @@
       "periodMismatch": "Cette période n'est pas celle de l'année de la classe.",
       "unknownStudent": "Un élève n'est plus inscrit dans cette classe. Rechargez la page."
     }
+  },
+  "verify": {
+    "title": "Vérifier un bulletin",
+    "intro": "Saisissez le code de vérification imprimé sous le QR code du bulletin, ou scannez le QR code avec votre téléphone.",
+    "codeLabel": "Code de vérification",
+    "codePlaceholder": "Ex. : Y4QVWAFCA9",
+    "submit": "Vérifier",
+    "validTitle": "Bulletin authentique",
+    "validBody": "Ce code correspond à un bulletin émis par l'école. Comparez ces informations avec le bulletin présenté : si l'une d'elles diffère, le bulletin a été modifié. Contactez alors l'école.",
+    "student": "Élève",
+    "matricule": "Matricule",
+    "school": "École",
+    "class": "Classe",
+    "period": "Période",
+    "general": "Moyenne générale",
+    "rank": "Rang",
+    "mention": "Mention",
+    "generatedAt": "Bulletin établi le",
+    "code": "Code vérifié : {code}",
+    "notFoundTitle": "Aucun bulletin ne correspond",
+    "notFoundBody": "Le code {code} ne correspond à aucun bulletin. Vérifiez la saisie (10 caractères, sans O ni I) ; si le code est exact, le bulletin n'est pas authentique.",
+    "tooManyTitle": "Trop d'essais",
+    "tooManyBody": "Par sécurité, le nombre de vérifications est limité. Réessayez dans une dizaine de minutes."
   }
 }

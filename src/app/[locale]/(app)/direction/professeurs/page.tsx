@@ -90,32 +90,33 @@ async function TeachersList({ searchParams }: { searchParams: PageProps<"/[local
     <>
       <p className="mb-3 text-sm text-muted-foreground">{t("list.count", { count: teachers.length })}</p>
 
-      <div className="hidden overflow-hidden rounded-xl bg-white shadow-card ring-1 ring-line/70 md:block">
+      {/* Colonnes secondaires (classes, puis cycle et téléphone) seulement sur grand écran ; défilement si le tableau déborde. */}
+      <div className="hidden overflow-x-auto rounded-xl bg-white shadow-card ring-1 ring-line/70 md:block">
         <table className="w-full text-left text-sm">
           <thead className="bg-azure-50 text-xs font-semibold text-ink-soft">
             <tr>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="px-4 py-4">
                 {t("list.teacher")}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="hidden px-4 py-4 2xl:table-cell">
                 {t("list.cycle")}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="px-4 py-4">
                 {t("list.subjects")}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="hidden px-4 py-4 xl:table-cell">
                 {t("list.classes")}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="hidden px-4 py-4 2xl:table-cell">
                 {t("list.phone")}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="px-4 py-4">
                 {t("list.contract")}
               </th>
-              <th scope="col" className="px-5 py-4">
+              <th scope="col" className="px-4 py-4">
                 {t("list.account")}
               </th>
-              <th scope="col" className="w-10 px-3 py-4">
+              <th scope="col" className="hidden w-10 px-3 py-4 xl:table-cell">
                 <span className="sr-only">{t("list.open")}</span>
               </th>
             </tr>
@@ -123,29 +124,33 @@ async function TeachersList({ searchParams }: { searchParams: PageProps<"/[local
           <tbody className="divide-y divide-line">
             {teachers.map((teacher) => (
               <tr key={teacher.id} className="group relative transition-colors hover:bg-azure-50/60">
-                <td className="px-5 py-3.5">
+                <td className="px-4 py-3.5">
                   <Link
                     href={`/direction/professeurs/${teacher.id}`}
-                    className="flex items-center gap-3 after:absolute after:inset-0"
+                    className="flex max-w-60 items-center gap-3 after:absolute after:inset-0"
                   >
                     <PersonAvatar name={teacher.full_name} />
                     <span className="min-w-0">
-                      <span className="block font-semibold text-ink">{teacher.full_name}</span>
+                      <span className="block truncate font-semibold text-ink">{teacher.full_name}</span>
                       <span className="block truncate text-xs text-muted-foreground">{teacher.title ?? teacher.email ?? ""}</span>
                     </span>
                   </Link>
                 </td>
-                <td className="px-5 py-3.5 whitespace-nowrap text-ink-soft">{cycleLabel(teacher.cycle)}</td>
-                <td className="max-w-56 px-5 py-3.5 text-ink-soft">{subjectsOf(teacher) || "—"}</td>
-                <td className="max-w-48 px-5 py-3.5 text-ink-soft">{teacher.classes.join(", ") || "—"}</td>
-                <td className="tabular px-5 py-3.5 whitespace-nowrap text-ink-soft">{formatPhone(teacher.phone) || "—"}</td>
-                <td className="px-5 py-3.5">
+                <td className="hidden px-4 py-3.5 whitespace-nowrap text-ink-soft 2xl:table-cell">{cycleLabel(teacher.cycle)}</td>
+                <td className="max-w-56 px-4 py-3.5 text-ink-soft">{subjectsOf(teacher) || "—"}</td>
+                <td className="hidden max-w-48 min-w-28 px-4 py-3.5 text-ink-soft xl:table-cell">
+                  {teacher.classes.join(", ") || "—"}
+                </td>
+                <td className="tabular hidden px-4 py-3.5 whitespace-nowrap text-ink-soft 2xl:table-cell">
+                  {formatPhone(teacher.phone) || "—"}
+                </td>
+                <td className="px-4 py-3.5">
                   <ContractPill contract={teacher.contract} />
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-4 py-3.5">
                   <AccountPill linked={Boolean(teacher.user_id)} status={teacher.status} />
                 </td>
-                <td className="px-3 py-3.5 text-muted-foreground">
+                <td className="hidden px-3 py-3.5 text-muted-foreground xl:table-cell">
                   <ChevronRight className="size-4" aria-hidden />
                 </td>
               </tr>

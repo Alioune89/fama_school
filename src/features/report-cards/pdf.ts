@@ -15,14 +15,14 @@ async function browserOptions() {
   throw new Error("Aucun Chromium disponible : définissez CHROME_PATH.");
 }
 
-/** Page HTML complète (polices et images incluses) vers un PDF A4. */
-export async function htmlToPdf(html: string): Promise<Uint8Array<ArrayBuffer>> {
+/** Page HTML complète (polices et images incluses) vers un PDF A4 (bulletins) ou A5 (reçus). */
+export async function htmlToPdf(html: string, format: "A4" | "A5" = "A4"): Promise<Uint8Array<ArrayBuffer>> {
   const browser = await puppeteer.launch({ ...(await browserOptions()), headless: true });
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "load" });
     await page.evaluate(() => document.fonts.ready);
-    const pdf = await page.pdf({ format: "A4", printBackground: true, preferCSSPageSize: true });
+    const pdf = await page.pdf({ format, printBackground: true, preferCSSPageSize: true });
     return new Uint8Array(pdf);
   } finally {
     await browser.close();

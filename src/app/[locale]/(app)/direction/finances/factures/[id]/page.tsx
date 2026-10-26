@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Wallet } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { buttonVariants } from "@/components/ui/button";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import { CancelInvoiceForm } from "@/features/invoices/components/cancel-invoice-form";
 import { InvoiceStatusPill } from "@/features/invoices/components/invoice-status";
@@ -19,7 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Détail d'une facture : élève, lignes, montants, statut ; annulation tant qu'elle est impayée. */
 async function InvoiceDetail({ params }: { params: PageProps<"/[locale]/direction/finances/factures/[id]">["params"] }) {
-  const [{ id }, { entry }, t] = await Promise.all([params, requireSpace("direction"), getTranslations("invoices")]);
+  const [{ id }, { entry }, t, tPayments] = await Promise.all([
+    params,
+    requireSpace("direction"),
+    getTranslations("invoices"),
+    getTranslations("payments"),
+  ]);
   const invoice = await getInvoice(entry.schoolId!, id, todayInDakar());
   if (!invoice) notFound();
   const canCancel = permissions.manageFinance(entry.roles) && invoice.status !== "cancelled" && invoice.amountPaid === 0;
@@ -110,6 +116,13 @@ async function InvoiceDetail({ params }: { params: PageProps<"/[locale]/directio
               {t("cancelledBecause", { reason: invoice.cancelReason ?? "" })}
             </p>
           )}
+          {permissions.manageFinance(entry.roles) &&
+            (invoice.status === "open" || invoice.status === "overdue" || invoice.status === "partial") && (
+              <Link href={`/direction/finances/encaissements/nouveau?eleve=${invoice.studentId}`} className={buttonVariants()}>
+                <Wallet aria-hidden />
+                {tPayments("collect")}
+              </Link>
+            )}
           {canCancel && <CancelInvoiceForm invoiceId={invoice.id} />}
         </section>
       </div>

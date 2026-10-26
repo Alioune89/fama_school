@@ -12,6 +12,7 @@ import { StudentFees } from "@/features/fees/components/student-fees";
 import { getStudentFees } from "@/features/fees/queries";
 import { StudentInvoices } from "@/features/invoices/components/student-invoices";
 import { listStudentInvoices } from "@/features/invoices/queries";
+import { listStudentPayments } from "@/features/payments/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
@@ -43,9 +44,10 @@ export async function StudentDetailView({ id }: { id: string }) {
   if (!detail) notFound();
   const { student, photoUrl, documents, current, enrollments, guardians } = detail;
   const canSeeFinance = permissions.manageFinance(entry.roles) || permissions.manageSchool(entry.roles);
-  const [fees, invoices] = await Promise.all([
+  const [fees, invoices, payments] = await Promise.all([
     current?.status === "active" ? getStudentFees(entry.schoolId!, student.id, current.classId) : null,
     canSeeFinance ? listStudentInvoices(student.id, todayInDakar()) : [],
+    canSeeFinance ? listStudentPayments(student.id) : [],
   ]);
   const t = await getTranslations("students");
   const tReports = await getTranslations("reports");
@@ -171,7 +173,14 @@ export async function StudentDetailView({ id }: { id: string }) {
           </section>
 
           {fees && <StudentFees studentId={student.id} data={fees} canEdit={permissions.manageFinance(entry.roles)} />}
-          {canSeeFinance && <StudentInvoices invoices={invoices} />}
+          {canSeeFinance && (
+            <StudentInvoices
+              studentId={student.id}
+              invoices={invoices}
+              payments={payments}
+              canCollect={permissions.manageFinance(entry.roles)}
+            />
+          )}
 
           <StudentBadge studentId={student.id} name={fullName} canRenew={canEdit} />
 

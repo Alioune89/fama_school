@@ -741,6 +741,54 @@ export type Database = {
           },
         ];
       };
+      expenses: {
+        Row: {
+          amount: number;
+          category: Database["public"]["Enums"]["expense_category"];
+          created_at: string;
+          id: string;
+          label: string;
+          method: Database["public"]["Enums"]["payment_method"];
+          recorded_by: string | null;
+          reference: string | null;
+          school_id: string;
+          spent_on: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          category: Database["public"]["Enums"]["expense_category"];
+          created_at?: string;
+          id?: string;
+          label: string;
+          method?: Database["public"]["Enums"]["payment_method"];
+          recorded_by?: string | null;
+          reference?: string | null;
+          school_id: string;
+          spent_on?: string;
+        };
+        Update: {
+          amount?: number;
+          category?: Database["public"]["Enums"]["expense_category"];
+          created_at?: string;
+          id?: string;
+          label?: string;
+          method?: Database["public"]["Enums"]["payment_method"];
+          recorded_by?: string | null;
+          reference?: string | null;
+          school_id?: string;
+          spent_on?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "expenses_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       fee_rates: {
         Row: {
           academic_year_id: string;
@@ -1196,6 +1244,115 @@ export type Database = {
             columns: ["cycle_id", "school_id"];
             isOneToOne: false;
             referencedRelation: "cycles";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      payment_allocations: {
+        Row: {
+          amount: number;
+          invoice_id: string;
+          payment_id: string;
+          school_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          invoice_id: string;
+          payment_id: string;
+          school_id: string;
+        };
+        Update: {
+          amount?: number;
+          invoice_id?: string;
+          payment_id?: string;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payment_allocations_invoice_id_fkey";
+            columns: ["invoice_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payment_allocations_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: false;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      payments: {
+        Row: {
+          amount: number;
+          cancel_reason: string | null;
+          cancel_requested_at: string | null;
+          cancel_requested_by: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          code: string;
+          created_at: string;
+          id: string;
+          method: Database["public"]["Enums"]["payment_method"];
+          note: string | null;
+          number: string;
+          received_by: string | null;
+          received_on: string;
+          reference: string | null;
+          school_id: string;
+          status: Database["public"]["Enums"]["payment_status"];
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          cancel_reason?: string | null;
+          cancel_requested_at?: string | null;
+          cancel_requested_by?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          code?: string;
+          created_at?: string;
+          id?: string;
+          method: Database["public"]["Enums"]["payment_method"];
+          note?: string | null;
+          number: string;
+          received_by?: string | null;
+          received_on?: string;
+          reference?: string | null;
+          school_id: string;
+          status?: Database["public"]["Enums"]["payment_status"];
+          student_id: string;
+        };
+        Update: {
+          amount?: number;
+          cancel_reason?: string | null;
+          cancel_requested_at?: string | null;
+          cancel_requested_by?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          code?: string;
+          created_at?: string;
+          id?: string;
+          method?: Database["public"]["Enums"]["payment_method"];
+          note?: string | null;
+          number?: string;
+          received_by?: string | null;
+          received_on?: string;
+          reference?: string | null;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["payment_status"];
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payments_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
             referencedColumns: ["id", "school_id"];
           },
         ];
@@ -2127,10 +2284,22 @@ export type Database = {
         }[];
       };
       cancel_invoice: { Args: { p_invoice_id: string; p_reason: string }; Returns: undefined };
+      decide_payment_cancellation: { Args: { p_approve: boolean; p_payment_id: string }; Returns: undefined };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       record_departure: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
+      record_payment: {
+        Args: {
+          p_amount: number;
+          p_invoice_ids?: string[];
+          p_method: Database["public"]["Enums"]["payment_method"];
+          p_note?: string;
+          p_reference?: string;
+          p_student_id: string;
+        };
+        Returns: string;
+      };
       register_student: {
         Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };
         Returns: string;
@@ -2138,6 +2307,7 @@ export type Database = {
       remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       renew_student_badge: { Args: { p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
+      request_payment_cancellation: { Args: { p_payment_id: string; p_reason: string }; Returns: undefined };
       review_absence_justification: {
         Args: { p_id: string; p_note?: string; p_status: Database["public"]["Enums"]["justification_status"] };
         Returns: undefined;
@@ -2203,6 +2373,7 @@ export type Database = {
       discount_kind: "sibling" | "scholarship" | "staff" | "other";
       enrollment_status: "active" | "transferred" | "left" | "completed";
       evaluation_kind: "devoir" | "interrogation" | "composition";
+      expense_category: "salaries" | "rent" | "utilities" | "supplies" | "maintenance" | "transport" | "food" | "other";
       fee_frequency: "once" | "monthly";
       fee_kind: "registration" | "tuition" | "canteen" | "transport" | "uniform" | "parents_association" | "exam" | "other";
       grade_status: "graded" | "absent" | "excused";
@@ -2211,6 +2382,8 @@ export type Database = {
       justification_reason: "illness" | "medical" | "family" | "other";
       justification_status: "pending" | "accepted" | "refused";
       membership_status: "invited" | "active" | "suspended";
+      payment_method: "cash" | "wave" | "orange_money" | "free_money" | "bank_transfer" | "check" | "online";
+      payment_status: "valid" | "cancel_requested" | "cancelled";
       period_kind: "semester" | "trimester";
       person_status: "active" | "inactive";
       report_category: "behavior" | "health" | "homework" | "equipment" | "other";
@@ -2337,6 +2510,7 @@ export const Constants = {
       discount_kind: ["sibling", "scholarship", "staff", "other"],
       enrollment_status: ["active", "transferred", "left", "completed"],
       evaluation_kind: ["devoir", "interrogation", "composition"],
+      expense_category: ["salaries", "rent", "utilities", "supplies", "maintenance", "transport", "food", "other"],
       fee_frequency: ["once", "monthly"],
       fee_kind: ["registration", "tuition", "canteen", "transport", "uniform", "parents_association", "exam", "other"],
       grade_status: ["graded", "absent", "excused"],
@@ -2345,6 +2519,8 @@ export const Constants = {
       justification_reason: ["illness", "medical", "family", "other"],
       justification_status: ["pending", "accepted", "refused"],
       membership_status: ["invited", "active", "suspended"],
+      payment_method: ["cash", "wave", "orange_money", "free_money", "bank_transfer", "check", "online"],
+      payment_status: ["valid", "cancel_requested", "cancelled"],
       period_kind: ["semester", "trimester"],
       person_status: ["active", "inactive"],
       report_category: ["behavior", "health", "homework", "equipment", "other"],

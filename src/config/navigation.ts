@@ -94,10 +94,10 @@ const direction: SpaceNavigation = {
       href: "/direction/finances",
       icon: "finance",
       children: [
-        { label: "feesCollection", href: "/direction/finances/encaissements", soon: true },
+        { label: "feesCollection", href: "/direction/finances/encaissements" },
         { label: "invoices", href: "/direction/finances/factures" },
         { label: "feeSchedule", href: "/direction/finances/frais" },
-        { label: "expenses", href: "/direction/finances/depenses", soon: true },
+        { label: "expenses", href: "/direction/finances/depenses" },
       ],
     },
     { label: "announcements", href: "/direction/annonces", icon: "announcements", soon: true },

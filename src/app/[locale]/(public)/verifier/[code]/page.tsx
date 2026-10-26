@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 import { formatAverage } from "@/features/grades/sheet";
 import { verifyReportCard } from "@/features/verification/queries";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatXOF } from "@/lib/format";
 import { VerifyForm } from "../verify-form";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const SCALE_MAX = { ten: 10, twenty: 20 } as const;
 
-/** Résultat de la vérification d'un code : bulletin authentique, code inconnu, ou trop d'essais. */
+/** Résultat de la vérification d'un code : bulletin ou reçu authentique, code inconnu, ou trop d'essais. */
 async function Result({ params }: { params: PageProps<"/[locale]/verifier/[code]">["params"] }) {
   const [{ code }, t, tCards] = await Promise.all([params, getTranslations("verify"), getTranslations("reportCards")]);
   const display = decodeURIComponent(code).slice(0, 20);
@@ -38,6 +38,42 @@ async function Result({ params }: { params: PageProps<"/[locale]/verifier/[code]
         <h1 className="text-xl font-bold">{t("notFoundTitle")}</h1>
         <p className="text-sm text-ink-soft">{t("notFoundBody", { code: display })}</p>
         <VerifyForm defaultValue={display} />
+      </section>
+    );
+  }
+
+  if (result.kind === "receipt") {
+    const tReceipts = await getTranslations("receipts");
+    const receiptRows: [string, string][] = [
+      [t("receiptNumber"), result.number],
+      [t("student"), `${result.student.firstName} ${result.student.lastName.toUpperCase()}`],
+      [t("matricule"), result.student.matricule],
+      [t("school"), result.school],
+      [t("receivedOn"), formatDate(result.receivedOn, { day: "numeric", month: "long", year: "numeric" })],
+      [t("amount"), formatXOF(result.amount)],
+      [t("method"), tReceipts(`methods.${result.method}`)],
+    ];
+    return (
+      <section
+        className={`space-y-4 rounded-2xl bg-white p-6 shadow-card ring-1 ${result.cancelled ? "ring-danger-500/40" : "ring-success-500/40"}`}
+        role="status"
+      >
+        {result.cancelled ? (
+          <CircleAlert className="size-8 text-danger-500" aria-hidden />
+        ) : (
+          <CircleCheck className="size-8 text-success-500" aria-hidden />
+        )}
+        <h1 className="text-xl font-bold">{t(result.cancelled ? "receiptCancelledTitle" : "receiptValidTitle")}</h1>
+        <p className="text-sm text-ink-soft">{t(result.cancelled ? "receiptCancelledBody" : "receiptValidBody")}</p>
+        <dl className="divide-y divide-line rounded-xl bg-success-50/40 px-4 ring-1 ring-line/70">
+          {receiptRows.map(([label, value]) => (
+            <div key={label} className="flex flex-wrap justify-between gap-x-4 gap-y-0.5 py-2.5 text-sm">
+              <dt className="text-muted-foreground">{label}</dt>
+              <dd className="font-semibold text-ink">{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="text-xs text-muted-foreground">{t("code", { code: result.code })}</p>
       </section>
     );
   }

@@ -72,7 +72,7 @@ test.describe("Bulletins", () => {
     await expect(anonymous.getByText("Mariama SOW")).toBeVisible();
     await expect(anonymous.getByText("15,00 / 20")).toBeVisible();
     await anonymous.goto("/verifier/AAAAAAAAAA");
-    await expect(anonymous.getByRole("heading", { name: "Aucun bulletin ne correspond" })).toBeVisible();
+    await expect(anonymous.getByRole("heading", { name: "Aucun document ne correspond" })).toBeVisible();
     await visitor.close();
 
     // Le PDF se télécharge.

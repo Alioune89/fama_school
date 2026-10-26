@@ -13,7 +13,7 @@ export const verifyUrl = (origin: string, code: string) => `${origin}/verifier/$
 export const qrSvg = (url: string) => QRCode.toString(url, { type: "svg", margin: 0, errorCorrectionLevel: "M" });
 
 /** Polices intégrées au document : le Chromium du serveur n'en a aucune (fichiers inclus par next.config.ts). */
-async function embeddedFonts() {
+export async function embeddedFonts() {
   const entries = await Promise.all(
     REPORT_CARD_FONTS.map(async (font) => {
       const file = await readFile(path.join(process.cwd(), "public/fonts/report-card", `${font}.woff2`));
@@ -25,7 +25,7 @@ async function embeddedFonts() {
 }
 
 /** Logo intégré au document (le PDF ne dépend pas du réseau au moment de l'impression). */
-async function embeddedImage(url: string | null): Promise<string | null> {
+export async function embeddedImage(url: string | null): Promise<string | null> {
   if (!url) return null;
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });

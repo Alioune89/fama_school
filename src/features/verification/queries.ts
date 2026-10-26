@@ -5,6 +5,19 @@ import { createClient } from "@/lib/supabase/server";
 export type Verification =
   | {
       status: "valid";
+      kind: "receipt";
+      code: string;
+      school: string;
+      number: string;
+      receivedOn: string;
+      amount: number;
+      method: "cash" | "wave" | "orange_money" | "free_money" | "bank_transfer" | "check" | "online";
+      cancelled: boolean;
+      student: { firstName: string; lastName: string; matricule: string };
+    }
+  | {
+      status: "valid";
+      kind: "reportCard";
       code: string;
       school: string;
       generatedAt: string;
@@ -27,7 +40,7 @@ async function clientKey() {
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
 }
 
-/** Bulletin authentique correspondant au code (public.verify_report_card, limites d'essais comprises). */
+/** Bulletin ou reçu authentique correspondant au code (public.verify_report_card, limites d'essais comprises). */
 export async function verifyReportCard(code: string): Promise<Verification> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("verify_report_card", { p_code: code, p_client: await clientKey() });

@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { DEMO, loginWithEmail } from "./helpers";
+import { clickUntilVisible, DEMO, issueInvoicesFor, loginWithEmail } from "./helpers";
 
 test.describe("Factures", () => {
-  test("la direction émet les mensualités sans doublon, consulte une facture et l'annule", async ({ page }) => {
+  test("la direction émet les mensualités sans doublon, consulte une facture et l'annule", async ({ page }, testInfo) => {
     test.setTimeout(90_000);
     const name = `Mensualité test ${Date.now().toString(36)}`;
     await loginWithEmail(page, DEMO.director);
@@ -20,28 +20,17 @@ test.describe("Factures", () => {
     await page.getByRole("button", { name: "Enregistrer la grille" }).click();
     await expect(page.getByText("Grille des frais enregistrée.")).toBeVisible();
 
-    // Émission des mensualités du mois proposé, puis une seconde fois : aucun doublon.
-    await page.goto("/direction/finances/factures");
-    await expect(page.getByRole("heading", { name: "Factures", level: 1 })).toBeVisible();
-    const issue = async () => {
-      await page.getByRole("button", { name: "Émettre des factures" }).click();
-      await page
-        .getByRole("dialog", { name: "Émettre des factures" })
-        .getByRole("button", { name: "Émettre", exact: true })
-        .click();
-    };
-    await issue();
-    await expect(page.getByText(/^(\d+ factures émises|1 facture émise)\.$/)).toBeVisible();
-    await issue();
-    await expect(page.getByText(/^Aucune nouvelle facture/)).toBeVisible();
-
-    // La facture de Mariama Sow (celles des passages précédents sont annulées).
-    await page.getByRole("searchbox", { name: "Rechercher une facture" }).fill("Mariama Sow");
-    await expect(page).toHaveURL(/q=Mariama/);
-    const invoice = page
-      .getByRole("list", { name: "Factures" })
-      .getByRole("link")
-      .filter({ hasText: "Mariama Sow", hasNotText: "Annulée" });
+    // Émission des mensualités d'un mois propre à ce test et à ce format (voir issueInvoicesFor) : la facture
+    // de Mariama Sow ; une seconde émission du même mois ne crée aucun doublon.
+    const monthIndex = testInfo.project.name === "mobile" ? 1 : 0;
+    const { liveInvoices: invoice } = await issueInvoicesFor(page, "Mariama Sow", monthIndex);
+    const dialog = page.getByRole("dialog", { name: "Émettre des factures" });
+    await clickUntilVisible(page.getByRole("button", { name: "Émettre des factures" }), dialog);
+    await dialog.getByLabel("Factures à émettre").selectOption({ index: monthIndex });
+    await dialog.getByRole("button", { name: "Émettre", exact: true }).click();
+    await expect(dialog).toBeHidden();
+    await page.reload();
+    await expect(invoice).toHaveCount(1);
     await expect(invoice.getByText(/^20\s000\sFCFA$/)).toBeVisible();
     await expect(invoice.getByText(/^(À payer|En retard)$/)).toBeVisible();
     await invoice.click();
@@ -49,7 +38,7 @@ test.describe("Factures", () => {
     await expect(page.getByRole("cell", { name })).toBeVisible();
 
     // Annulation avec motif.
-    await page.getByRole("button", { name: "Annuler la facture" }).click();
+    await clickUntilVisible(page.getByRole("button", { name: "Annuler la facture" }), page.getByLabel("Motif de l'annulation"));
     await page.getByLabel("Motif de l'annulation").fill("Test automatique");
     await page.getByRole("button", { name: "Confirmer l'annulation" }).click();
     await expect(page.getByText("Facture annulée. Elle pourra être réémise.")).toBeVisible();

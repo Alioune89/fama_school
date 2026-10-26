@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 /**
  * Comptes de démonstration (voir supabase/seed.sql). Sur le staging, le mot de passe du directeur
@@ -35,4 +35,39 @@ export async function loginWithEmail(page: Page, email: string, password: string
   await page.getByLabel("Adresse e-mail").fill(email);
   await page.getByLabel("Mot de passe").fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
+}
+
+/**
+ * Clique jusqu'à ce que `expected` apparaisse : un bouton rendu par le serveur ne réagit qu'une fois
+ * la page interactive (premier clic parfois perdu sur une page qui vient de s'afficher).
+ */
+export async function clickUntilVisible(target: Locator, expected: Locator) {
+  await expect(async () => {
+    await target.click();
+    await expect(expected).toBeVisible({ timeout: 1500 });
+  }).toPass({ timeout: 20_000 });
+}
+
+/**
+ * Émet les mensualités du mois n° `monthIndex` de l'année (0 : premier mois facturé) jusqu'à ce que `name` ait
+ * une facture vivante (non annulée) ce mois-là. Chaque test et chaque format travaille sur son propre mois :
+ * les tests s'exécutent en alternance sur la même base. L'émission étant sans doublon, la réessayer est sans risque.
+ */
+export async function issueInvoicesFor(page: Page, name: string, monthIndex: number) {
+  const dialog = page.getByRole("dialog", { name: "Émettre des factures" });
+  let month = "";
+  const liveInvoices = () =>
+    page.getByRole("list", { name: "Factures" }).getByRole("link").filter({ hasText: name, hasNotText: "Annulée" });
+  await expect(async () => {
+    await page.goto("/direction/finances/factures");
+    await clickUntilVisible(page.getByRole("button", { name: "Émettre des factures" }), dialog);
+    const select = dialog.getByLabel("Factures à émettre");
+    await select.selectOption({ index: monthIndex });
+    month = await select.inputValue();
+    await dialog.getByRole("button", { name: "Émettre", exact: true }).click();
+    await expect(dialog).toBeHidden();
+    await page.goto(`/direction/finances/factures?mois=${month}&q=${encodeURIComponent(name)}`);
+    await expect(liveInvoices()).toHaveCount(1, { timeout: 3000 });
+  }).toPass({ timeout: 45_000 });
+  return { month, liveInvoices: liveInvoices() };
 }

@@ -37,7 +37,7 @@ set local role anon;
 
 select is(
   public.verify_report_card('ABCDE23456', '198.51.100.7') - 'generatedAt',
-  '{"status": "valid", "code": "ABCDE23456", "school": "École Test R",
+  '{"status": "valid", "kind": "reportCard", "code": "ABCDE23456", "school": "École Test R",
     "student": {"firstName": "Awa", "lastName": "Diop", "matricule": "R-001"}, "className": "6e A",
     "periodLabel": "1er semestre", "academicYear": "2026-2027", "scale": "twenty", "general": 14.25,
     "rank": {"rank": 2, "exAequo": false}, "classSize": 31, "mention": "encouragements"}'::jsonb,

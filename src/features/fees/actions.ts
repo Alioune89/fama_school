@@ -67,18 +67,27 @@ export async function saveFeeType(input: FeeTypeInput): Promise<ActionResult> {
   return ok(undefined);
 }
 
-export async function deleteFeeType(input: { id: string }): Promise<ActionResult> {
+/** Supprime un type de frais ; déjà facturé, il est archivé (retiré de la grille et des factures à venir). */
+export async function deleteFeeType(input: { id: string }): Promise<ActionResult<{ archived: boolean }>> {
   const ctx = await financeContext();
   if (!ctx) return fail("errors.forbidden");
   const parsed = z.object({ id: z.uuid() }).safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
   const supabase = await createClient();
   const { error } = await supabase.from("fee_types").delete().eq("id", parsed.data.id).eq("school_id", ctx.schoolId);
-  // Déjà facturé : le type de frais est conservé (factures, Lot 4.2).
-  if (error?.code === "23503") return fail("fees.errors.inUse");
+  if (error?.code === "23503") {
+    const { error: archiveError } = await supabase
+      .from("fee_types")
+      .update({ active: false })
+      .eq("id", parsed.data.id)
+      .eq("school_id", ctx.schoolId);
+    if (archiveError) return fail("errors.unknown");
+    refresh();
+    return ok({ archived: true });
+  }
   if (error) return fail("errors.unknown");
   refresh();
-  return ok(undefined);
+  return ok({ archived: false });
 }
 
 /** Grille de l'année : calendrier des mensualités et montants par niveau (un montant vide ou nul retire le frais). */

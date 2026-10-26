@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { annualFees, billingMonths, defaultSchedule, discounted, discountFor, shiftMonth, type FeeRate } from "./fees";
+import {
+  annualFees,
+  billingMonths,
+  defaultSchedule,
+  discounted,
+  discountFor,
+  invoiceStatus,
+  shiftMonth,
+  type FeeRate,
+} from "./fees";
 
 describe("billingMonths", () => {
   it("9 mensualités d'octobre à juin, à cheval sur deux années civiles", () => {
@@ -70,5 +79,18 @@ describe("annualFees", () => {
 
   it("sans option ni réduction", () => {
     expect(annualFees(rates, 10, new Set(), []).total).toBe(30000 + 25000 * 10);
+  });
+});
+
+describe("invoiceStatus", () => {
+  const invoice = { total: 25000, amountPaid: 0, cancelled: false, dueOn: "2026-10-05" };
+  it("à payer, puis en retard après l'échéance", () => {
+    expect(invoiceStatus(invoice, "2026-10-05")).toBe("open");
+    expect(invoiceStatus(invoice, "2026-10-06")).toBe("overdue");
+  });
+  it("payée en partie, payée, annulée", () => {
+    expect(invoiceStatus({ ...invoice, amountPaid: 10000 }, "2026-11-01")).toBe("partial");
+    expect(invoiceStatus({ ...invoice, amountPaid: 25000 }, "2026-11-01")).toBe("paid");
+    expect(invoiceStatus({ ...invoice, cancelled: true }, "2026-11-01")).toBe("cancelled");
   });
 });

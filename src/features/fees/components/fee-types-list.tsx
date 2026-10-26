@@ -90,7 +90,11 @@ export function FeeTypesList({ feeTypes, canEdit }: { feeTypes: FeeType[]; canEd
                     title={t("deleteFor", { name: feeType.name })}
                     onClick={() => {
                       if (!window.confirm(t("deleteConfirm", { name: feeType.name }))) return;
-                      run(() => deleteFeeType({ id: feeType.id }), t("typeDeleted"));
+                      startTransition(async () => {
+                        const result = await deleteFeeType({ id: feeType.id });
+                        if (!result.ok) toast.error(message(result.error));
+                        else toast.success(t(result.data.archived ? "typeArchived" : "typeDeleted"));
+                      });
                     }}
                   >
                     <Trash2 aria-hidden />

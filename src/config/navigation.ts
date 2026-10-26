@@ -95,7 +95,7 @@ const direction: SpaceNavigation = {
       icon: "finance",
       children: [
         { label: "feesCollection", href: "/direction/finances/encaissements", soon: true },
-        { label: "invoices", href: "/direction/finances/factures", soon: true },
+        { label: "invoices", href: "/direction/finances/factures" },
         { label: "feeSchedule", href: "/direction/finances/frais" },
         { label: "expenses", href: "/direction/finances/depenses", soon: true },
       ],

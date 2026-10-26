@@ -71,3 +71,19 @@ export function annualFees(
     });
   return { lines, total: lines.reduce((sum, line) => sum + line.total, 0) };
 }
+
+export type InvoiceStatus = "open" | "overdue" | "partial" | "paid" | "cancelled";
+
+/**
+ * Statut d'une facture : annulée ; payée (rien à payer) ; partiellement payée ; en retard (échéance dépassée,
+ * rien de payé) ; à payer.
+ */
+export function invoiceStatus(
+  invoice: { total: number; amountPaid: number; cancelled: boolean; dueOn: string },
+  today: string,
+): InvoiceStatus {
+  if (invoice.cancelled) return "cancelled";
+  if (invoice.amountPaid >= invoice.total) return "paid";
+  if (invoice.amountPaid > 0) return "partial";
+  return invoice.dueOn < today ? "overdue" : "open";
+}

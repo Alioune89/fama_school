@@ -360,6 +360,7 @@ export type Database = {
       billing_schedules: {
         Row: {
           academic_year_id: string;
+          due_day: number;
           first_month: string;
           installments: number;
           school_id: string;
@@ -367,12 +368,14 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           academic_year_id: string;
+          due_day?: number;
           first_month: string;
           installments?: number;
           school_id: string;
         };
         Update: {
           academic_year_id?: string;
+          due_day?: number;
           first_month?: string;
           installments?: number;
           school_id?: string;
@@ -981,6 +984,128 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "schools";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoice_lines: {
+        Row: {
+          amount: number;
+          base_amount: number;
+          discount_percent: number;
+          fee_type_id: string | null;
+          id: string;
+          invoice_id: string;
+          label: string;
+          position: number;
+          school_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          base_amount: number;
+          discount_percent?: number;
+          fee_type_id?: string | null;
+          id?: string;
+          invoice_id: string;
+          label: string;
+          position?: number;
+          school_id: string;
+        };
+        Update: {
+          amount?: number;
+          base_amount?: number;
+          discount_percent?: number;
+          fee_type_id?: string | null;
+          id?: string;
+          invoice_id?: string;
+          label?: string;
+          position?: number;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoice_lines_fee_type_id_school_id_fkey";
+            columns: ["fee_type_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "fee_types";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "invoice_lines_invoice_id_fkey";
+            columns: ["invoice_id"];
+            isOneToOne: false;
+            referencedRelation: "invoices";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoices: {
+        Row: {
+          academic_year_id: string;
+          amount_paid: number;
+          billing_month: string | null;
+          cancel_reason: string | null;
+          cancelled_at: string | null;
+          created_at: string;
+          due_on: string;
+          id: string;
+          issued_by: string | null;
+          issued_on: string;
+          label: string;
+          number: string;
+          school_id: string;
+          student_id: string;
+          total: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          amount_paid?: number;
+          billing_month?: string | null;
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          created_at?: string;
+          due_on: string;
+          id?: string;
+          issued_by?: string | null;
+          issued_on?: string;
+          label: string;
+          number: string;
+          school_id: string;
+          student_id: string;
+          total: number;
+        };
+        Update: {
+          academic_year_id?: string;
+          amount_paid?: number;
+          billing_month?: string | null;
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          created_at?: string;
+          due_on?: string;
+          id?: string;
+          issued_by?: string | null;
+          issued_on?: string;
+          label?: string;
+          number?: string;
+          school_id?: string;
+          student_id?: string;
+          total?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoices_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "invoices_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
           },
         ];
       };
@@ -2001,7 +2126,9 @@ export type Database = {
           student_id: string;
         }[];
       };
+      cancel_invoice: { Args: { p_invoice_id: string; p_reason: string }; Returns: undefined };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
+      issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       record_departure: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       register_student: {

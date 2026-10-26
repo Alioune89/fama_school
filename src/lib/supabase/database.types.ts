@@ -357,6 +357,36 @@ export type Database = {
           },
         ];
       };
+      billing_schedules: {
+        Row: {
+          academic_year_id: string;
+          first_month: string;
+          installments: number;
+          school_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          first_month: string;
+          installments?: number;
+          school_id: string;
+        };
+        Update: {
+          academic_year_id?: string;
+          first_month?: string;
+          installments?: number;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "billing_schedules_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       classes: {
         Row: {
           academic_year_id: string;
@@ -705,6 +735,101 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "subjects";
             referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      fee_rates: {
+        Row: {
+          academic_year_id: string;
+          amount: number;
+          fee_type_id: string;
+          level_id: string;
+          school_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          amount: number;
+          fee_type_id: string;
+          level_id: string;
+          school_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          academic_year_id?: string;
+          amount?: number;
+          fee_type_id?: string;
+          level_id?: string;
+          school_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "fee_rates_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "fee_rates_fee_type_id_school_id_fkey";
+            columns: ["fee_type_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "fee_types";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "fee_rates_level_id_school_id_fkey";
+            columns: ["level_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "levels";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      fee_types: {
+        Row: {
+          active: boolean;
+          created_at: string;
+          frequency: Database["public"]["Enums"]["fee_frequency"];
+          id: string;
+          kind: Database["public"]["Enums"]["fee_kind"];
+          name: string;
+          optional: boolean;
+          position: number;
+          school_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          active?: boolean;
+          created_at?: string;
+          frequency: Database["public"]["Enums"]["fee_frequency"];
+          id?: string;
+          kind: Database["public"]["Enums"]["fee_kind"];
+          name: string;
+          optional?: boolean;
+          position?: number;
+          school_id: string;
+        };
+        Update: {
+          active?: boolean;
+          created_at?: string;
+          frequency?: Database["public"]["Enums"]["fee_frequency"];
+          id?: string;
+          kind?: Database["public"]["Enums"]["fee_kind"];
+          name?: string;
+          optional?: boolean;
+          position?: number;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "fee_types_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -1366,6 +1491,68 @@ export type Database = {
           },
         ];
       };
+      student_discounts: {
+        Row: {
+          academic_year_id: string;
+          created_at: string;
+          created_by: string | null;
+          fee_type_id: string | null;
+          id: string;
+          kind: Database["public"]["Enums"]["discount_kind"];
+          label: string | null;
+          percent: number;
+          school_id: string;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          fee_type_id?: string | null;
+          id?: string;
+          kind: Database["public"]["Enums"]["discount_kind"];
+          label?: string | null;
+          percent: number;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          academic_year_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          fee_type_id?: string | null;
+          id?: string;
+          kind?: Database["public"]["Enums"]["discount_kind"];
+          label?: string | null;
+          percent?: number;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_discounts_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_discounts_fee_type_id_school_id_fkey";
+            columns: ["fee_type_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "fee_types";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_discounts_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       student_documents: {
         Row: {
           created_at: string;
@@ -1407,6 +1594,53 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "student_documents_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
+      student_fee_options: {
+        Row: {
+          academic_year_id: string;
+          created_at: string;
+          fee_type_id: string;
+          school_id: string;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          created_at?: string;
+          fee_type_id: string;
+          school_id: string;
+          student_id: string;
+        };
+        Update: {
+          academic_year_id?: string;
+          created_at?: string;
+          fee_type_id?: string;
+          school_id?: string;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "student_fee_options_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_fee_options_fee_type_id_school_id_fkey";
+            columns: ["fee_type_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "fee_types";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "student_fee_options_student_id_school_id_fkey";
             columns: ["student_id", "school_id"];
             isOneToOne: false;
             referencedRelation: "students";
@@ -1839,8 +2073,11 @@ export type Database = {
       council_sanction: "warning" | "blame";
       cycle_code: "prescolaire" | "elementaire" | "moyen" | "secondaire";
       demo_request_status: "new" | "contacted" | "scheduled" | "closed";
+      discount_kind: "sibling" | "scholarship" | "staff" | "other";
       enrollment_status: "active" | "transferred" | "left" | "completed";
       evaluation_kind: "devoir" | "interrogation" | "composition";
+      fee_frequency: "once" | "monthly";
+      fee_kind: "registration" | "tuition" | "canteen" | "transport" | "uniform" | "parents_association" | "exam" | "other";
       grade_status: "graded" | "absent" | "excused";
       grading_scale: "appreciation" | "ten" | "twenty";
       guardian_relationship: "father" | "mother" | "guardian" | "grandparent" | "uncle" | "aunt" | "sibling" | "other";
@@ -1970,8 +2207,11 @@ export const Constants = {
       council_sanction: ["warning", "blame"],
       cycle_code: ["prescolaire", "elementaire", "moyen", "secondaire"],
       demo_request_status: ["new", "contacted", "scheduled", "closed"],
+      discount_kind: ["sibling", "scholarship", "staff", "other"],
       enrollment_status: ["active", "transferred", "left", "completed"],
       evaluation_kind: ["devoir", "interrogation", "composition"],
+      fee_frequency: ["once", "monthly"],
+      fee_kind: ["registration", "tuition", "canteen", "transport", "uniform", "parents_association", "exam", "other"],
       grade_status: ["graded", "absent", "excused"],
       grading_scale: ["appreciation", "ten", "twenty"],
       guardian_relationship: ["father", "mother", "guardian", "grandparent", "uncle", "aunt", "sibling", "other"],

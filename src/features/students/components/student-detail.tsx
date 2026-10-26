@@ -8,6 +8,8 @@ import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
 import { StudentBadge } from "@/features/arrivals/components/student-badge";
+import { StudentFees } from "@/features/fees/components/student-fees";
+import { getStudentFees } from "@/features/fees/queries";
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
 import { getStudent, listClassOptions } from "../queries";
@@ -37,6 +39,7 @@ export async function StudentDetailView({ id }: { id: string }) {
   ]);
   if (!detail) notFound();
   const { student, photoUrl, documents, current, enrollments, guardians } = detail;
+  const fees = current?.status === "active" ? await getStudentFees(entry.schoolId!, student.id, current.classId) : null;
   const t = await getTranslations("students");
   const tReports = await getTranslations("reports");
   const fullName = `${student.first_name} ${student.last_name}`;
@@ -159,6 +162,8 @@ export async function StudentDetailView({ id }: { id: string }) {
               ))}
             </ol>
           </section>
+
+          {fees && <StudentFees studentId={student.id} data={fees} canEdit={permissions.manageFinance(entry.roles)} />}
 
           <StudentBadge studentId={student.id} name={fullName} canRenew={canEdit} />
 

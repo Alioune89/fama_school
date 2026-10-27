@@ -76,7 +76,33 @@ async function Header() {
   );
 }
 
-/** Téléphone dessiné : ce que reçoit un parent (présence, bulletin, paiement). */
+/** Arrivée des notifications, en boucle de 12 s : chaque carte entre à son tour, la cloche sonne, puis tout recommence. */
+const NOTIFICATION_STARTS = [4, 20, 36, 52];
+const PHONE_CSS = `
+${NOTIFICATION_STARTS.map(
+  (start, index) => `@keyframes phone-notification-${index} {
+  0%, ${start}% { opacity: 0; transform: translateY(14px) scale(0.97); }
+  ${start + 4}%, 88% { opacity: 1; transform: none; }
+  96%, 100% { opacity: 0; transform: translateY(-6px); }
+}`,
+).join("\n")}
+@keyframes phone-bell {
+  0%, 100% { transform: rotate(0); }
+  ${NOTIFICATION_STARTS.map((start) => `${start + 1}% { transform: rotate(16deg); } ${start + 2}% { transform: rotate(-14deg); } ${start + 3}% { transform: rotate(0); }`).join("\n  ")}
+}
+@keyframes phone-badge {
+  0%, ${NOTIFICATION_STARTS[0]! + 1}% { opacity: 0; transform: scale(0); }
+  ${NOTIFICATION_STARTS[0]! + 4}%, 88% { opacity: 1; transform: scale(1); }
+  96%, 100% { opacity: 0; transform: scale(0); }
+}
+.phone-notification { animation: 12s ease-out infinite both; }
+.phone-bell { animation: phone-bell 12s ease-in-out infinite; transform-origin: 50% 10%; }
+.phone-badge { animation: phone-badge 12s ease-out infinite both; }
+@media (prefers-reduced-motion: reduce) {
+  .phone-notification, .phone-bell, .phone-badge { animation: none; }
+}`;
+
+/** Téléphone dessiné : ce que reçoit un parent (présence, bulletin, paiement), notification après notification. */
 async function PhoneMockup() {
   const t = await getTranslations("landing.phone");
   const items = [
@@ -93,19 +119,27 @@ async function PhoneMockup() {
   return (
     <div aria-hidden className="relative mx-auto w-full max-w-[19rem] select-none">
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-lavender-200 via-azure-100 to-sun-100 blur-2xl" />
+      <style dangerouslySetInnerHTML={{ __html: PHONE_CSS }} />
       <div className="rounded-[2.5rem] bg-ink p-2.5 shadow-float">
         <div className="overflow-hidden rounded-[2rem] bg-background">
           <div className="flex items-center justify-between px-5 pt-4 pb-3">
             <span className="text-xs font-bold text-ink">{t("title")}</span>
-            <BellRing className="size-4 text-ink-soft" />
+            <span className="relative">
+              <BellRing className="phone-bell size-4 text-ink-soft" />
+              <span className="phone-badge absolute -top-0.5 -right-0.5 size-2 rounded-full bg-danger-500 ring-2 ring-background" />
+            </span>
           </div>
           <div className="mx-4 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-card">
             <span className="grid size-10 place-items-center rounded-full bg-lavender-200 text-sm font-bold text-ink">AD</span>
             <span className="text-sm font-semibold text-ink">{t("child")}</span>
           </div>
           <ul className="space-y-2.5 p-4">
-            {items.map(({ icon: Icon, tone, title, detail }) => (
-              <li key={title} className="flex gap-3 rounded-2xl bg-white p-3 shadow-card">
+            {items.map(({ icon: Icon, tone, title, detail }, index) => (
+              <li
+                key={title}
+                className="phone-notification flex gap-3 rounded-2xl bg-white p-3 shadow-card"
+                style={{ animationName: `phone-notification-${index}` }}
+              >
                 <span className={cn("grid size-9 shrink-0 place-items-center rounded-xl", tone)}>
                   <Icon className="size-4.5" />
                 </span>

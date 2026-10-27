@@ -31,11 +31,16 @@ test.describe("Factures", () => {
     await expect(dialog).toBeHidden();
     await page.reload();
     await expect(invoice).toHaveCount(1);
-    await expect(invoice.getByText(/^20\s000\sFCFA$/)).toBeVisible();
     await expect(invoice.getByText(/^(À payer|En retard)$/)).toBeVisible();
     await invoice.click();
     await expect(page.getByRole("heading", { name: /^Facture F\d{4}-\d{5}$/, level: 1 })).toBeVisible();
-    await expect(page.getByRole("cell", { name })).toBeVisible();
+    await expect(
+      page
+        .getByRole("row")
+        .filter({ hasText: name })
+        .getByText(/^20\s000\sFCFA$/)
+        .first(),
+    ).toBeVisible();
 
     // Annulation avec motif.
     await clickUntilVisible(page.getByRole("button", { name: "Annuler la facture" }), page.getByLabel("Motif de l'annulation"));

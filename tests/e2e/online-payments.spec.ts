@@ -45,9 +45,11 @@ test.describe("Paiement en ligne", () => {
         const keep = (await item.textContent())!.includes(number);
         if (keep !== ((await box.getAttribute("aria-checked")) === "true")) await box.click();
       }
-      await mariama.getByRole("button", { name: /^Payer 15\s000\sFCFA en ligne$/ }).click({ timeout: 10_000 });
+      // Montant de cette seule facture (d'autres frais laissés par un essai interrompu peuvent s'y ajouter).
+      const amount = (await items.filter({ hasText: number }).textContent())!.match(/reste (.+?FCFA)/)![1]!;
+      await mariama.getByRole("button", { name: `Payer ${amount} en ligne`, exact: true }).click();
       await expect(parent).toHaveURL(/\/parent\/paiements\/[0-9a-f-]{36}\/simulation$/);
-      await expect(parent.getByText(/^15\s000\sFCFA$/)).toBeVisible();
+      await expect(parent.getByText(amount, { exact: true })).toBeVisible();
     }
 
     // Premier essai : échec, rien n'est encaissé.

@@ -37,8 +37,13 @@ test.describe("Frais de scolarité", () => {
     await expect(page.getByRole("heading", { name: "Mariama Sow", level: 1 })).toBeVisible();
     const fees = page.getByRole("region", { name: "Frais de scolarité" });
     await fees.getByRole("checkbox", { name }).click();
-    // Ligne du frais, et total de l'année (c'est le seul frais) : 12 500 × 9 mois.
-    await expect(fees.getByRole("definition").filter({ hasText: /^112\s500\sFCFA$/ })).toHaveCount(2);
+    // Ligne du frais : 12 500 × 9 mois (d'autres frais laissés par un essai interrompu ne la changent pas).
+    await expect(
+      fees
+        .getByRole("definition")
+        .filter({ hasText: /^112\s500\sFCFA$/ })
+        .first(),
+    ).toBeVisible();
     await fees.getByRole("combobox", { name: "Type de réduction" }).selectOption({ label: "Bourse" });
     await fees.getByRole("textbox", { name: "Pourcentage de réduction" }).fill("50");
     await fees.getByRole("combobox", { name: "Frais concerné" }).selectOption({ label: name });

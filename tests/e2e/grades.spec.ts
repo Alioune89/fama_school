@@ -10,6 +10,8 @@ test.describe("Saisie des notes", () => {
     browser,
     baseURL,
   }, testInfo) => {
+    // Long parcours : saisie, hors ligne, publication, connexion du parent, moyennes.
+    test.setTimeout(60_000);
     const title = `Devoir test ${Date.now().toString(36)}`;
     await loginWithPhone(page, DEMO.teacherPhone);
     await page.getByRole("button", { name: /Groupe Scolaire Les Baobabs/ }).click();

@@ -5,8 +5,9 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/layout/empty-state";
 import { enterSpace } from "@/features/auth/actions";
 import { redirect } from "@/i18n/navigation";
+import { spaceEntry } from "@/features/consents/queries";
 import { getCurrentUser } from "@/lib/auth/session";
-import { SPACE_HOME, type Space } from "@/lib/auth/spaces";
+import type { Space } from "@/lib/auth/spaces";
 import { formatPhone } from "@/lib/phone";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +40,7 @@ async function SpaceList() {
   }
 
   // Un seul espace : on y entre directement.
-  if (user!.spaces.length === 1) redirect({ href: SPACE_HOME[user!.spaces[0]!.space], locale });
+  if (user!.spaces.length === 1) redirect({ href: await spaceEntry(user!.id, user!.spaces[0]!.space), locale });
 
   return (
     <section className="rounded-2xl bg-white p-6 shadow-float ring-1 ring-line/70 sm:p-8">

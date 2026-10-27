@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft, ChevronRight, CircleCheck, FileCheck, FileText, LogOut, Wallet } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleCheck, FileCheck, FileText, LogOut } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
@@ -11,7 +11,15 @@ import { listChildGrades } from "@/features/grades/queries";
 import { JustificationList } from "@/features/justifications/components/justification-list";
 import { listStudentJustifications } from "@/features/justifications/queries";
 import { AbsenceList } from "@/features/parent/components/absence-list";
-import { listChildrenAbsences, listMyChildren, PARENT_WINDOW_DAYS, parentWindowStart } from "@/features/parent/queries";
+import { ChildPayments } from "@/features/parent/components/child-payments";
+import {
+  listBalances,
+  listChildrenAbsences,
+  listMyChildren,
+  PARENT_WINDOW_DAYS,
+  parentWindowStart,
+} from "@/features/parent/queries";
+import { listStudentPayments } from "@/features/payments/queries";
 import { listStudentReportCards } from "@/features/report-cards/queries";
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
@@ -26,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const card = "rounded-xl bg-white p-5 shadow-card ring-1 ring-line/70 sm:p-6";
 
-/** Fiche d'un enfant pour son parent : notes publiées, signalements des enseignants, absences, retards et justificatifs. */
+/** Fiche d'un enfant pour son parent : bulletins, notes publiées, paiements et reçus, signalements, absences et justificatifs. */
 async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enfants/[id]">["params"] }) {
   const [{ id }, { user }] = await Promise.all([params, requireSpace("parent")]);
   const child = (await listMyChildren(user.id)).find((c) => c.id === id);
@@ -34,7 +42,7 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [reportCards, grades, reports, absences, justifications, arrivals, departures, t, tArrivals, tPayments] =
+  const [reportCards, grades, reports, absences, justifications, arrivals, departures, balances, payments, t, tArrivals] =
     await Promise.all([
       listStudentReportCards(child.id),
       listChildGrades(child.id, child.schoolId, today),
@@ -43,9 +51,10 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
       listStudentJustifications([child.id], from),
       listArrivals({ studentIds: [child.id] }, today),
       listDepartures({ studentIds: [child.id] }, today),
+      listBalances([child.id], today),
+      listStudentPayments(child.id),
       getTranslations("parentSpace"),
       getTranslations("arrivals"),
-      getTranslations("onlinePayments"),
     ]);
   const arrivedAt = arrivals.get(child.id);
   const leftAt = departures.get(child.id);
@@ -53,7 +62,7 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   return (
     <>
-      <section className="mb-6 flex flex-wrap items-center gap-4">
+      <section className="mb-6 flex items-center gap-4">
         <PersonAvatar name={name} size="lg" />
         <div className="min-w-0">
           <h1 className="text-2xl font-bold">{name}</h1>
@@ -71,13 +80,6 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
             </p>
           )}
         </div>
-        <Link
-          href={`/parent/paiements#enfant-${child.id}`}
-          className="ml-auto inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-azure-700 hover:underline"
-        >
-          <Wallet className="size-4" aria-hidden />
-          {tPayments("payChild")}
-        </Link>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-report-cards">
@@ -114,6 +116,9 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
         </section>
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-grades">
           <ChildGrades data={grades} firstName={child.firstName} />
+        </section>
+        <section className={`${card} lg:col-span-2`} aria-labelledby="child-payments">
+          <ChildPayments childId={child.id} firstName={child.firstName} balance={balances.get(child.id)} payments={payments} />
         </section>
         <section className={card} aria-labelledby="child-reports">
           <h2 id="child-reports" className="text-lg font-semibold">

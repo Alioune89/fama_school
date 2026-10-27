@@ -2370,6 +2370,31 @@ export type Database = {
           },
         ];
       };
+      user_consents: {
+        Row: {
+          decided_at: string;
+          granted: boolean;
+          kind: string;
+          policy_version: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          decided_at?: string;
+          granted: boolean;
+          kind: string;
+          policy_version: string;
+          user_id?: string;
+        };
+        Update: {
+          decided_at?: string;
+          granted?: boolean;
+          kind?: string;
+          policy_version?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -2476,6 +2501,7 @@ export type Database = {
         };
         Returns: string;
       };
+      upcoming_compositions: { Args: { p_student_ids: string[] }; Returns: Json };
       verify_report_card: { Args: { p_client: string; p_code: string }; Returns: Json };
       withdraw_absence_justification: { Args: { p_id: string }; Returns: string };
     };

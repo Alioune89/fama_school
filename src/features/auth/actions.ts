@@ -2,10 +2,11 @@
 
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { spaceEntry } from "@/features/consents/queries";
 import { redirect } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { ACTIVE_SCHOOL_COOKIE, getCurrentUser } from "@/lib/auth/session";
-import { SPACE_HOME, type Space } from "@/lib/auth/spaces";
+import type { Space } from "@/lib/auth/spaces";
 import { normalizePhone } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 import { mapAuthError, safeNextPath, type ActionResult } from "./errors";
@@ -99,5 +100,5 @@ export async function enterSpace(input: { space: Space; schoolId: string | null;
       maxAge: 60 * 60 * 24 * 180,
     });
   }
-  redirect({ href: SPACE_HOME[space], locale });
+  redirect({ href: await spaceEntry(user!.id, space), locale });
 }

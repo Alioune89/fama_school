@@ -209,7 +209,17 @@
   },
   "parentHome": {
     "title": "Mes enfants",
-    "empty": "Vos enfants apparaîtront ici dès que l'école les aura rattachés à votre numéro."
+    "empty": "Vos enfants apparaîtront ici dès que l'école les aura rattachés à votre numéro.",
+    "highlights": {
+      "lastGrade": "Dernière note",
+      "noGrade": "Aucune",
+      "nextComposition": "Prochaine compo",
+      "noComposition": "Aucune",
+      "balance": "À payer",
+      "upToDate": "À jour",
+      "overdue": "dont {amount} en retard",
+      "notYetDue": "Pas encore échu"
+    }
   },
   "platform": {
     "schoolsTitle": "Écoles clientes",
@@ -1303,7 +1313,14 @@
     "reportCardPublished": "publié le {date}",
     "reportCardBack": "Retour à la fiche de {name}",
     "reportCardBlocked": "Le téléchargement de ce bulletin est suspendu tant que des frais de scolarité restent en retard. Vous pouvez le consulter ci-dessous.",
-    "reportCardBlockedPay": "Régler les frais"
+    "reportCardBlockedPay": "Régler les frais",
+    "paymentsTitle": "Paiements et reçus",
+    "paymentsPay": "Payer {amount}",
+    "paymentsUpToDate": "{name} est à jour de ses paiements.",
+    "paymentsOverdue": "Dont {amount} en retard.",
+    "paymentsEmpty": "Aucun reçu pour l'instant.",
+    "paymentsReceipts": "Reçus",
+    "paymentsDownload": "Télécharger le reçu {number}"
   },
   "justifications": {
     "title": "Justifier une absence",
@@ -2188,7 +2205,6 @@
     "noReceipts": "Aucun reçu pour l'instant.",
     "receiptLine": "{number} · {date} · {method}",
     "downloadReceipt": "Télécharger le reçu {number}",
-    "payChild": "Payer en ligne",
     "statusTitle": "Paiement en ligne",
     "back": "Retour aux paiements",
     "forChild": "{amount} pour {name}",
@@ -2255,5 +2271,35 @@
     "errors": {
       "amount": "Montant invalide : un nombre entier de francs CFA, 100 000 000 au plus."
     }
+  },
+  "consents": {
+    "welcomeTitle": "Bienvenue sur Fama School",
+    "welcomeName": "Bienvenue, {name} !",
+    "welcomeIntro": "Deux réglages avant de commencer : votre langue et l'usage de vos données. Vous pourrez les changer à tout moment dans votre profil.",
+    "language": "Langue",
+    "title": "Vos données",
+    "required": "Indispensable",
+    "optional": "Facultatif",
+    "data": {
+      "title": "Suivi scolaire de mes enfants",
+      "body": "L'école partage avec vous les notes, présences, bulletins et paiements de vos enfants, et vous contacte à ce numéro. Ces données restent dans l'école et ne sont jamais vendues."
+    },
+    "photos": {
+      "title": "Photos",
+      "body": "L'école peut afficher la photo de vos enfants dans l'application (carte d'élève, pointage) et partager des photos de la vie de classe."
+    },
+    "location": {
+      "title": "Géolocalisation",
+      "body": "Pour le suivi du transport scolaire, quand l'école le propose : position du car, jamais la vôtre sans votre accord."
+    },
+    "changeLater": "Vous pouvez modifier ces choix à tout moment depuis votre profil.",
+    "dataNeeded": "Activez le suivi scolaire pour accéder à l'espace parents.",
+    "continue": "Continuer",
+    "save": "Enregistrer",
+    "saved": "Vos choix sont enregistrés.",
+    "errors": {
+      "dataRequired": "Le suivi scolaire est indispensable pour utiliser l'espace parents. Pour retirer votre accord, adressez-vous à l'école."
+    },
+    "install": "Installez Fama School sur votre téléphone : vos enfants à portée de main, même avec une connexion faible."
   }
 }

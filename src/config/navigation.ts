@@ -146,7 +146,7 @@ const parent: SpaceNavigation = {
     { label: "payments", href: "/parent/paiements", icon: "payments" },
     { label: "messages", href: "/parent/messages", icon: "messages", soon: true },
   ],
-  other: [{ label: "profile", href: "/parent/profil", icon: "profile", soon: true }],
+  other: [{ label: "profile", href: "/parent/profil", icon: "profile" }],
   mobile: [],
 };
 parent.mobile = parent.menu.slice(0, 4);

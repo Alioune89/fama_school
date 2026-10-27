@@ -8,10 +8,14 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
+import { ChildHighlights } from "@/features/parent/components/child-highlights";
 import {
   countRecentReports,
+  listBalances,
   listChildrenAbsences,
+  listLastGrades,
   listMyChildren,
+  listUpcomingCompositions,
   PARENT_WINDOW_DAYS,
   parentWindowStart,
 } from "@/features/parent/queries";
@@ -43,11 +47,14 @@ async function Children() {
   if (children.length === 0) return <EmptyState icon={UsersRound} title={tHome("title")} body={tHome("empty")} />;
 
   const ids = children.map((c) => c.id);
-  const [absences, reports, arrivals, departures] = await Promise.all([
+  const [absences, reports, arrivals, departures, lastGrades, compositions, balances] = await Promise.all([
     listChildrenAbsences(ids, from),
     countRecentReports(ids, from),
     listArrivals({ studentIds: ids }, today),
     listDepartures({ studentIds: ids }, today),
+    listLastGrades(ids),
+    listUpcomingCompositions(ids),
+    listBalances(ids, today),
   ]);
 
   return (
@@ -93,6 +100,11 @@ async function Children() {
                   ))}
                 </div>
               )}
+              <ChildHighlights
+                lastGrade={lastGrades.get(child.id)}
+                composition={compositions.get(child.id)}
+                balance={balances.get(child.id)}
+              />
               <p className="text-sm text-ink-soft">
                 {t("summary", {
                   days: PARENT_WINDOW_DAYS,

@@ -24,10 +24,18 @@ const noopSubscribe = () => () => {};
  * Carte « Installer l'appli » (la carte promo des maquettes) : propose l'installation
  * de la PWA quand le navigateur le permet, sinon l'astuce iPhone.
  */
-export function InstallCard({ className }: { className?: string }) {
+export function InstallCard({ className, title }: { className?: string; title?: string }) {
   const t = useTranslations("installCard");
-  const standalone = useSyncExternalStore(subscribeToDisplayMode, () => window.matchMedia(STANDALONE_QUERY).matches, () => false);
-  const isIos = useSyncExternalStore(noopSubscribe, () => /iphone|ipad|ipod/i.test(window.navigator.userAgent), () => false);
+  const standalone = useSyncExternalStore(
+    subscribeToDisplayMode,
+    () => window.matchMedia(STANDALONE_QUERY).matches,
+    () => false,
+  );
+  const isIos = useSyncExternalStore(
+    noopSubscribe,
+    () => /iphone|ipad|ipod/i.test(window.navigator.userAgent),
+    () => false,
+  );
   const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [justInstalled, setJustInstalled] = useState(false);
 
@@ -64,7 +72,7 @@ export function InstallCard({ className }: { className?: string }) {
     >
       <div aria-hidden className="absolute -top-8 -right-10 size-28 rounded-full bg-white/15" />
       <div aria-hidden className="absolute -bottom-12 -left-6 size-28 rounded-full bg-lavender-300/30" />
-      <p className="relative text-[15px] leading-snug font-semibold">{t("title")}</p>
+      <p className="relative text-[15px] leading-snug font-semibold">{title ?? t("title")}</p>
       {promptEvent ? (
         <button
           type="button"

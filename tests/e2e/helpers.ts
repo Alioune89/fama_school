@@ -17,7 +17,7 @@ export const DEMO = {
   alAmineDirectorPhone: "77 000 00 04",
 } as const;
 
-export async function loginWithPhone(page: Page, phone: string, code: string = DEMO.otp) {
+export async function loginWithPhone(page: Page, phone: string, code: string = DEMO.otp, { acceptWelcome = true } = {}) {
   await page.goto("/connexion");
   await page.getByLabel("Numéro de téléphone").fill(phone);
   await page.getByRole("button", { name: "Recevoir le code" }).click();
@@ -29,6 +29,25 @@ export async function loginWithPhone(page: Page, phone: string, code: string = D
     await expect(page).toHaveURL(/\/connexion\/code/);
   }
   await page.getByLabel("Code de vérification").fill(code);
+  if (acceptWelcome && code === DEMO.otp) await acceptWelcomeIfShown(page);
+}
+
+/**
+ * Première connexion d'un parent : la page de bienvenue demande d'accepter le suivi scolaire avant d'entrer.
+ * Les parcours qui ne testent pas cette page l'acceptent ici (voir consents.spec.ts pour la page elle-même).
+ */
+export async function acceptWelcomeIfShown(page: Page) {
+  await expect(page).not.toHaveURL(/\/connexion\/code/, { timeout: 15_000 });
+  // Redirections de l'entrée dans l'espace terminées.
+  await page.waitForLoadState("networkidle");
+  if (!/\/bienvenue$/.test(new URL(page.url()).pathname)) return;
+  const data = page.getByRole("switch", { name: "Suivi scolaire de mes enfants" });
+  await expect(async () => {
+    await data.click();
+    await expect(data).toBeChecked({ timeout: 1500 });
+  }).toPass();
+  await page.getByRole("button", { name: "Continuer" }).click();
+  await expect(page).not.toHaveURL(/\/bienvenue$/);
 }
 
 export async function loginWithEmail(page: Page, email: string, password: string = DEMO.password) {

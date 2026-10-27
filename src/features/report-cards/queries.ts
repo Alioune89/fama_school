@@ -224,3 +224,11 @@ export async function listClassRoster(classId: string): Promise<{ id: string; fi
     .flatMap((e) => (e.student ? [{ id: e.student.id, firstName: e.student.first_name, lastName: e.student.last_name }] : []))
     .sort((a, b) => byName(a.lastName, b.lastName) || byName(a.firstName, b.firstName));
 }
+
+/** Téléchargement bloqué pour l'utilisateur connecté : réglage de l'école et facture en retard (parents seulement). */
+export async function isReportCardDownloadBlocked(id: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("report_card_download_blocked", { p_report_card_id: id });
+  if (error) throw error;
+  return data === true;
+}

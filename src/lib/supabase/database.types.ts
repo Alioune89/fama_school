@@ -1352,6 +1352,45 @@ export type Database = {
           },
         ];
       };
+      payment_reminders: {
+        Row: {
+          channel: string;
+          id: string;
+          overdue_amount: number;
+          school_id: string;
+          sent_at: string;
+          sent_by: string | null;
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          channel: string;
+          id?: string;
+          overdue_amount: number;
+          school_id: string;
+          sent_at?: string;
+          sent_by?: string | null;
+          student_id: string;
+        };
+        Update: {
+          channel?: string;
+          id?: string;
+          overdue_amount?: number;
+          school_id?: string;
+          sent_at?: string;
+          sent_by?: string | null;
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payment_reminders_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       payments: {
         Row: {
           amount: number;
@@ -2374,6 +2413,7 @@ export type Database = {
       remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       renew_student_badge: { Args: { p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };
+      report_card_download_blocked: { Args: { p_report_card_id: string }; Returns: boolean };
       request_payment_cancellation: { Args: { p_payment_id: string; p_reason: string }; Returns: undefined };
       review_absence_justification: {
         Args: { p_id: string; p_note?: string; p_status: Database["public"]["Enums"]["justification_status"] };

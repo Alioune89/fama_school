@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { pdfFileName } from "@/features/report-cards/file-name";
 import { htmlToPdf } from "@/features/report-cards/pdf";
-import { getReportCard, listClassReportCards } from "@/features/report-cards/queries";
+import { getReportCard, isReportCardDownloadBlocked, listClassReportCards } from "@/features/report-cards/queries";
 import { renderReportCardsHtml } from "@/features/report-cards/render";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,12 +21,19 @@ export async function GET(request: Request) {
   const { data: claims } = await supabase.auth.getClaims();
   if (!claims?.claims?.sub) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const cards = (await listClassReportCards(query.data.classe, query.data.periode)).sort(
-    (a, b) =>
-      a.data.student.lastName.localeCompare(b.data.student.lastName, "fr") ||
-      a.data.student.firstName.localeCompare(b.data.student.firstName, "fr"),
-  );
-  if (cards.length === 0) return NextResponse.json({ error: "notFound" }, { status: 404 });
+  const readable = await listClassReportCards(query.data.classe, query.data.periode);
+  // Un parent ne lit que les bulletins de ses enfants (RLS) : le blocage pour impayé s'applique aussi ici.
+  const blocked = await Promise.all(readable.map((card) => isReportCardDownloadBlocked(card.id)));
+  const cards = readable
+    .filter((_, index) => !blocked[index])
+    .sort(
+      (a, b) =>
+        a.data.student.lastName.localeCompare(b.data.student.lastName, "fr") ||
+        a.data.student.firstName.localeCompare(b.data.student.firstName, "fr"),
+    );
+  if (cards.length === 0) {
+    return NextResponse.json({ error: readable.length > 0 ? "unpaid" : "notFound" }, { status: readable.length > 0 ? 403 : 404 });
+  }
 
   // Même école pour toute la classe : le logo se lit une fois.
   const logoUrl = (await getReportCard(cards[0]!.id))?.logoUrl ?? null;

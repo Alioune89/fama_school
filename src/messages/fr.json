@@ -73,7 +73,9 @@
     "attendance": "Présences",
     "grades": "Notes et bulletins",
     "finance": "Finances",
+    "financeOverview": "Vue d'ensemble",
     "feesCollection": "Encaissements",
+    "overdue": "Impayés",
     "invoices": "Factures",
     "feeSchedule": "Frais de scolarité",
     "expenses": "Dépenses",
@@ -1299,7 +1301,9 @@
     "reportCardsEmpty": "Aucun bulletin publié pour {name} pour l'instant.",
     "reportCardOpen": "Bulletin du {period}",
     "reportCardPublished": "publié le {date}",
-    "reportCardBack": "Retour à la fiche de {name}"
+    "reportCardBack": "Retour à la fiche de {name}",
+    "reportCardBlocked": "Le téléchargement de ce bulletin est suspendu tant que des frais de scolarité restent en retard. Vous pouvez le consulter ci-dessous.",
+    "reportCardBlockedPay": "Régler les frais"
   },
   "justifications": {
     "title": "Justifier une absence",
@@ -2102,6 +2106,70 @@
       "reasonRequired": "Indiquez le motif de l'annulation."
     },
     "recordedShort": "Paiement encaissé."
+  },
+  "collections": {
+    "title": "Finances",
+    "description": "Où en sont les frais de scolarité de l'année : facturé, encaissé, reste à encaisser et retards.",
+    "noYear": "Aucune année scolaire en cours",
+    "noYearHint": "Créez l'année scolaire dans les paramètres pour suivre les encaissements.",
+    "yearTotals": "Totaux de l'année {year}",
+    "billed": "Facturé cette année",
+    "collected": "Encaissé",
+    "remaining": "Reste à encaisser",
+    "overdue": "En retard",
+    "overdueBanner": "{count, plural, one {Une famille est} other {# familles sont}} en retard de paiement ({amount}). Voir les impayés et relancer.",
+    "byMonth": "Facturé et encaissé par mois · {year}",
+    "rate": "{rate} % encaissé",
+    "annual": "Frais annuels",
+    "annualShort": "Annuels",
+    "thisMonth": "Recettes et dépenses de {month}",
+    "received": "Encaissé ce mois",
+    "spent": "Dépensé ce mois",
+    "balance": "Solde du mois",
+    "seePayments": "Voir les encaissements",
+    "seeExpenses": "Voir les dépenses",
+    "chart": {
+      "legend": "Légende",
+      "collected": "Encaissé",
+      "remaining": "Reste à encaisser",
+      "billed": "Facturé",
+      "month": "Mois",
+      "table": "Voir les chiffres en tableau",
+      "detail": "{month} : facturé {billed}, encaissé {collected}, reste {remaining}"
+    },
+    "overdueTitle": "Impayés",
+    "overdueDescription": "Familles dont une facture a dépassé son échéance sans être réglée. Relancez-les par WhatsApp, SMS ou téléphone.",
+    "noOverdue": "Aucun impayé",
+    "noOverdueHint": "Toutes les factures échues sont réglées.",
+    "overdueCount": "{count, plural, one {# famille en retard} other {# familles en retard}}",
+    "overdueTotal": "Total en retard : {amount}",
+    "overdueListLabel": "Familles en retard de paiement",
+    "lateSince": "{count, plural, one {Échue} other {# factures, la 1re échue}} le {date} · {days, plural, one {# jour} other {# jours}} de retard",
+    "lastReminder": "Dernière relance : {channel}, le {date}",
+    "neverReminded": "Jamais relancée",
+    "reminders": {
+      "whatsapp": "WhatsApp",
+      "sms": "SMS",
+      "call": "Appeler",
+      "whatsappFor": "Relancer la famille de {name} par WhatsApp",
+      "smsFor": "Relancer la famille de {name} par SMS",
+      "callFor": "Appeler la famille de {name}",
+      "noPhone": "Aucun numéro de téléphone pour cette famille.",
+      "logged": "Relance notée.",
+      "channels": {
+        "whatsapp": "WhatsApp",
+        "sms": "SMS",
+        "call": "appel"
+      },
+      "message": "Bonjour {guardian}, {school} vous rappelle que {amount} de frais de scolarité de {student} restent à régler (échéance du {date}). Vous pouvez payer au guichet de l'école ou en ligne depuis Fama School. Merci."
+    },
+    "policy": {
+      "title": "Bloquer le téléchargement des bulletins en cas d'impayé",
+      "hint": "Les parents d'un élève en retard de paiement consultent le bulletin à l'écran mais ne peuvent pas le télécharger. Le personnel n'est jamais bloqué.",
+      "hintReadOnly": "Réglage du fondateur ou du directeur : les parents d'un élève en retard de paiement consultent le bulletin sans pouvoir le télécharger.",
+      "enabled": "Téléchargement des bulletins bloqué en cas d'impayé.",
+      "disabled": "Les bulletins sont de nouveau téléchargeables par tous les parents."
+    }
   },
   "onlinePayments": {
     "title": "Paiements",

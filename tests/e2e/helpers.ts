@@ -1,4 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
 import { expect, type Locator, type Page } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 
 /**
  * Comptes de démonstration (voir supabase/seed.sql). Sur le staging, le mot de passe du directeur
@@ -70,4 +72,21 @@ export async function issueInvoicesFor(page: Page, name: string, monthIndex: num
     await expect(liveInvoices()).toHaveCount(1, { timeout: 3000 });
   }).toPass({ timeout: 45_000 });
   return { month, liveInvoices: liveInvoices() };
+}
+
+/**
+ * Client Supabase « service » pour préparer une situation impossible à créer par l'interface (une facture déjà
+ * échue, par exemple). Base locale ou de CI seulement : clés lues dans l'environnement ou dans .env.local.
+ */
+export function adminClient() {
+  const env: Record<string, string | undefined> = { ...process.env };
+  if (!env.SUPABASE_SECRET_KEY && existsSync(".env.local")) {
+    for (const line of readFileSync(".env.local", "utf8").split("\n")) {
+      const match = line.match(/^([A-Z_]+)=(.*)$/);
+      if (match && !env[match[1]!]) env[match[1]!] = match[2];
+    }
+  }
+  return createClient(env.NEXT_PUBLIC_SUPABASE_URL!, env.SUPABASE_SECRET_KEY!, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }

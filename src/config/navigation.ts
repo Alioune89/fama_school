@@ -38,6 +38,8 @@ export type NavLabelKey =
   | "invoices"
   | "feeSchedule"
   | "expenses"
+  | "financeOverview"
+  | "overdue"
   | "announcements"
   | "calendar"
   | "messages"
@@ -56,7 +58,13 @@ export type NavLabelKey =
   | "plans"
   | "reports";
 
-export type NavLeaf = { label: NavLabelKey; href: string; soon?: boolean };
+export type NavLeaf = {
+  label: NavLabelKey;
+  href: string;
+  soon?: boolean;
+  /** Actif sur cette adresse seulement (vue d'ensemble d'une rubrique dont les pages sont ses sous-adresses). */
+  exact?: boolean;
+};
 export type NavItem = NavLeaf & {
   icon: NavIconName;
   children?: NavLeaf[];
@@ -94,7 +102,9 @@ const direction: SpaceNavigation = {
       href: "/direction/finances",
       icon: "finance",
       children: [
+        { label: "financeOverview", href: "/direction/finances", exact: true },
         { label: "feesCollection", href: "/direction/finances/encaissements" },
+        { label: "overdue", href: "/direction/finances/impayes" },
         { label: "invoices", href: "/direction/finances/factures" },
         { label: "feeSchedule", href: "/direction/finances/frais" },
         { label: "expenses", href: "/direction/finances/depenses" },

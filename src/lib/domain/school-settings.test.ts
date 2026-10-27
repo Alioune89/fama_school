@@ -7,6 +7,7 @@ describe("parseSchoolSettings", () => {
       mentionThresholds: DEFAULT_SETTINGS.mentionThresholds,
       evaluationWeights: DEFAULT_SETTINGS.evaluationWeights,
       francoArabic: false,
+      blockReportCardsWhenOverdue: false,
       onboardingCompletedAt: null,
     });
   });

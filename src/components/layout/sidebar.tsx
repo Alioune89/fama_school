@@ -12,8 +12,8 @@ import { Link, usePathname } from "@/i18n/navigation";
 import type { Space } from "@/lib/auth/spaces";
 import { cn } from "@/lib/utils";
 
-export function isActiveHref(pathname: string, href: string, home: string): boolean {
-  if (href === home) return pathname === home;
+export function isActiveHref(pathname: string, href: string, home: string, exact = false): boolean {
+  if (href === home || exact) return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -29,7 +29,7 @@ export function SoonBadge() {
 
 function NavGroup({ item, home, pathname, onNavigate }: { item: NavItem; home: string; pathname: string | null; onNavigate?: () => void }) {
   const t = useTranslations("nav");
-  const childActive = pathname !== null && (item.children?.some((child) => isActiveHref(pathname, child.href, home)) ?? false);
+  const childActive = pathname !== null && (item.children?.some((child) => isActiveHref(pathname, child.href, home, child.exact)) ?? false);
   const [open, setOpen] = useState(childActive);
 
   return (
@@ -74,7 +74,7 @@ function NavLeafLink({
   onNavigate?: () => void;
 }) {
   const t = useTranslations("nav");
-  const active = pathname !== null && isActiveHref(pathname, leaf.href, home);
+  const active = pathname !== null && isActiveHref(pathname, leaf.href, home, leaf.exact);
 
   return (
     <li>

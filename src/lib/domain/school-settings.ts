@@ -21,6 +21,8 @@ export const DEFAULT_SETTINGS = {
   /** Poids de chaque type d'évaluation dans la moyenne d'une matière (Lot 3). */
   evaluationWeights: { devoir: 1, interrogation: 1, composition: 2 },
   francoArabic: false,
+  /** Lot 4.5 : le parent d'un élève en retard de paiement consulte le bulletin sans pouvoir le télécharger. */
+  blockReportCardsWhenOverdue: false,
 } as const;
 
 export const schoolSettingsSchema = z.object({
@@ -39,6 +41,7 @@ export const schoolSettingsSchema = z.object({
     .refine((w) => w.devoir + w.interrogation + w.composition > 0, { error: "settings.errors.weightsZero" })
     .default(DEFAULT_SETTINGS.evaluationWeights),
   francoArabic: z.boolean().default(false),
+  blockReportCardsWhenOverdue: z.boolean().default(false),
   onboardingCompletedAt: z.iso.datetime().nullable().default(null),
 });
 

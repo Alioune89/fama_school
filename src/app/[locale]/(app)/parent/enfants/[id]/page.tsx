@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronLeft, ChevronRight, CircleCheck, FileCheck, FileText, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleCheck, FileCheck, FileText, LogOut, Wallet } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
@@ -34,24 +34,26 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [reportCards, grades, reports, absences, justifications, arrivals, departures, t, tArrivals] = await Promise.all([
-    listStudentReportCards(child.id),
-    listChildGrades(child.id, child.schoolId, today),
-    listStudentReports(child.id),
-    listChildrenAbsences([child.id], from),
-    listStudentJustifications([child.id], from),
-    listArrivals({ studentIds: [child.id] }, today),
-    listDepartures({ studentIds: [child.id] }, today),
-    getTranslations("parentSpace"),
-    getTranslations("arrivals"),
-  ]);
+  const [reportCards, grades, reports, absences, justifications, arrivals, departures, t, tArrivals, tPayments] =
+    await Promise.all([
+      listStudentReportCards(child.id),
+      listChildGrades(child.id, child.schoolId, today),
+      listStudentReports(child.id),
+      listChildrenAbsences([child.id], from),
+      listStudentJustifications([child.id], from),
+      listArrivals({ studentIds: [child.id] }, today),
+      listDepartures({ studentIds: [child.id] }, today),
+      getTranslations("parentSpace"),
+      getTranslations("arrivals"),
+      getTranslations("onlinePayments"),
+    ]);
   const arrivedAt = arrivals.get(child.id);
   const leftAt = departures.get(child.id);
   const name = `${child.firstName} ${child.lastName}`;
 
   return (
     <>
-      <section className="mb-6 flex items-center gap-4">
+      <section className="mb-6 flex flex-wrap items-center gap-4">
         <PersonAvatar name={name} size="lg" />
         <div className="min-w-0">
           <h1 className="text-2xl font-bold">{name}</h1>
@@ -69,6 +71,13 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
             </p>
           )}
         </div>
+        <Link
+          href={`/parent/paiements#enfant-${child.id}`}
+          className="ml-auto inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-azure-700 hover:underline"
+        >
+          <Wallet className="size-4" aria-hidden />
+          {tPayments("payChild")}
+        </Link>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-report-cards">

@@ -1248,6 +1248,73 @@ export type Database = {
           },
         ];
       };
+      online_payments: {
+        Row: {
+          amount: number;
+          checkout_url: string | null;
+          completed_at: string | null;
+          created_at: string;
+          created_by: string;
+          failure_reason: string | null;
+          id: string;
+          invoice_ids: string[];
+          payment_id: string | null;
+          provider: string;
+          provider_token: string | null;
+          school_id: string;
+          status: Database["public"]["Enums"]["online_payment_status"];
+          student_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          checkout_url?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          failure_reason?: string | null;
+          id?: string;
+          invoice_ids: string[];
+          payment_id?: string | null;
+          provider: string;
+          provider_token?: string | null;
+          school_id: string;
+          status?: Database["public"]["Enums"]["online_payment_status"];
+          student_id: string;
+        };
+        Update: {
+          amount?: number;
+          checkout_url?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          failure_reason?: string | null;
+          id?: string;
+          invoice_ids?: string[];
+          payment_id?: string | null;
+          provider?: string;
+          provider_token?: string | null;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["online_payment_status"];
+          student_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "online_payments_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: false;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "online_payments_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       payment_allocations: {
         Row: {
           amount: number;
@@ -2318,8 +2385,19 @@ export type Database = {
         Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };
         Returns: undefined;
       };
+      set_online_payment_checkout: { Args: { p_checkout_url: string; p_id: string; p_token: string }; Returns: undefined };
       set_period_lock: { Args: { p_lock: boolean; p_period_id: string }; Returns: undefined };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
+      settle_online_payment: {
+        Args: {
+          p_id: string;
+          p_reason?: string;
+          p_reference?: string;
+          p_status: Database["public"]["Enums"]["online_payment_status"];
+        };
+        Returns: string;
+      };
+      start_online_payment: { Args: { p_invoice_ids: string[]; p_provider: string; p_student_id: string }; Returns: Json };
       submit_absence_justification: {
         Args: {
           p_comment?: string;
@@ -2382,6 +2460,7 @@ export type Database = {
       justification_reason: "illness" | "medical" | "family" | "other";
       justification_status: "pending" | "accepted" | "refused";
       membership_status: "invited" | "active" | "suspended";
+      online_payment_status: "pending" | "succeeded" | "failed" | "cancelled";
       payment_method: "cash" | "wave" | "orange_money" | "free_money" | "bank_transfer" | "check" | "online";
       payment_status: "valid" | "cancel_requested" | "cancelled";
       period_kind: "semester" | "trimester";
@@ -2519,6 +2598,7 @@ export const Constants = {
       justification_reason: ["illness", "medical", "family", "other"],
       justification_status: ["pending", "accepted", "refused"],
       membership_status: ["invited", "active", "suspended"],
+      online_payment_status: ["pending", "succeeded", "failed", "cancelled"],
       payment_method: ["cash", "wave", "orange_money", "free_money", "bank_transfer", "check", "online"],
       payment_status: ["valid", "cancel_requested", "cancelled"],
       period_kind: ["semester", "trimester"],

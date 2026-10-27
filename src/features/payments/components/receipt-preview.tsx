@@ -1,5 +1,5 @@
-import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
+import { requestOrigin } from "@/lib/request-origin";
 import { qrSvg, verifyUrl } from "../../report-cards/render";
 import { ScaledSheets } from "../../report-cards/components/scaled-sheets";
 import { fontFaces } from "../../report-cards/styles";
@@ -9,13 +9,6 @@ import { RECEIPT_CSS } from "../receipt-styles";
 
 /** Largeur d'une page A5 en pixels CSS (148 mm). */
 const A5_WIDTH = 559.4;
-
-async function requestOrigin() {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
 /** Aperçu à l'écran d'un reçu, identique au PDF. */
 export async function ReceiptPreview({ payment }: { payment: PaymentDetail }) {

@@ -47,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN: ci
+      # Paiement en ligne de démonstration (fermé par défaut).
+      ONLINE_PAYMENT_PROVIDER: simulated
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

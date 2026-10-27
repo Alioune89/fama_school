@@ -133,7 +133,7 @@ const parent: SpaceNavigation = {
     { label: "children", href: "/parent", icon: "children" },
     { label: "gradeEntry", href: "/parent/notes", icon: "grades", soon: true },
     { label: "attendance", href: "/parent/presences", icon: "attendance", soon: true },
-    { label: "payments", href: "/parent/paiements", icon: "payments", soon: true },
+    { label: "payments", href: "/parent/paiements", icon: "payments" },
     { label: "messages", href: "/parent/messages", icon: "messages", soon: true },
   ],
   other: [{ label: "profile", href: "/parent/profil", icon: "profile", soon: true }],

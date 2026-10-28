@@ -167,7 +167,7 @@ export function FeeGrid({ data, canEdit }: { data: FeeSchedule; canEdit: boolean
                         const cellKey = key(level.id, fee.id);
                         const bad = amountOf(level.id, fee.id) === null;
                         return (
-                          <td key={fee.id} className="border-t border-line px-2 py-1.5">
+                          <td key={fee.id} className="border-t border-line px-2 py-1.5 text-right">
                             <input
                               type="text"
                               inputMode="numeric"

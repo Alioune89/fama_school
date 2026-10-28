@@ -83,6 +83,8 @@ test.describe("Paiement en ligne", () => {
     // Ménage : le frais, déjà facturé, est archivé (retiré de la grille).
     await page.goto("/direction/finances/frais");
     const remove = page.getByRole("button", { name: `Supprimer « ${name} »` });
+    // La page s'affiche d'abord en squelette : attendre le bouton avant de le compter.
+    await expect(remove).toBeVisible();
     await expect(async () => {
       if ((await remove.count()) > 0) await remove.click({ timeout: 2000 });
       await expect(remove).toHaveCount(0, { timeout: 3000 });

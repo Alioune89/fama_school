@@ -14,21 +14,33 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { publishAnnouncement } from "../actions";
-import type { AnnouncementAudience } from "../queries";
+import type { AnnouncementAudience, GuardianOption } from "../queries";
+import { GuardianPicker } from "./guardian-picker";
 
-const AUDIENCES: AnnouncementAudience[] = ["parents", "classes", "overdue", "staff"];
+const AUDIENCES: AnnouncementAudience[] = ["parents", "classes", "guardians", "overdue", "staff"];
 
-/** Nouvelle annonce : titre, texte, destinataires (tous les parents, des classes, les familles en retard, le personnel). */
-export function AnnouncementSheet({ classes }: { classes: { id: string; name: string }[] }) {
+/**
+ * Nouvelle annonce : titre, texte, destinataires (tous les parents, des classes, des parents choisis un par un,
+ * les familles en retard, le personnel).
+ */
+export function AnnouncementSheet({
+  classes,
+  guardians,
+}: {
+  classes: { id: string; name: string }[];
+  guardians: GuardianOption[];
+}) {
   const t = useTranslations("announcements");
   const [open, setOpen] = useState(false);
   const [audience, setAudience] = useState<AnnouncementAudience>("parents");
   const [classIds, setClassIds] = useState<Set<string>>(new Set());
+  const [guardianIds, setGuardianIds] = useState<Set<string>>(new Set());
   const form = useActionForm(publishAnnouncement, {
     onSuccess: ({ recipients }) => {
       toast.success(t("published", { count: recipients }));
       setOpen(false);
       setClassIds(new Set());
+      setGuardianIds(new Set());
     },
   });
 
@@ -61,6 +73,7 @@ export function AnnouncementSheet({ classes }: { classes: { id: string; name: st
               body: String(formData.get("body") ?? ""),
               audience,
               classIds: [...classIds],
+              guardianIds: [...guardianIds],
             }),
           )}
           noValidate
@@ -105,6 +118,12 @@ export function AnnouncementSheet({ classes }: { classes: { id: string; name: st
               </ul>
               <FieldError>{form.fieldError("classIds")}</FieldError>
             </fieldset>
+          )}
+          {audience === "guardians" && (
+            <div>
+              <GuardianPicker guardians={guardians} classes={classes} selected={guardianIds} onChange={setGuardianIds} />
+              <FieldError>{form.fieldError("guardianIds")}</FieldError>
+            </div>
           )}
           <Field data-invalid={form.hasError("title") || undefined}>
             <FieldLabel htmlFor="announcement-title">{t("titleLabel")}</FieldLabel>

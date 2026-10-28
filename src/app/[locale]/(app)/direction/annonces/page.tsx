@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { AnnouncementList } from "@/features/announcements/components/announcement-list";
 import { AnnouncementSheet } from "@/features/announcements/components/announcement-sheet";
-import { listAnnouncements } from "@/features/announcements/queries";
+import { listAnnouncements, listGuardianOptions } from "@/features/announcements/queries";
 import { listClasses } from "@/features/classes/queries";
 import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
@@ -19,9 +19,10 @@ async function Announcements() {
   const { entry } = await requireSpace("direction");
   const schoolId = entry.schoolId!;
   const canPublish = permissions.publish(entry.roles);
-  const [announcements, classes, t] = await Promise.all([
+  const [announcements, classes, guardians, t] = await Promise.all([
     listAnnouncements(schoolId),
     canPublish ? listClasses(schoolId) : null,
+    canPublish ? listGuardianOptions(schoolId) : [],
     getTranslations("announcements"),
   ]);
   return (
@@ -33,6 +34,7 @@ async function Announcements() {
           classes && (
             <AnnouncementSheet
               classes={classes.cycles.flatMap((cycle) => cycle.classes.map((c) => ({ id: c.id, name: c.name })))}
+              guardians={guardians}
             />
           )
         }

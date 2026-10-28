@@ -35,6 +35,19 @@ test.describe("Annonces et calendrier", () => {
     const article = page.getByRole("article", { name: title });
     await expect(article.getByText(/^Parents de 6e A · \d+ destinataires?$/)).toBeVisible();
 
+    // Annonce à un parent choisi dans la liste (recherche par son nom).
+    const personal = `Rendez-vous (test ${stamp})`;
+    await clickUntilVisible(page.getByRole("button", { name: "Nouvelle annonce" }), sheet);
+    await sheet.getByRole("radio", { name: /Parents choisis/ }).click();
+    await sheet.getByRole("searchbox", { name: "Rechercher un parent" }).fill("Fatou");
+    await sheet.getByRole("list", { name: "Parents de l'école" }).getByRole("checkbox").first().click();
+    await expect(sheet.getByText("1 parent sélectionné")).toBeVisible();
+    await sheet.getByLabel("Titre").fill(personal);
+    await sheet.getByLabel("Message").fill("Merci de passer au bureau du directeur.");
+    await sheet.getByRole("button", { name: "Publier" }).click();
+    await expect(page.getByText("Annonce publiée : 1 destinataire prévenu.")).toBeVisible();
+    await expect(page.getByRole("article", { name: personal }).getByText("Fatou Sow · 1 destinataire")).toBeVisible();
+
     // Vacances au calendrier, dans 20 jours.
     const start = new Date(Date.now() + 20 * 86_400_000).toISOString().slice(0, 10);
     const end = new Date(Date.now() + 27 * 86_400_000).toISOString().slice(0, 10);
@@ -63,7 +76,9 @@ test.describe("Annonces et calendrier", () => {
     await page.getByRole("button", { name: `Supprimer « ${holiday} »` }).click();
     await expect(page.getByText("Événement supprimé.")).toBeVisible();
     await page.goto("/direction/annonces");
-    await page.getByRole("button", { name: `Supprimer « ${title} »` }).click();
-    await expect(page.getByText("Annonce supprimée.")).toBeVisible();
+    for (const name of [title, personal]) {
+      await page.getByRole("button", { name: `Supprimer « ${name} »` }).click();
+      await expect(page.getByRole("article", { name })).toHaveCount(0);
+    }
   });
 });

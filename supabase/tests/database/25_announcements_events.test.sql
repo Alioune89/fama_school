@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(13);
+select plan(16);
 
 insert into public.schools (id, name, slug) values ('3f250000-0000-4000-8000-000000000010', 'École Test Z', 'ecole-test-z');
 insert into auth.users (id, aud, role, email) values
@@ -79,14 +79,35 @@ select throws_ok(
   'P0001', 'noClass',
   'il faut choisir au moins une classe'
 );
-select is((select count(*)::int from public.announcements), 4, 'la direction voit toutes les annonces');
+select is(
+  (public.publish_announcement('3f250000-0000-4000-8000-000000000010', 'Rendez-vous', 'Merci de passer au bureau.', 'guardians',
+     '{}', array['cf250000-0000-4000-8000-000000000012']::uuid[]) ->> 'recipients')::int,
+  1,
+  'annonce à un parent choisi : lui seul'
+);
+select throws_ok(
+  $$ select public.publish_announcement('3f250000-0000-4000-8000-000000000010', 'Rendez-vous', 'Texte', 'guardians', '{}', '{}') $$,
+  'P0001', 'noGuardian',
+  'il faut choisir au moins un parent'
+);
+reset role;
+insert into public.guardians (id, school_id, full_name) values
+  ('cf250000-0000-4000-8000-000000000013', '3f250000-0000-4000-8000-000000000010', 'Parent sans compte');
+set local role authenticated;
+select throws_ok(
+  $$ select public.publish_announcement('3f250000-0000-4000-8000-000000000010', 'Rendez-vous', 'Texte', 'guardians', '{}',
+       array['cf250000-0000-4000-8000-000000000013']::uuid[]) $$,
+  'P0001', 'noRecipient',
+  'un parent jamais connecté ne peut pas encore la recevoir'
+);
+select is((select count(*)::int from public.announcements), 5, 'la direction voit toutes les annonces');
 
 -- Ce que lit chacun.
 select set_config('request.jwt.claims', '{"sub": "4f250000-0000-4000-8000-000000000012", "role": "authenticated"}', true);
 select results_eq(
   $$ select title from public.announcements order by published_at, title $$,
   $$ values ('Réunion des parents'::text), ('Sortie de la 6e A') $$,
-  'le parent de la 6e A, à jour de ses paiements, lit deux annonces'
+  'le parent de la 6e A, à jour de ses paiements et non choisi, lit deux annonces'
 );
 select results_eq(
   $$ select kind, link from public.notifications order by created_at limit 1 $$,

@@ -143,6 +143,7 @@ export type Database = {
           audience: string;
           body: string;
           class_ids: string[];
+          guardian_ids: string[];
           id: string;
           published_at: string;
           published_by: string | null;
@@ -156,6 +157,7 @@ export type Database = {
           audience: string;
           body: string;
           class_ids?: string[];
+          guardian_ids?: string[];
           id?: string;
           published_at?: string;
           published_by?: string | null;
@@ -168,6 +170,7 @@ export type Database = {
           audience?: string;
           body?: string;
           class_ids?: string[];
+          guardian_ids?: string[];
           id?: string;
           published_at?: string;
           published_by?: string | null;
@@ -2610,7 +2613,14 @@ export type Database = {
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       prune_notifications: { Args: Record<PropertyKey, never>; Returns: number };
       publish_announcement: {
-        Args: { p_audience: string; p_body: string; p_class_ids?: string[]; p_school_id: string; p_title: string };
+        Args: {
+          p_audience: string;
+          p_body: string;
+          p_class_ids?: string[];
+          p_guardian_ids?: string[];
+          p_school_id: string;
+          p_title: string;
+        };
         Returns: Json;
       };
       record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };

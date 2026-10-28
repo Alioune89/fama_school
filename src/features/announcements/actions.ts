@@ -9,18 +9,23 @@ import { createClient } from "@/lib/supabase/server";
 import { requiredText } from "@/lib/validation";
 
 /** Codes de public.publish_announcement (migration announcements_events). */
-const CODES = ["invalidAnnouncement", "noClass", "noRecipient"] as const;
+const CODES = ["invalidAnnouncement", "noClass", "noGuardian", "noRecipient"] as const;
 
 const announcementSchema = z
   .object({
     title: requiredText(120, 3),
     body: requiredText(4000),
-    audience: z.enum(["parents", "classes", "overdue", "staff"]),
+    audience: z.enum(["parents", "classes", "overdue", "staff", "guardians"]),
     classIds: z.array(z.uuid()).max(200),
+    guardianIds: z.array(z.uuid()).max(5000),
   })
   .refine((value) => value.audience !== "classes" || value.classIds.length > 0, {
     error: "announcements.errors.noClass",
     path: ["classIds"],
+  })
+  .refine((value) => value.audience !== "guardians" || value.guardianIds.length > 0, {
+    error: "announcements.errors.noGuardian",
+    path: ["guardianIds"],
   });
 
 /** Publie une annonce : destinataires figés, prévenus par la cloche. */
@@ -39,6 +44,7 @@ export async function publishAnnouncement(
     p_body: v.body,
     p_audience: v.audience,
     p_class_ids: v.audience === "classes" ? v.classIds : [],
+    p_guardian_ids: v.audience === "guardians" ? v.guardianIds : [],
   });
   if (error) {
     if (error.code === "P0001" && (CODES as readonly string[]).includes(error.message)) {

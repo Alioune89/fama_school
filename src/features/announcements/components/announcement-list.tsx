@@ -38,7 +38,13 @@ export async function AnnouncementList({ announcements, manage = false }: { anno
               <p className="mt-3 text-xs font-medium text-ink-soft">
                 {item.audience === "classes"
                   ? t("sentToClasses", { classes: item.classNames.join(", "), count: item.recipientCount })
-                  : t("sentTo", { audience: t(`audiences.${item.audience}`), count: item.recipientCount })}
+                  : item.audience === "guardians"
+                    ? t("sentToGuardians", {
+                        names: item.guardianNames.slice(0, 3).join(", "),
+                        others: Math.max(0, item.guardianNames.length - 3),
+                        count: item.recipientCount,
+                      })
+                    : t("sentTo", { audience: t(`audiences.${item.audience}`), count: item.recipientCount })}
               </p>
             )}
           </article>

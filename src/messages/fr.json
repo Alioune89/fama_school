@@ -2386,6 +2386,7 @@
     "audiences": {
       "parents": "Tous les parents",
       "classes": "Parents de certaines classes",
+      "guardians": "Parents choisis",
       "overdue": "Familles en retard de paiement",
       "staff": "Personnel et enseignants"
     },
@@ -2393,7 +2394,8 @@
       "parents": "Les parents de tous les élèves inscrits cette année.",
       "classes": "Les parents des élèves des classes choisies.",
       "overdue": "Les parents d'un élève qui a une facture échue non réglée.",
-      "staff": "La direction, la vie scolaire, le secrétariat et les enseignants."
+      "staff": "La direction, la vie scolaire, le secrétariat et les enseignants.",
+      "guardians": "Un ou plusieurs parents, choisis dans la liste."
     },
     "classes": "Classes",
     "titleLabel": "Titre",
@@ -2416,7 +2418,22 @@
     "errors": {
       "noClass": "Choisissez au moins une classe.",
       "noRecipient": "Personne ne correspond à ces destinataires pour l'instant.",
-      "invalidAnnouncement": "Titre ou message manquant."
+      "invalidAnnouncement": "Titre ou message manquant.",
+      "noGuardian": "Choisissez au moins un parent."
+    },
+    "sentToGuardians": "{names}{others, plural, =0 {} one { et # autre} other { et # autres}} · {count, plural, one {# destinataire} other {# destinataires}}",
+    "picker": {
+      "title": "Parents",
+      "search": "Rechercher un parent",
+      "searchPlaceholder": "Parent, enfant ou téléphone…",
+      "classFilter": "Filtrer par classe",
+      "allClasses": "Toutes les classes",
+      "selectVisible": "{count, plural, =0 {Tout sélectionner} one {Sélectionner le parent affiché} other {Sélectionner les # parents affichés}}",
+      "selected": "{count, plural, =0 {Aucun parent sélectionné} one {# parent sélectionné} other {# parents sélectionnés}}",
+      "listLabel": "Parents de l'école",
+      "none": "Aucun parent ne correspond.",
+      "noChild": "Aucun enfant inscrit cette année",
+      "noAccount": "Pas encore connecté : ne recevra pas l'annonce"
     }
   },
   "events": {

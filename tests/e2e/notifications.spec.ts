@@ -49,6 +49,22 @@ test.describe("Notifications", () => {
       await page.getByRole("menuitem", { name: "Tout marquer comme lu" }).click();
       await expect(page.getByRole("button", { name: "Notifications", exact: true })).toBeVisible();
 
+      // En temps réel : un signalement arrive pendant que la page est ouverte, la cloche s'allume sans recharger.
+      const liveId = crypto.randomUUID();
+      reportIds.push(liveId);
+      await admin.from("student_reports").insert({
+        id: liveId,
+        school_id: student!.school_id,
+        student_id: student!.id,
+        class_id: student!.enrollments[0]!.class_id,
+        category: "health",
+        message: `Fièvre (test ${Date.now().toString(36)})`,
+        occurred_at: new Date().toISOString(),
+        author_name: "Awa Diop",
+      });
+      await expect(page.getByText("Nouvelle notification")).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByRole("button", { name: "Notifications : 1 non lue" })).toBeVisible();
+
       // Profil : canaux de notification.
       await page.goto("/parent/profil");
       const whatsapp = page.getByRole("switch", { name: "WhatsApp" });

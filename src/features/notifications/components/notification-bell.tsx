@@ -7,5 +7,5 @@ export async function NotificationBell({ className }: { className: string }) {
   const user = await getCurrentUser();
   if (!user) return null;
   const { items, unread } = await listMyNotifications();
-  return <NotificationMenu items={items} unread={unread} className={className} />;
+  return <NotificationMenu userId={user.id} items={items} unread={unread} className={className} />;
 }

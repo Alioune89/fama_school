@@ -15,6 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { markNotificationsRead } from "../actions";
 import type { NotificationItem } from "../queries";
+import { useLiveNotifications } from "./use-live-notifications";
 
 const relative = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
 
@@ -33,8 +34,19 @@ function ago(iso: string): string | null {
 }
 
 /** La cloche : pastille des non lues, dernières notifications ; un clic ouvre la page concernée et marque lu. */
-export function NotificationMenu({ items, unread, className }: { items: NotificationItem[]; unread: number; className: string }) {
+export function NotificationMenu({
+  userId,
+  items,
+  unread,
+  className,
+}: {
+  userId: string;
+  items: NotificationItem[];
+  unread: number;
+  className: string;
+}) {
   const t = useTranslations("notifications");
+  useLiveNotifications(userId);
   const router = useRouter();
   const [, startTransition] = useTransition();
 

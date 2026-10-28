@@ -2428,12 +2428,15 @@
       "searchPlaceholder": "Parent, enfant ou téléphone…",
       "classFilter": "Filtrer par classe",
       "allClasses": "Toutes les classes",
-      "selectVisible": "{count, plural, =0 {Tout sélectionner} one {Sélectionner le parent affiché} other {Sélectionner les # parents affichés}}",
-      "selected": "{count, plural, =0 {Aucun parent sélectionné} one {# parent sélectionné} other {# parents sélectionnés}}",
+      "selected": "{count, plural, =0 {Aucun sélectionné} one {# sélectionné} other {# sélectionnés}}",
       "listLabel": "Parents de l'école",
       "none": "Aucun parent ne correspond.",
       "noChild": "Aucun enfant inscrit cette année",
-      "noAccount": "Pas encore connecté : ne recevra pas l'annonce"
+      "selectAll": "{count, plural, =0 {Tout sélectionner} other {Tout sélectionner ({count})}}",
+      "noneReachable": "Aucun de ces parents ne s'est encore connecté.",
+      "notConnected": "{count, plural, one {# parent pas encore connecté} other {# parents pas encore connectés}}",
+      "notConnectedHint": "Ils n'ont pas encore ouvert leur compte Fama School : ils ne peuvent pas recevoir l'annonce pour l'instant.",
+      "notConnectedLabel": "Parents pas encore connectés"
     }
   },
   "events": {

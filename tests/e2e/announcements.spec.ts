@@ -41,7 +41,7 @@ test.describe("Annonces et calendrier", () => {
     await sheet.getByRole("radio", { name: /Parents choisis/ }).click();
     await sheet.getByRole("searchbox", { name: "Rechercher un parent" }).fill("Fatou");
     await sheet.getByRole("list", { name: "Parents de l'école" }).getByRole("checkbox").first().click();
-    await expect(sheet.getByText("1 parent sélectionné")).toBeVisible();
+    await expect(sheet.getByText("1 sélectionné", { exact: true })).toBeVisible();
     await sheet.getByLabel("Titre").fill(personal);
     await sheet.getByLabel("Message").fill("Merci de passer au bureau du directeur.");
     await sheet.getByRole("button", { name: "Publier" }).click();

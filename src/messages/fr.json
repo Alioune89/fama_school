@@ -2353,6 +2353,10 @@
       "announcement": {
         "title": "{title}",
         "body": "Annonce de {from}"
+      },
+      "message": {
+        "title": "Message de {from}",
+        "body": "{subject}"
       }
     },
     "settings": {
@@ -2476,5 +2480,66 @@
       "tooLong": "Un événement dure 120 jours au plus."
     },
     "pageDescription": "Vacances, examens, réunions et fêtes de l'école, avec les compositions programmées et les périodes."
+  },
+  "messages": {
+    "title": "Messages",
+    "descriptionParent": "Écrivez aux professeurs de vos enfants ou à la direction de l'école.",
+    "descriptionTeacher": "Vos échanges avec les parents de vos élèves.",
+    "descriptionDirection": "Messages des parents adressés à la direction, partagés avec le fondateur, la vie scolaire et le secrétariat.",
+    "listLabel": "Conversations",
+    "empty": "Aucune conversation",
+    "emptyHint": "Écrivez un premier message : la réponse arrivera ici.",
+    "direction": "Direction de l'école",
+    "about": "{child} · {subject}",
+    "you": "Vous : {body}",
+    "unread": "Non lu",
+    "new": "Nouveau message",
+    "newHintParent": "Votre message arrive chez le destinataire, qui vous répond ici.",
+    "newHintTeacher": "Écrivez au parent d'un de vos élèves.",
+    "newHintDirection": "Écrivez au parent d'un élève au nom de la direction.",
+    "child": "Enfant concerné",
+    "recipient": "Destinataire",
+    "directionOption": "La direction de l'école",
+    "teacherOption": "{name} ({subjects})",
+    "teacherHomeroom": "{name} (professeur principal)",
+    "student": "Élève concerné",
+    "studentPlaceholder": "Nom de l'élève ou classe…",
+    "studentResults": "Élèves trouvés",
+    "changeStudent": "Changer",
+    "parent": "Parent",
+    "loadingParents": "Recherche des parents…",
+    "noParentAccount": "Aucun parent de cet élève ne s'est encore connecté à Fama School.",
+    "subject": "Objet",
+    "subjectPlaceholder": "Ex. : absence de mardi, devoir de français…",
+    "message": "Message",
+    "send": "Envoyer",
+    "cancel": "Annuler",
+    "back": "Toutes les conversations",
+    "with": "Avec {name} · au sujet de {child}",
+    "threadLabel": "Messages de la conversation",
+    "reply": "Votre réponse",
+    "replyPlaceholder": "Écrire une réponse…",
+    "availability": {
+      "text": "Répond {days}, de {from} à {to}.",
+      "dayRange": "du {from} au {to}",
+      "later": "En dehors de ces horaires, la réponse peut attendre.",
+      "title": "Mes horaires de réponse",
+      "hint": "Les parents les voient quand ils vous écrivent. Vous restez libre de répondre quand vous voulez.",
+      "days": "Jours",
+      "from": "De",
+      "to": "À",
+      "save": "Enregistrer",
+      "saved": "Horaires enregistrés."
+    },
+    "errors": {
+      "invalidMessage": "Objet ou message manquant.",
+      "notTeacherOfStudent": "Ce professeur n'enseigne pas dans la classe de l'enfant.",
+      "notGuardianOfStudent": "Ce parent n'est pas rattaché à cet élève.",
+      "chooseStudent": "Choisissez un élève.",
+      "chooseParent": "Choisissez un parent.",
+      "time": "Heure invalide.",
+      "noDay": "Choisissez au moins un jour.",
+      "endBeforeStart": "L'heure de fin doit suivre l'heure de début."
+    }
   }
 }

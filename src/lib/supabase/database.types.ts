@@ -527,6 +527,91 @@ export type Database = {
           },
         ];
       };
+      conversation_reads: {
+        Row: {
+          conversation_id: string;
+          read_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          conversation_id: string;
+          read_at?: string;
+          user_id: string;
+        };
+        Update: {
+          conversation_id?: string;
+          read_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_reads_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversations: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          last_message_at: string;
+          parent_id: string;
+          parent_name: string;
+          school_id: string;
+          student_id: string;
+          subject: string;
+          teacher_id: string | null;
+          teacher_name: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          last_message_at?: string;
+          parent_id: string;
+          parent_name: string;
+          school_id: string;
+          student_id: string;
+          subject: string;
+          teacher_id?: string | null;
+          teacher_name?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          last_message_at?: string;
+          parent_id?: string;
+          parent_name?: string;
+          school_id?: string;
+          student_id?: string;
+          subject?: string;
+          teacher_id?: string | null;
+          teacher_name?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversations_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversations_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       council_decisions: {
         Row: {
           class_id: string;
@@ -1323,6 +1408,42 @@ export type Database = {
           },
         ];
       };
+      messages: {
+        Row: {
+          body: string;
+          conversation_id: string;
+          created_at: string;
+          id: string;
+          sender_id: string | null;
+          sender_name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          conversation_id: string;
+          created_at?: string;
+          id?: string;
+          sender_id?: string | null;
+          sender_name: string;
+        };
+        Update: {
+          body?: string;
+          conversation_id?: string;
+          created_at?: string;
+          id?: string;
+          sender_id?: string | null;
+          sender_name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       notification_settings: {
         Row: {
           push: boolean;
@@ -1994,6 +2115,28 @@ export type Database = {
         };
         Relationships: [];
       };
+      staff_availability: {
+        Row: {
+          days: number[];
+          ends_at: string;
+          starts_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          days?: number[];
+          ends_at?: string;
+          starts_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          days?: number[];
+          ends_at?: string;
+          starts_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       student_arrivals: {
         Row: {
           date: string;
@@ -2611,6 +2754,7 @@ export type Database = {
       decide_payment_cancellation: { Args: { p_approve: boolean; p_payment_id: string }; Returns: undefined };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
+      mark_conversation_read: { Args: { p_conversation_id: string }; Returns: undefined };
       prune_notifications: { Args: Record<PropertyKey, never>; Returns: number };
       publish_announcement: {
         Args: {
@@ -2655,6 +2799,7 @@ export type Database = {
         Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };
         Returns: undefined;
       };
+      send_message: { Args: { p_body: string; p_conversation_id: string }; Returns: undefined };
       set_online_payment_checkout: { Args: { p_checkout_url: string; p_id: string; p_token: string }; Returns: undefined };
       set_period_lock: { Args: { p_lock: boolean; p_period_id: string }; Returns: undefined };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
@@ -2667,7 +2812,13 @@ export type Database = {
         };
         Returns: string;
       };
+      start_conversation: {
+        Args: { p_body: string; p_parent_id: string; p_student_id: string; p_subject: string; p_teacher_id: string };
+        Returns: string;
+      };
       start_online_payment: { Args: { p_invoice_ids: string[]; p_provider: string; p_student_id: string }; Returns: Json };
+      student_contacts: { Args: { p_student_id: string }; Returns: Json };
+      student_parent_contacts: { Args: { p_student_id: string }; Returns: Json };
       submit_absence_justification: {
         Args: {
           p_comment?: string;

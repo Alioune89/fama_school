@@ -114,6 +114,78 @@ export type Database = {
           },
         ];
       };
+      announcement_recipients: {
+        Row: {
+          announcement_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          announcement_id: string;
+          user_id: string;
+        };
+        Update: {
+          announcement_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "announcement_recipients_announcement_id_fkey";
+            columns: ["announcement_id"];
+            isOneToOne: false;
+            referencedRelation: "announcements";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      announcements: {
+        Row: {
+          audience: string;
+          body: string;
+          class_ids: string[];
+          id: string;
+          published_at: string;
+          published_by: string | null;
+          published_by_name: string;
+          recipient_count: number;
+          school_id: string;
+          title: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          audience: string;
+          body: string;
+          class_ids?: string[];
+          id?: string;
+          published_at?: string;
+          published_by?: string | null;
+          published_by_name: string;
+          recipient_count?: number;
+          school_id: string;
+          title: string;
+        };
+        Update: {
+          audience?: string;
+          body?: string;
+          class_ids?: string[];
+          id?: string;
+          published_at?: string;
+          published_by?: string | null;
+          published_by_name?: string;
+          recipient_count?: number;
+          school_id?: string;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "announcements_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       attendance_changes: {
         Row: {
           new_status: Database["public"]["Enums"]["attendance_status"];
@@ -1693,6 +1765,54 @@ export type Database = {
           },
         ];
       };
+      school_events: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          ends_on: string;
+          id: string;
+          kind: string;
+          school_id: string;
+          staff_only: boolean;
+          starts_on: string;
+          title: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          ends_on: string;
+          id?: string;
+          kind: string;
+          school_id: string;
+          staff_only?: boolean;
+          starts_on: string;
+          title: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          ends_on?: string;
+          id?: string;
+          kind?: string;
+          school_id?: string;
+          staff_only?: boolean;
+          starts_on?: string;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "school_events_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       school_memberships: {
         Row: {
           created_at: string;
@@ -2489,6 +2609,10 @@ export type Database = {
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       prune_notifications: { Args: Record<PropertyKey, never>; Returns: number };
+      publish_announcement: {
+        Args: { p_audience: string; p_body: string; p_class_ids?: string[]; p_school_id: string; p_title: string };
+        Returns: Json;
+      };
       record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       record_departure: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       record_payment: {

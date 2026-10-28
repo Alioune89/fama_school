@@ -23,6 +23,8 @@ export const permissions = {
   recordArrivals: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "supervisor"]),
   /** Décision sur les justificatifs d'absence (private.can_review_absences). */
   reviewAbsences: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "supervisor"]),
+  /** Annonces et calendrier de l'école (private.can_publish). */
+  publish: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "secretary"]),
   /** Ajout au répertoire selon le rôle visé (private.can_invite). */
   inviteRole: (roles: readonly AppRole[], target: AppRole) => {
     if (target === "owner") return hasAny(roles, ["owner"]);

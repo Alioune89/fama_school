@@ -2349,6 +2349,10 @@
       "unknown": {
         "title": "Nouvelle notification",
         "body": ""
+      },
+      "announcement": {
+        "title": "{title}",
+        "body": "Annonce de {from}"
       }
     },
     "settings": {
@@ -2370,5 +2374,86 @@
       "saved": "Vos choix de notification sont enregistrés."
     },
     "justNow": "à l'instant"
+  },
+  "announcements": {
+    "title": "Annonces",
+    "description": "Informez les familles ou le personnel : chaque destinataire reçoit l'annonce dans sa cloche.",
+    "received": "Les informations de l'école qui vous sont adressées.",
+    "new": "Nouvelle annonce",
+    "newHint": "Choisissez les destinataires : ils sont prévenus dès la publication.",
+    "audience": "Destinataires",
+    "audiences": {
+      "parents": "Tous les parents",
+      "classes": "Parents de certaines classes",
+      "overdue": "Familles en retard de paiement",
+      "staff": "Personnel et enseignants"
+    },
+    "audienceHints": {
+      "parents": "Les parents de tous les élèves inscrits cette année.",
+      "classes": "Les parents des élèves des classes choisies.",
+      "overdue": "Les parents d'un élève qui a une facture échue non réglée.",
+      "staff": "La direction, la vie scolaire, le secrétariat et les enseignants."
+    },
+    "classes": "Classes",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Ex. : Réunion des parents d'élèves",
+    "bodyLabel": "Message",
+    "bodyPlaceholder": "Date, heure, lieu, ce qu'il faut apporter…",
+    "publish": "Publier",
+    "cancel": "Annuler",
+    "published": "{count, plural, one {Annonce publiée : # destinataire prévenu.} other {Annonce publiée : # destinataires prévenus.}}",
+    "byline": "{author} · {date}",
+    "sentTo": "{audience} · {count, plural, one {# destinataire} other {# destinataires}}",
+    "sentToClasses": "Parents de {classes} · {count, plural, one {# destinataire} other {# destinataires}}",
+    "listLabel": "Annonces",
+    "empty": "Aucune annonce",
+    "emptyHint": "Les annonces de l'école apparaîtront ici.",
+    "emptyHintManage": "Publiez une première annonce pour les familles ou le personnel.",
+    "deleteFor": "Supprimer « {title} »",
+    "deleteConfirm": "Supprimer l'annonce « {title} » ? Elle disparaîtra aussi chez ses destinataires.",
+    "deleted": "Annonce supprimée.",
+    "errors": {
+      "noClass": "Choisissez au moins une classe.",
+      "noRecipient": "Personne ne correspond à ces destinataires pour l'instant.",
+      "invalidAnnouncement": "Titre ou message manquant."
+    }
+  },
+  "events": {
+    "pageTitle": "Calendrier",
+    "description": "Précisions (facultatif)",
+    "readDescription": "Vacances, examens, réunions et fêtes de l'école.",
+    "new": "Nouvel événement",
+    "newHint": "L'événement apparaît dans le calendrier des familles et du personnel.",
+    "kind": "Type",
+    "kinds": {
+      "holiday": "Vacances",
+      "exam": "Examen",
+      "meeting": "Réunion",
+      "event": "Événement",
+      "composition": "Composition",
+      "period": "Début de période"
+    },
+    "title": "Titre",
+    "titlePlaceholder": "Ex. : Vacances de Noël",
+    "startsOn": "Du",
+    "endsOn": "Au (facultatif)",
+    "staffOnly": "Réservé au personnel",
+    "staffOnlyHint": "Les parents ne le voient pas (conseil des maîtres, réunion pédagogique…).",
+    "staffOnlyShort": "personnel",
+    "save": "Ajouter",
+    "cancel": "Annuler",
+    "added": "Événement ajouté au calendrier.",
+    "range": "du {from} au {to}",
+    "empty": "Rien de prévu pour l'instant",
+    "emptyHint": "Les vacances, examens et réunions de l'école apparaîtront ici.",
+    "emptyHintManage": "Ajoutez les vacances, examens et réunions de l'année.",
+    "deleteFor": "Supprimer « {label} »",
+    "deleteConfirm": "Supprimer l'événement « {label} » ?",
+    "deleted": "Événement supprimé.",
+    "errors": {
+      "endBeforeStart": "La fin doit suivre le début.",
+      "tooLong": "Un événement dure 120 jours au plus."
+    },
+    "pageDescription": "Vacances, examens, réunions et fêtes de l'école, avec les compositions programmées et les périodes."
   }
 }

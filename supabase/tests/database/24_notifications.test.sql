@@ -37,26 +37,26 @@ insert into public.attendance_records (session_id, school_id, class_id, date, st
   ('d0240000-0000-4000-8000-000000000011', '3f240000-0000-4000-8000-000000000010', '9f240000-0000-4000-8000-000000000011',
    current_date, 'b0340000-0000-4000-8000-000000000011', 'absent');
 select results_eq(
-  $$ select user_id, kind, params ->> 'child', params ->> 'status', link from public.notifications $$,
+  $$ select user_id, kind, params ->> 'child', params ->> 'status', link from public.notifications where school_id = '3f240000-0000-4000-8000-000000000010' $$,
   $$ values ('4f240000-0000-4000-8000-000000000011'::uuid, 'attendance'::text, 'Awa'::text, 'absent'::text,
              '/parent/enfants/b0340000-0000-4000-8000-000000000011'::text) $$,
   'absence à l''appel : le parent est prévenu'
 );
 update public.attendance_records set status = 'late' where student_id = 'b0340000-0000-4000-8000-000000000011';
 select results_eq(
-  $$ select count(*)::int, max(params ->> 'status') from public.notifications $$,
+  $$ select count(*)::int, max(params ->> 'status') from public.notifications where school_id = '3f240000-0000-4000-8000-000000000010' $$,
   $$ values (1, 'late'::text) $$,
   'appel corrigé en retard : la même notification est mise à jour, sans doublon'
 );
 update public.attendance_records set status = 'present' where student_id = 'b0340000-0000-4000-8000-000000000011';
-select is_empty($$ select 1 from public.notifications $$, 'finalement présente : la notification disparaît');
+select is_empty($$ select 1 from public.notifications where school_id = '3f240000-0000-4000-8000-000000000010' $$, 'finalement présente : la notification disparaît');
 
 -- Facture, paiement, demande d'annulation.
 insert into public.invoices (id, school_id, academic_year_id, student_id, number, billing_month, label, due_on, total) values
   ('e1300000-0000-4000-8000-000000000011', '3f240000-0000-4000-8000-000000000010', '5f860000-0000-4000-8000-000000000011',
    'b0340000-0000-4000-8000-000000000011', 'F2026-00001', '2026-10-01', 'Mensualité octobre 2026', current_date + 5, 25000);
 select results_eq(
-  $$ select kind, (params ->> 'total')::int from public.notifications $$,
+  $$ select kind, (params ->> 'total')::int from public.notifications where school_id = '3f240000-0000-4000-8000-000000000010' $$,
   $$ values ('invoiceIssued'::text, 25000) $$,
   'facture émise : le parent est prévenu'
 );
@@ -75,7 +75,7 @@ select lives_ok(
 );
 reset role;
 select results_eq(
-  $$ select user_id, kind from public.notifications where kind <> 'invoiceIssued' order by kind $$,
+  $$ select user_id, kind from public.notifications where school_id = '3f240000-0000-4000-8000-000000000010' and kind <> 'invoiceIssued' order by kind $$,
   $$ values ('4f240000-0000-4000-8000-000000000012'::uuid, 'paymentCancelRequested'::text),
             ('4f240000-0000-4000-8000-000000000011'::uuid, 'paymentReceived'::text) $$,
   'paiement reçu chez le parent ; demande d''annulation chez le directeur (pas chez le comptable qui l''a faite)'
@@ -86,7 +86,7 @@ insert into public.student_reports (id, school_id, student_id, class_id, categor
   ('a7240000-0000-4000-8000-000000000011', '3f240000-0000-4000-8000-000000000010', 'b0340000-0000-4000-8000-000000000011',
    '9f240000-0000-4000-8000-000000000011', 'health', 'Fièvre en classe', now(), 'Awa Diop');
 select is(
-  (select params ->> 'author' from public.notifications where kind = 'studentReport'),
+  (select params ->> 'author' from public.notifications where school_id = '3f240000-0000-4000-8000-000000000010' and kind = 'studentReport'),
   'Awa Diop',
   'signalement : le parent est prévenu, avec le nom de l''enseignante'
 );

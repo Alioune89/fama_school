@@ -110,8 +110,8 @@ const direction: SpaceNavigation = {
         { label: "expenses", href: "/direction/finances/depenses" },
       ],
     },
-    { label: "announcements", href: "/direction/annonces", icon: "announcements", soon: true },
-    { label: "calendar", href: "/direction/calendrier", icon: "calendar", soon: true },
+    { label: "announcements", href: "/direction/annonces", icon: "announcements" },
+    { label: "calendar", href: "/direction/calendrier", icon: "calendar" },
     { label: "messages", href: "/direction/messages", icon: "messages", soon: true },
   ],
   other: [
@@ -129,6 +129,8 @@ const professeur: SpaceNavigation = {
     { label: "rollCall", href: "/professeur/appel", icon: "rollCall" },
     { label: "reports", href: "/professeur/signalements", icon: "reports" },
     { label: "gradeEntry", href: "/professeur/notes", icon: "grades" },
+    { label: "announcements", href: "/professeur/annonces", icon: "announcements" },
+    { label: "calendar", href: "/professeur/calendrier", icon: "calendar" },
     { label: "programme", href: "/professeur/programme", icon: "programme", soon: true },
     { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework", soon: true },
     { label: "messages", href: "/professeur/messages", icon: "messages", soon: true },
@@ -141,9 +143,9 @@ professeur.mobile = pick(professeur.menu, ["home", "rollCall", "reports", "messa
 const parent: SpaceNavigation = {
   menu: [
     { label: "children", href: "/parent", icon: "children" },
-    { label: "gradeEntry", href: "/parent/notes", icon: "grades", soon: true },
-    { label: "attendance", href: "/parent/presences", icon: "attendance", soon: true },
     { label: "payments", href: "/parent/paiements", icon: "payments" },
+    { label: "announcements", href: "/parent/annonces", icon: "announcements" },
+    { label: "calendar", href: "/parent/calendrier", icon: "calendar" },
     { label: "messages", href: "/parent/messages", icon: "messages", soon: true },
   ],
   other: [{ label: "profile", href: "/parent/profil", icon: "profile" }],

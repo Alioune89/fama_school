@@ -1248,6 +1248,76 @@ export type Database = {
           },
         ];
       };
+      notification_settings: {
+        Row: {
+          push: boolean;
+          sms: boolean;
+          updated_at: string;
+          user_id: string;
+          whatsapp: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          push?: boolean;
+          sms?: boolean;
+          updated_at?: string;
+          user_id?: string;
+          whatsapp?: boolean;
+        };
+        Update: {
+          push?: boolean;
+          sms?: boolean;
+          updated_at?: string;
+          user_id?: string;
+          whatsapp?: boolean;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          created_at: string;
+          dedupe_key: string;
+          id: string;
+          kind: string;
+          link: string | null;
+          params: NonNullable<Json>;
+          read_at: string | null;
+          school_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          dedupe_key: string;
+          id?: string;
+          kind: string;
+          link?: string | null;
+          params?: NonNullable<Json>;
+          read_at?: string | null;
+          school_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          dedupe_key?: string;
+          id?: string;
+          kind?: string;
+          link?: string | null;
+          params?: NonNullable<Json>;
+          read_at?: string | null;
+          school_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       online_payments: {
         Row: {
           amount: number;
@@ -2418,6 +2488,7 @@ export type Database = {
       decide_payment_cancellation: { Args: { p_approve: boolean; p_payment_id: string }; Returns: undefined };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
+      prune_notifications: { Args: Record<PropertyKey, never>; Returns: number };
       record_arrival: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       record_departure: { Args: { p_operation_id: string; p_scanned_at: string; p_student_id: string }; Returns: string };
       record_payment: {

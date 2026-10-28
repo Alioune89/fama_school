@@ -3,6 +3,7 @@ import { Bell, MessagesSquare, Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/brand/logo";
 import { NAVIGATION } from "@/config/navigation";
+import { NotificationBell } from "@/features/notifications/components/notification-bell";
 import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import type { Space } from "@/lib/auth/spaces";
@@ -58,9 +59,15 @@ export async function Topbar({ space }: { space: Space }) {
             <MessagesSquare className="size-[18px]" aria-hidden strokeWidth={1.75} />
           </Link>
         )}
-        <button type="button" className={iconButton} aria-label={tCommon("notifications")}>
-          <Bell className="size-[18px]" aria-hidden strokeWidth={1.75} />
-        </button>
+        <Suspense
+          fallback={
+            <span className={iconButton} aria-hidden>
+              <Bell className="size-[18px]" strokeWidth={1.75} />
+            </span>
+          }
+        >
+          <NotificationBell className={iconButton} />
+        </Suspense>
         <Suspense fallback={<UserMenuSkeleton />}>
           <UserMenu space={space} />
         </Suspense>

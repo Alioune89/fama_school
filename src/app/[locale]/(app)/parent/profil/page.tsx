@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { ConsentForm } from "@/features/consents/components/consent-form";
 import { getMyConsents } from "@/features/consents/queries";
+import { NotificationSettingsForm } from "@/features/notifications/components/notification-settings-form";
+import { getNotificationSettings } from "@/features/notifications/queries";
 import { requireSpace } from "@/lib/auth/session";
 import { formatPhone } from "@/lib/phone";
 
@@ -16,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Profil du parent : identité, langue et consentements (modifiables à tout moment). */
 async function Profile() {
   const { user } = await requireSpace("parent");
-  const { consents } = await getMyConsents(user.id);
+  const [{ consents }, settings] = await Promise.all([getMyConsents(user.id), getNotificationSettings(user.id)]);
   const name = user.fullName ?? formatPhone(user.phone ?? "");
   return (
     <div className="max-w-xl space-y-6">
@@ -28,6 +30,7 @@ async function Profile() {
         </div>
       </section>
       <ConsentForm initial={consents} mode="profile" />
+      <NotificationSettingsForm initial={settings} />
     </div>
   );
 }

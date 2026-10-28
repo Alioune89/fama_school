@@ -84,7 +84,7 @@ select results_eq(
   'paiement réussi : encaissement « en ligne » de 50 000 FCFA, avec la référence du fournisseur'
 );
 select results_eq(
-  $$ select number, amount_paid from public.invoices order by number $$,
+  $$ select number, amount_paid from public.invoices where school_id = '3f210000-0000-4000-8000-000000000010' order by number $$,
   $$ values ('F2026-00001'::text, 25000), ('F2026-00002', 25000) $$,
   'les deux factures sont soldées'
 );
@@ -93,7 +93,7 @@ select is(
   (select payment_id from settled),
   'une seconde notification ne crée pas un second encaissement'
 );
-select is((select count(*)::int from public.payments), 1, 'un seul reçu');
+select is((select count(*)::int from public.payments where school_id = '3f210000-0000-4000-8000-000000000010'), 1, 'un seul reçu');
 select is(
   (select status::text from public.online_payments where id = (select (r ->> 'id')::uuid from first_try)),
   'succeeded',

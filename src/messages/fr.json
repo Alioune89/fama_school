@@ -2301,5 +2301,74 @@
       "dataRequired": "Le suivi scolaire est indispensable pour utiliser l'espace parents. Pour retirer votre accord, adressez-vous à l'école."
     },
     "install": "Installez Fama School sur votre téléphone : vos enfants à portée de main, même avec une connexion faible."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "bell": "Notifications",
+    "bellUnread": "{count, plural, one {Notifications : # non lue} other {Notifications : # non lues}}",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Aucune notification pour l'instant.",
+    "unreadAgo": "Nouveau · {ago}",
+    "kinds": {
+      "attendance": {
+        "title": "{status, select, late {Retard de {child}} other {Absence de {child}}} ({slot})",
+        "body": "Appel du {date}. Vous pouvez envoyer un justificatif depuis sa fiche."
+      },
+      "gradePublished": {
+        "title": "Nouvelle note pour {child}",
+        "body": "{subject} · {title}"
+      },
+      "reportCardPublished": {
+        "title": "Bulletin de {child} disponible",
+        "body": "{period}"
+      },
+      "studentReport": {
+        "title": "Signalement pour {child} : {category}",
+        "body": "Par {author}"
+      },
+      "invoiceIssued": {
+        "title": "Nouvelle facture pour {child}",
+        "body": "{label} · {total}, à régler avant le {dueOn}"
+      },
+      "paymentReceived": {
+        "title": "Paiement reçu pour {child}",
+        "body": "{amount} · reçu {number}"
+      },
+      "justificationReviewed": {
+        "title": "{status, select, accepted {Justificatif de {child} accepté} other {Justificatif de {child} refusé}}",
+        "body": "{note}"
+      },
+      "justificationReceived": {
+        "title": "Justificatif reçu pour {child}",
+        "body": "Envoyé par {from}, à examiner"
+      },
+      "paymentCancelRequested": {
+        "title": "Annulation demandée : reçu {number}",
+        "body": "{amount} · {reason}"
+      },
+      "unknown": {
+        "title": "Nouvelle notification",
+        "body": ""
+      }
+    },
+    "settings": {
+      "title": "Me prévenir aussi par",
+      "hint": "Les notifications arrivent toujours dans la cloche de l'application. Choisissez les autres moyens de vous prévenir.",
+      "push": {
+        "title": "Notifications sur le téléphone",
+        "body": "Une alerte s'affiche sur votre téléphone, même application fermée (après installation)."
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "body": "Un message WhatsApp pour les absences, bulletins et paiements."
+      },
+      "sms": {
+        "title": "SMS",
+        "body": "Un SMS, utile si vous n'avez pas toujours internet."
+      },
+      "save": "Enregistrer mes notifications",
+      "saved": "Vos choix de notification sont enregistrés."
+    },
+    "justNow": "à l'instant"
   }
 }

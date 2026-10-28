@@ -54,7 +54,7 @@ test.describe("Espace parents", () => {
     await expect(page.getByRole("switch", { name: "Photos" })).toBeChecked();
     await expect(location).not.toBeChecked();
     await checkSwitch(location);
-    await page.getByRole("button", { name: "Enregistrer" }).click();
+    await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
     await expect(page.getByText("Vos choix sont enregistrés.")).toBeVisible();
     await page.reload();
     await expect(location).toBeChecked();

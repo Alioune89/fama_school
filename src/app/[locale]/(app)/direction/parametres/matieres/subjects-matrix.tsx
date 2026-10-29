@@ -103,6 +103,11 @@ export function SubjectsMatrix({
       for (const item of cycles) {
         const presets = [...SUBJECT_PRESETS[item.code], ...(francoArabic && item.code !== "prescolaire" ? ARABIC_SUBJECT_PRESETS : [])];
         for (const preset of presets) {
+          // Matière propre à des séries que l'école n'a pas (économie sans série G…) : pas proposée.
+          const taught = item.levels.some((level) =>
+            appliesToLevel(preset, { code: level.code, label: level.label, series: level.series ?? undefined }),
+          );
+          if (!taught) continue;
           let row = next.find((candidate) => normalize(candidate.name) === normalize(preset.name));
           if (!row) {
             row = {

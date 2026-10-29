@@ -45,12 +45,13 @@ describe("préréglages des cycles", () => {
 });
 
 describe("préréglages des matières", () => {
-  it.each(Object.entries(SUBJECT_PRESETS))("%s : noms uniques et coefficients positifs", (_, subjects) => {
+  it.each(Object.entries(SUBJECT_PRESETS))("%s : noms uniques, coefficients positifs ou nuls, chaque matière enseignée quelque part", (_, subjects) => {
     const names = subjects.map((subject) => subject.name);
     expect(new Set(names).size).toBe(names.length);
     for (const subject of subjects) {
-      expect(subject.coefficient.default).toBeGreaterThan(0);
-      for (const value of Object.values(subject.coefficient.bySeries ?? {})) expect(value).toBeGreaterThan(0);
+      const values = [subject.coefficient.default, ...Object.values(subject.coefficient.bySeries ?? {})];
+      for (const value of values) expect(value).toBeGreaterThanOrEqual(0);
+      expect(Math.max(...(values as number[]))).toBeGreaterThan(0);
     }
   });
 
@@ -62,12 +63,25 @@ describe("préréglages des matières", () => {
     expect(coefficientFor(philo.coefficient, "L")).toBe(5);
   });
 
-  it("applique aux séries numérotées les coefficients de leur famille", () => {
-    const maths = SUBJECT_PRESETS.secondaire.find((subject) => subject.name === "Mathématiques")!;
-    expect(coefficientFor(maths.coefficient, "S1")).toBe(5);
-    expect(coefficientFor(maths.coefficient, "T2")).toBe(5);
-    expect(coefficientFor(maths.coefficient, "L'1")).toBe(2);
-    expect(coefficientFor(maths.coefficient, "G")).toBe(2);
+  it("pondère chaque série de Première et Terminale selon sa dominante", () => {
+    const subject = (name: string) => SUBJECT_PRESETS.secondaire.find((candidate) => candidate.name === name)!.coefficient;
+    expect(coefficientFor(subject("Mathématiques"), "S1")).toBe(8);
+    expect(coefficientFor(subject("Sciences de la vie et de la Terre"), "S2")).toBe(6);
+    expect(coefficientFor(subject("Philosophie"), "L2")).toBe(6);
+    expect(coefficientFor(subject("Techniques de gestion et comptabilité"), "G")).toBe(6);
+    // Repli sur la famille pour une valeur non précisée.
+    expect(coefficientFor(subject("Histoire-Géographie"), "S5")).toBe(2);
+    expect(coefficientFor(subject("Philosophie"), "L'1")).toBe(5);
+  });
+
+  it("n'enseigne une matière que dans les séries où elle a un coefficient", () => {
+    const subject = (name: string) => SUBJECT_PRESETS.secondaire.find((candidate) => candidate.name === name)!;
+    const tle = (series: string) => ({ code: "Tle", label: "Terminale", series });
+    expect(appliesToLevel(subject("Économie"), tle("G"))).toBe(true);
+    expect(appliesToLevel(subject("Économie"), tle("S1"))).toBe(false);
+    expect(appliesToLevel(subject("Sciences physiques"), tle("L2"))).toBe(false);
+    expect(appliesToLevel(subject("Sciences physiques"), { code: "2nde", label: "Seconde", series: "L" })).toBe(true);
+    expect(appliesToLevel(subject("Arabe"), tle("LA"))).toBe(true);
   });
 
   it("n'enseigne la philosophie qu'en 1ère et en Terminale", () => {

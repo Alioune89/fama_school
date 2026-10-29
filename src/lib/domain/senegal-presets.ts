@@ -24,7 +24,10 @@ export type CyclePreset = {
   levels: LevelPreset[];
 };
 
-/** Coefficient d'une matière : valeur commune, éventuellement différente selon la série (lycée). */
+/**
+ * Coefficient d'une matière : valeur commune, éventuellement différente selon la série (lycée) ; 0 = matière non
+ * enseignée dans cette série.
+ */
 export type CoefficientRule = { default: number; bySeries?: Partial<Record<string, number>> };
 
 export type SubjectPreset = {
@@ -146,14 +149,95 @@ export const SUBJECT_PRESETS: Record<CycleCode, SubjectPreset[]> = {
     { name: "Arts plastiques", shortName: "ARTS", group: "Arts et sport", track: "french", coefficient: one, optional: true },
   ],
   secondaire: [
-    { name: "Français", shortName: "FR", group: "Lettres", track: "french", coefficient: { default: 3, bySeries: { L: 5 } } },
-    { name: "Philosophie", shortName: "PHILO", group: "Lettres", track: "french", coefficient: { default: 2, bySeries: { L: 5 } }, onlyLevels: ["1ère", "Tle"] },
-    { name: "Mathématiques", shortName: "MATHS", group: "Sciences", track: "french", coefficient: { default: 2, bySeries: { S: 5 } } },
-    { name: "Sciences physiques", shortName: "PC", group: "Sciences", track: "french", coefficient: { default: 1, bySeries: { S: 5 } } },
-    { name: "Sciences de la vie et de la Terre", shortName: "SVT", group: "Sciences", track: "french", coefficient: { default: 2, bySeries: { S: 4 } } },
-    { name: "Histoire-Géographie", shortName: "HG", group: "Lettres", track: "french", coefficient: { default: 2, bySeries: { L: 4 } } },
-    { name: "Anglais", shortName: "ANG", group: "Langues", track: "french", coefficient: { default: 2, bySeries: { L: 4 } } },
-    { name: "Espagnol", shortName: "ESP", group: "Langues", track: "french", coefficient: { default: 2, bySeries: { L: 3 } }, optional: true },
+    // Seconde : familles L et S. Première et Terminale : pondération indicative par série, dans l'esprit des épreuves
+    // du BAC (S1 maths-physique, S2 sciences expérimentales, L2 philosophie et lettres, G gestion…), à ajuster par
+    // chaque école.
+    {
+      name: "Français",
+      shortName: "FR",
+      group: "Lettres",
+      track: "french",
+      coefficient: { default: 3, bySeries: { L: 5, L1: 5, L2: 5, "L'1": 5, LA: 4, T1: 2, T2: 2 } },
+    },
+    {
+      name: "Philosophie",
+      shortName: "PHILO",
+      group: "Lettres",
+      track: "french",
+      coefficient: { default: 2, bySeries: { L: 5, L1: 5, L2: 6, "L'1": 5, LA: 5 } },
+      onlyLevels: ["1ère", "Tle"],
+    },
+    {
+      name: "Mathématiques",
+      shortName: "MATHS",
+      group: "Sciences",
+      track: "french",
+      coefficient: { default: 2, bySeries: { S: 5, S1: 8, S2: 5, S3: 6, S4: 4, S5: 4, T1: 5, T2: 5, G: 4, LA: 1 } },
+    },
+    {
+      name: "Sciences physiques",
+      shortName: "PC",
+      group: "Sciences",
+      track: "french",
+      coefficient: { default: 1, bySeries: { S: 5, S1: 8, S2: 6, S3: 6, S4: 4, S5: 4, T1: 5, T2: 5, L1: 0, L2: 0, "L'1": 0, LA: 0, G: 0 } },
+    },
+    {
+      name: "Sciences de la vie et de la Terre",
+      shortName: "SVT",
+      group: "Sciences",
+      track: "french",
+      coefficient: { default: 2, bySeries: { S: 4, S1: 2, S2: 6, S3: 0, S4: 6, S5: 6, T1: 0, T2: 0, LA: 0, G: 0 } },
+    },
+    {
+      name: "Histoire-Géographie",
+      shortName: "HG",
+      group: "Lettres",
+      track: "french",
+      coefficient: { default: 2, bySeries: { L: 4, L1: 4, L2: 5, "L'1": 4, LA: 4, G: 3 } },
+    },
+    {
+      name: "Anglais",
+      shortName: "ANG",
+      group: "Langues",
+      track: "french",
+      coefficient: { default: 2, bySeries: { L: 4, L1: 4, L2: 4, "L'1": 4, LA: 3, G: 3 } },
+    },
+    {
+      name: "Espagnol",
+      shortName: "ESP",
+      group: "Langues",
+      track: "french",
+      coefficient: { default: 2, bySeries: { L: 3, L1: 4, L2: 3, "L'1": 0, LA: 0, T1: 0, T2: 0 } },
+      optional: true,
+    },
+    {
+      name: "Arabe",
+      shortName: "AR",
+      group: "Langues",
+      track: "french",
+      coefficient: { default: 0, bySeries: { "L'1": 4, LA: 6 } },
+    },
+    {
+      name: "Économie",
+      shortName: "ECO",
+      group: "Économie et gestion",
+      track: "french",
+      coefficient: { default: 0, bySeries: { G: 5 } },
+    },
+    {
+      name: "Techniques de gestion et comptabilité",
+      shortName: "GEST",
+      group: "Économie et gestion",
+      track: "french",
+      coefficient: { default: 0, bySeries: { G: 6 } },
+    },
+    {
+      name: "Technologie",
+      shortName: "TECH",
+      group: "Sciences et techniques",
+      track: "french",
+      coefficient: { default: 0, bySeries: { S3: 6, T1: 8, T2: 8 } },
+    },
     { name: "Éducation physique et sportive", shortName: "EPS", group: "Arts et sport", track: "french", coefficient: one },
   ],
 };
@@ -199,8 +283,10 @@ export function coefficientFor(rule: CoefficientRule, series?: string): number {
   return rule.bySeries?.[series] ?? (family ? rule.bySeries?.[family] : undefined) ?? rule.default;
 }
 
+/** Matière enseignée à ce niveau (niveaux concernés, et coefficient non nul pour la série). */
 export function appliesToLevel(subject: SubjectPreset, level: LevelPreset): boolean {
-  return !subject.onlyLevels || subject.onlyLevels.includes(level.code);
+  if (subject.onlyLevels && !subject.onlyLevels.includes(level.code)) return false;
+  return coefficientFor(subject.coefficient, level.series) > 0;
 }
 
 /** Lettres des classes parallèles : A, B, C… */

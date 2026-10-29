@@ -18,8 +18,8 @@ select is_empty(
 select is(
   (select string_agg(p.proname::text, ',' order by p.proname::text) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute')),
-  'public_school_site,verify_report_card',
-  'un visiteur anonyme n''appelle que le site vitrine publié et la vérification publique des bulletins et reçus'
+  'preregistration_levels,public_school_site,submit_preregistration,verify_report_card',
+  'un visiteur anonyme n''appelle que le site vitrine publié, la pré-inscription et la vérification publique des bulletins et reçus'
 );
 
 select is_empty(
@@ -74,7 +74,7 @@ select is_empty(
          'publish_announcement', 'record_payment', 'report_card_download_blocked', 'request_payment_cancellation',
          'send_message', 'set_chapter_progress', 'start_conversation', 'start_online_payment', 'student_contacts',
          'student_parent_contacts', 'upcoming_compositions', 'validate_chapter', 'verify_report_card',
-         'public_school_site'
+         'public_school_site', 'preregistration_levels', 'submit_preregistration', 'enroll_preregistration'
        ) $$,
   'aucune fonction à privilèges nouvelle n''est ouverte sans relecture'
 );

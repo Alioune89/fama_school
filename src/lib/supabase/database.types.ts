@@ -1,6 +1,23 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: { Args: { extensions?: Json; operationName?: string; query?: string; variables?: Json }; Returns: Json };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       absence_justifications: {
@@ -2012,6 +2029,104 @@ export type Database = {
         };
         Relationships: [];
       };
+      preregistrations: {
+        Row: {
+          attachments: NonNullable<Json>;
+          child_birth_date: string | null;
+          child_first_name: string;
+          child_last_name: string;
+          child_sex: Database["public"]["Enums"]["sex"];
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          decision_note: string | null;
+          guardian_email: string | null;
+          guardian_name: string;
+          guardian_phone: string;
+          guardian_relationship: Database["public"]["Enums"]["guardian_relationship"];
+          id: string;
+          level_id: string | null;
+          message: string | null;
+          previous_school: string | null;
+          reference: string;
+          school_id: string;
+          status: Database["public"]["Enums"]["preregistration_status"];
+          student_id: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attachments?: NonNullable<Json>;
+          child_birth_date?: string | null;
+          child_first_name: string;
+          child_last_name: string;
+          child_sex: Database["public"]["Enums"]["sex"];
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          decision_note?: string | null;
+          guardian_email?: string | null;
+          guardian_name: string;
+          guardian_phone: string;
+          guardian_relationship?: Database["public"]["Enums"]["guardian_relationship"];
+          id?: string;
+          level_id?: string | null;
+          message?: string | null;
+          previous_school?: string | null;
+          reference: string;
+          school_id: string;
+          status?: Database["public"]["Enums"]["preregistration_status"];
+          student_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          attachments?: NonNullable<Json>;
+          child_birth_date?: string | null;
+          child_first_name?: string;
+          child_last_name?: string;
+          child_sex?: Database["public"]["Enums"]["sex"];
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          decision_note?: string | null;
+          guardian_email?: string | null;
+          guardian_name?: string;
+          guardian_phone?: string;
+          guardian_relationship?: Database["public"]["Enums"]["guardian_relationship"];
+          id?: string;
+          level_id?: string | null;
+          message?: string | null;
+          previous_school?: string | null;
+          reference?: string;
+          school_id?: string;
+          status?: Database["public"]["Enums"]["preregistration_status"];
+          student_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "preregistrations_level_id_fkey";
+            columns: ["level_id"];
+            isOneToOne: false;
+            referencedRelation: "levels";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "preregistrations_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "preregistrations_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_path: string | null;
@@ -3094,10 +3209,12 @@ export type Database = {
       cancel_invoice: { Args: { p_invoice_id: string; p_reason: string }; Returns: undefined };
       claim_deliveries: { Args: { p_limit?: number }; Returns: Json };
       decide_payment_cancellation: { Args: { p_approve: boolean; p_payment_id: string }; Returns: undefined };
+      enroll_preregistration: { Args: { p_class_id: string; p_id: string; p_matricule?: string }; Returns: string };
       finish_delivery: { Args: { p_error?: string; p_id: string; p_ok: boolean; p_provider_id?: string }; Returns: undefined };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       mark_conversation_read: { Args: { p_conversation_id: string }; Returns: undefined };
+      preregistration_levels: { Args: { p_slug: string }; Returns: Json };
       prune_notifications: { Args: Record<PropertyKey, never>; Returns: number };
       public_school_site: { Args: { p_preview?: boolean; p_slug: string }; Returns: Json };
       publish_announcement: {
@@ -3181,6 +3298,7 @@ export type Database = {
         Args: { p_entered_at: string; p_evaluation_id: string; p_marks: Json; p_operation_id: string };
         Returns: string;
       };
+      submit_preregistration: { Args: { p_data: Json; p_slug: string }; Returns: string };
       submit_roll_call: {
         Args: {
           p_class_id: string;
@@ -3234,6 +3352,7 @@ export type Database = {
       payment_status: "valid" | "cancel_requested" | "cancelled";
       period_kind: "semester" | "trimester";
       person_status: "active" | "inactive";
+      preregistration_status: "pending" | "accepted" | "rejected" | "enrolled";
       report_category: "behavior" | "health" | "homework" | "equipment" | "other";
       school_plan: "pilot" | "starter" | "school" | "establishment" | "group";
       school_status: "trial" | "active" | "suspended" | "archived";
@@ -3345,6 +3464,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       acquisition_level: ["acquired", "in_progress", "not_acquired"],
@@ -3372,6 +3494,7 @@ export const Constants = {
       payment_status: ["valid", "cancel_requested", "cancelled"],
       period_kind: ["semester", "trimester"],
       person_status: ["active", "inactive"],
+      preregistration_status: ["pending", "accepted", "rejected", "enrolled"],
       report_category: ["behavior", "health", "homework", "equipment", "other"],
       school_plan: ["pilot", "starter", "school", "establishment", "group"],
       school_status: ["trial", "active", "suspended", "archived"],

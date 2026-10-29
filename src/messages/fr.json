@@ -843,7 +843,9 @@
       "emptyHint": "Inscrivez vos élèves un par un ou importez la liste de l'école depuis un fichier Excel.",
       "setupFirst": "Créez d'abord l'année scolaire et les classes",
       "setupFirstHint": "Les élèves sont inscrits dans une classe de l'année en cours.",
-      "goToSettings": "Ouvrir les paramètres"
+      "goToSettings": "Ouvrir les paramètres",
+      "preregistrations": "Pré-inscriptions",
+      "pendingPreregistrations": "{count, plural, one {# demande en attente} other {# demandes en attente}}"
     },
     "form": {
       "registerTitle": "Inscrire un élève",
@@ -2387,6 +2389,10 @@
       "homework": {
         "title": "Nouveau devoir de {subject}",
         "body": "Pour le {dueOn} : {homework}"
+      },
+      "preregistration": {
+        "title": "Pré-inscription : {child}",
+        "body": "Demande en ligne pour {level}, à examiner"
       }
     },
     "settings": {
@@ -2809,7 +2815,8 @@
         "admissions": "Admissions",
         "contact": "Contact"
       },
-      "contactCta": "Nous contacter",
+      "preregisterShort": "Pré-inscription",
+      "preregisterCta": "Pré-inscrire mon enfant",
       "whatsappCta": "Écrire sur WhatsApp",
       "whatsappMessage": "Bonjour {school}, je souhaite avoir des informations sur les inscriptions.",
       "callCta": "Appeler",
@@ -2829,6 +2836,126 @@
       "whatsapp": "WhatsApp",
       "email": "E-mail",
       "poweredBy": "Site propulsé par Fama School"
+    }
+  },
+  "preregistrations": {
+    "title": "Pré-inscriptions",
+    "hint": "Demandes déposées par les parents sur le site de l'école. Examinez-les, prévenez le parent, puis inscrivez l'enfant en un clic.",
+    "forbidden": "Les pré-inscriptions sont suivies par la direction et le secrétariat.",
+    "filterLabel": "Filtrer par statut",
+    "all": "Toutes",
+    "statuses": {
+      "pending": "En attente",
+      "accepted": "Retenue",
+      "rejected": "Refusée",
+      "enrolled": "Inscrit"
+    },
+    "empty": "Aucune demande ici",
+    "emptyHint": "Les parents déposent leurs demandes depuis le site de l'école, bouton « Pré-inscrire mon enfant ». Publiez le site depuis la page Site de l'école.",
+    "receivedOn": "reçue le {date}",
+    "attachmentCount": "{count, plural, one {# pièce jointe} other {# pièces jointes}}",
+    "openStudent": "Voir la fiche de l'élève",
+    "decisionNote": "Mot au parent :",
+    "noClasses": "Aucune classe pour l'année en cours : créez les classes dans les paramètres avant d'inscrire.",
+    "childTitle": "L'enfant",
+    "level": "Niveau demandé",
+    "sex": "Sexe",
+    "birthDate": "Date de naissance",
+    "previousSchool": "École précédente",
+    "guardianTitle": "Le parent",
+    "guardianName": "Nom",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "call": "Appeler",
+    "whatsapp": "WhatsApp",
+    "message": "Message du parent",
+    "attachments": "Pièces jointes",
+    "noAttachments": "Aucune pièce jointe.",
+    "decision": {
+      "note": "Mot pour le parent (facultatif)",
+      "noteHint": "Envoyé par SMS avec la décision, si l'envoi de SMS est activé.",
+      "cancel": "Annuler",
+      "acceptedAction": "Retenir",
+      "acceptedTitle": "Retenir la demande",
+      "acceptedHint": "Le parent est prévenu que la demande est retenue et que l'école le recontacte pour finaliser l'inscription.",
+      "acceptedPlaceholder": "Ex. : présentez-vous jeudi à 9 h avec l'extrait de naissance.",
+      "acceptedConfirm": "Retenir",
+      "acceptedDone": "Demande retenue.",
+      "acceptedNotified": "Demande retenue. Le parent est prévenu par SMS.",
+      "rejectedAction": "Refuser",
+      "rejectedTitle": "Refuser la demande",
+      "rejectedHint": "Le parent est prévenu que la demande n'a pas pu être retenue.",
+      "rejectedPlaceholder": "Ex. : la classe de sixième est complète cette année.",
+      "rejectedConfirm": "Refuser",
+      "rejectedDone": "Demande refusée.",
+      "rejectedNotified": "Demande refusée. Le parent est prévenu par SMS."
+    },
+    "enroll": {
+      "action": "Inscrire",
+      "title": "Inscrire {name}",
+      "hint": "La fiche de l'élève est créée dans la classe choisie, avec son parent, pour l'année en cours.",
+      "suggested": "Classes du niveau demandé",
+      "otherClasses": "Autres classes",
+      "allClasses": "Classes",
+      "matricule": "Matricule (facultatif)",
+      "matriculeHint": "Laissez vide pour le numéro automatique.",
+      "confirm": "Inscrire",
+      "done": "{name} est inscrit(e).",
+      "doneNotified": "{name} est inscrit(e). Le parent est prévenu par SMS."
+    },
+    "sms": {
+      "accepted": "{school} : la demande de pré-inscription de {child} (réf. {reference}) est retenue. L'école vous recontacte pour finaliser l'inscription. {note}",
+      "rejected": "{school} : la demande de pré-inscription de {child} (réf. {reference}) n'a pas pu être retenue. {note}",
+      "enrolled": "{school} : {child} est inscrit(e). Bienvenue ! Vous recevrez bientôt l'accès à l'espace parents."
+    },
+    "public": {
+      "metaTitle": "Pré-inscription · {school}",
+      "title": "Pré-inscription",
+      "intro": "Demandez une place pour votre enfant à {school}. L'école étudie votre demande et vous recontacte par téléphone.",
+      "back": "Retour au site de l'école",
+      "closed": "Les pré-inscriptions en ligne ne sont pas encore ouvertes. Contactez l'école par téléphone."
+    },
+    "form": {
+      "childTitle": "L'enfant",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "sex": "Sexe",
+      "birthDate": "Date de naissance",
+      "level": "Classe demandée",
+      "previousSchool": "École précédente (facultatif)",
+      "choose": "Choisir…",
+      "guardianTitle": "Vous, le parent",
+      "guardianName": "Prénom et nom",
+      "relationship": "Lien avec l'enfant",
+      "phone": "Téléphone",
+      "phoneHint": "L'école vous répond à ce numéro.",
+      "email": "E-mail (facultatif)",
+      "filesTitle": "Documents",
+      "filesHint": "Facultatif : extrait de naissance, dernier bulletin… Une photo nette suffit ({count} au plus).",
+      "addFile": "Ajouter un document",
+      "removeFile": "Retirer {name}",
+      "fileErrors": {
+        "unsupported": "{name} : format non pris en charge (photo ou PDF).",
+        "tooLarge": "{name} : fichier trop volumineux (3 Mo au plus)."
+      },
+      "message": "Message pour l'école (facultatif)",
+      "messagePlaceholder": "Une question, une précision sur votre enfant…",
+      "submit": "Envoyer la demande",
+      "uploading": "Envoi des documents…",
+      "sending": "Envoi…",
+      "privacy": "Vos informations sont transmises uniquement à {school}.",
+      "successTitle": "Demande envoyée",
+      "successBody": "{school} a bien reçu votre demande et vous recontacte par téléphone.",
+      "reference": "Votre référence :"
+    },
+    "errors": {
+      "levelRequired": "Choisissez la classe demandée.",
+      "unknownSchool": "Cette école ne reçoit pas de pré-inscription en ligne.",
+      "invalidAttachment": "Un document n'a pas pu être joint. Retirez-le puis ajoutez-le de nouveau.",
+      "tooManyRequests": "Vous avez déjà envoyé plusieurs demandes aujourd'hui. L'école vous recontacte.",
+      "invalidValue": "Une information est invalide. Vérifiez le formulaire.",
+      "uploadFailed": "L'envoi des documents a échoué. Vérifiez la connexion et réessayez.",
+      "alreadyEnrolled": "Cet enfant est déjà inscrit."
     }
   }
 }

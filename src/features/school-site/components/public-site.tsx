@@ -1,6 +1,7 @@
-import { CalendarDays, GraduationCap, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { CalendarDays, ClipboardPen, GraduationCap, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/brand/logo";
+import { Link } from "@/i18n/navigation";
 import { formatDate, formatXOF } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import type { PublicSite } from "../queries";
@@ -19,6 +20,7 @@ export async function PublicSiteView({ site, preview }: { site: PublicSite; prev
     site.admissions && { id: "admissions", label: t("nav.admissions") },
     { id: "contact", label: t("nav.contact") },
   ].filter((item): item is { id: string; label: string } => Boolean(item));
+  const preregistrationHref = `/ecoles/${site.slug}/preinscription`;
 
   return (
     <div className="min-h-dvh bg-white text-ink" style={{ "--accent": site.accentColor } as React.CSSProperties}>
@@ -46,12 +48,12 @@ export async function PublicSiteView({ site, preview }: { site: PublicSite; prev
               </a>
             ))}
           </nav>
-          <a
-            href="#contact"
+          <Link
+            href={preregistrationHref}
             className="ml-auto shrink-0 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white md:ml-0"
           >
-            {t("contactCta")}
-          </a>
+            {t("preregisterShort")}
+          </Link>
         </div>
       </header>
 
@@ -73,12 +75,19 @@ export async function PublicSiteView({ site, preview }: { site: PublicSite; prev
           <h1 className="max-w-3xl text-3xl leading-tight font-bold text-white sm:text-5xl">{site.name}</h1>
           {site.tagline && <p className="max-w-2xl text-lg text-white/90 sm:text-xl">{site.tagline}</p>}
           <div className="mt-2 flex flex-wrap gap-3">
+            <Link
+              href={preregistrationHref}
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-ink"
+            >
+              <ClipboardPen className="size-5" aria-hidden />
+              {t("preregisterCta")}
+            </Link>
             {whatsappHref && (
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-ink"
+                className="inline-flex h-12 items-center gap-2 rounded-full px-6 font-semibold text-white ring-1 ring-white/70"
               >
                 <MessageCircle className="size-5" aria-hidden />
                 {t("whatsappCta")}
@@ -157,6 +166,13 @@ export async function PublicSiteView({ site, preview }: { site: PublicSite; prev
             <div>
               <Heading>{t("admissionsTitle")}</Heading>
               <p className="leading-relaxed whitespace-pre-line text-ink-soft">{site.admissions}</p>
+              <Link
+                href={preregistrationHref}
+                className="mt-6 inline-flex h-12 items-center gap-2 rounded-full bg-[var(--accent)] px-6 font-semibold text-white"
+              >
+                <ClipboardPen className="size-5" aria-hidden />
+                {t("preregisterCta")}
+              </Link>
             </div>
           )}
           {site.fees.length > 0 && (

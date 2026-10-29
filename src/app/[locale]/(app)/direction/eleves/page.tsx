@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ChevronRight, FileUp, Plus, Users } from "lucide-react";
+import { ChevronRight, ClipboardPen, FileUp, Plus, Users } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { FilterSelect } from "@/components/data/filter-select";
 import { SearchInput } from "@/components/data/search-input";
@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { countPendingPreregistrations } from "@/features/preregistrations/queries";
 import { StudentFormSheet } from "@/features/students/components/student-form-sheet";
 import { listClassOptions, listStudents } from "@/features/students/queries";
 import { Link } from "@/i18n/navigation";
@@ -27,10 +28,27 @@ export async function generateMetadata(): Promise<Metadata> {
 async function HeaderActions() {
   const { entry } = await requireSpace("direction");
   if (!permissions.managePeople(entry.roles)) return null;
-  const [{ classes }, t] = await Promise.all([listClassOptions(entry.schoolId!), getTranslations("students")]);
-  if (classes.length === 0) return null;
+  const [{ classes }, pending, t] = await Promise.all([
+    listClassOptions(entry.schoolId!),
+    countPendingPreregistrations(entry.schoolId!),
+    getTranslations("students"),
+  ]);
+  const preregistrations = (
+    <Link href="/direction/eleves/preinscriptions" className={buttonVariants({ variant: "outline" })}>
+      <ClipboardPen aria-hidden />
+      {t("list.preregistrations")}
+      {pending > 0 && (
+        <span className="rounded-full bg-sun-300 px-2 py-0.5 text-xs font-bold text-ink tabular-nums">
+          <span className="sr-only">{t("list.pendingPreregistrations", { count: pending })}</span>
+          <span aria-hidden>{pending}</span>
+        </span>
+      )}
+    </Link>
+  );
+  if (classes.length === 0) return preregistrations;
   return (
     <>
+      {preregistrations}
       <Link href="/direction/eleves/importer" className={buttonVariants({ variant: "outline" })}>
         <FileUp aria-hidden />
         {t("list.import")}

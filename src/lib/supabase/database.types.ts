@@ -2263,6 +2263,66 @@ export type Database = {
           },
         ];
       };
+      school_sites: {
+        Row: {
+          about: string | null;
+          accent_color: string;
+          admissions: string | null;
+          faq: NonNullable<Json>;
+          fees: NonNullable<Json>;
+          gallery: NonNullable<Json>;
+          hero_path: string | null;
+          published: boolean;
+          published_at: string | null;
+          school_id: string;
+          stats: NonNullable<Json>;
+          tagline: string | null;
+          updated_at: string;
+          whatsapp: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          about?: string | null;
+          accent_color?: string;
+          admissions?: string | null;
+          faq?: NonNullable<Json>;
+          fees?: NonNullable<Json>;
+          gallery?: NonNullable<Json>;
+          hero_path?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          school_id: string;
+          stats?: NonNullable<Json>;
+          tagline?: string | null;
+          updated_at?: string;
+          whatsapp?: string | null;
+        };
+        Update: {
+          about?: string | null;
+          accent_color?: string;
+          admissions?: string | null;
+          faq?: NonNullable<Json>;
+          fees?: NonNullable<Json>;
+          gallery?: NonNullable<Json>;
+          hero_path?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          school_id?: string;
+          stats?: NonNullable<Json>;
+          tagline?: string | null;
+          updated_at?: string;
+          whatsapp?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "school_sites_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: true;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       school_staff: {
         Row: {
           contract: Database["public"]["Enums"]["staff_contract"] | null;
@@ -3039,6 +3099,7 @@ export type Database = {
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       mark_conversation_read: { Args: { p_conversation_id: string }; Returns: undefined };
       prune_notifications: { Args: Record<PropertyKey, never>; Returns: number };
+      public_school_site: { Args: { p_preview?: boolean; p_slug: string }; Returns: Json };
       publish_announcement: {
         Args: {
           p_audience: string;

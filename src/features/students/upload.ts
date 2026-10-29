@@ -14,7 +14,7 @@ export type UploadError = "unsupported" | "tooLarge" | "failed";
  * Réduit une photo de téléphone (souvent 3 à 8 Mo, parfois en HEIC) en JPEG léger :
  * moins de données mobiles et un format accepté par le stockage.
  */
-async function shrinkImage(file: File, maxSide: number): Promise<Blob | null> {
+export async function shrinkImage(file: File, maxSide: number): Promise<Blob | null> {
   try {
     const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
     const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));

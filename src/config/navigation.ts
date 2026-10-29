@@ -22,7 +22,8 @@ export type NavIconName =
   | "schools"
   | "demoRequests"
   | "plans"
-  | "reports";
+  | "reports"
+  | "website";
 
 /** Clés de traduction du namespace « nav ». */
 export type NavLabelKey =
@@ -59,7 +60,8 @@ export type NavLabelKey =
   | "schools"
   | "demoRequests"
   | "plans"
-  | "reports";
+  | "reports"
+  | "schoolSite";
 
 export type NavLeaf = {
   label: NavLabelKey;
@@ -121,6 +123,7 @@ const direction: SpaceNavigation = {
     { label: "messages", href: "/direction/messages", icon: "messages" },
   ],
   other: [
+    { label: "schoolSite", href: "/direction/site", icon: "website" },
     { label: "profile", href: "/direction/profil", icon: "profile", soon: true },
     { label: "settings", href: "/direction/parametres", icon: "settings" },
   ],

@@ -4,6 +4,7 @@ import {
   CalendarDays,
   CircleUserRound,
   ClipboardCheck,
+  Globe,
   GraduationCap,
   House,
   Inbox,
@@ -45,6 +46,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   demoRequests: Inbox,
   plans: Tags,
   reports: MessageSquareWarning,
+  website: Globe,
 };
 
 export function NavIcon({ name, className }: { name: NavIconName; className?: string }) {

@@ -1601,7 +1601,8 @@
     "publishedBadge": "Publiée aux parents",
     "enterGrades": "Saisir les notes : {title}",
     "tabCouncil": "Conseil de classe",
-    "tabReportCards": "Bulletins"
+    "tabReportCards": "Bulletins",
+    "tabExams": "Examens"
   },
   "grades": {
     "title": "Saisie des notes",
@@ -2401,6 +2402,10 @@
       "preregistration": {
         "title": "Pré-inscription : {child}",
         "body": "Demande en ligne pour {level}, à examiner"
+      },
+      "examResult": {
+        "title": "Résultat du {exam} : {child}",
+        "body": "{result}{mention}"
       }
     },
     "settings": {
@@ -2965,5 +2970,57 @@
       "uploadFailed": "L'envoi des documents a échoué. Vérifiez la connexion et réessayez.",
       "alreadyEnrolled": "Cet enfant est déjà inscrit."
     }
+  },
+  "exams": {
+    "title": "Examens",
+    "hint": "Candidats aux examens nationaux : numéros de table et centres, liste imprimable, puis résultats. Chaque résultat enregistré est envoyé aux parents.",
+    "examsLabel": "Examen",
+    "none": "Aucune classe d'examen cette année",
+    "noneHint": "Le CFEE se prépare en CM2, le BFEM en 3e et le BAC en Terminale : créez ces classes dans les paramètres.",
+    "noCandidates": "Aucun élève inscrit dans une classe du {exam}.",
+    "count": "{count, plural, one {# candidat} other {# candidats}} au {exam} {year}",
+    "commonCenter": "Centre d'examen",
+    "applyCenter": "Appliquer aux candidats sans centre",
+    "bornOn": "né(e) le {date}",
+    "average": "moyenne {value}",
+    "tableNumber": "N° de table",
+    "tableNumberFor": "Numéro de table de {name}",
+    "tableNumberValue": "Table n° {value}",
+    "center": "Centre",
+    "centerFor": "Centre d'examen de {name}",
+    "result": "Résultat",
+    "resultFor": "Résultat de {name}",
+    "mention": "Mention",
+    "mentionFor": "Mention de {name}",
+    "results": {
+      "pending": "En attente",
+      "admitted": "Admis",
+      "second_round": "Second tour",
+      "admitted_second_round": "Admis au second tour",
+      "failed": "Ajourné",
+      "absent": "Absent"
+    },
+    "mentions": {
+      "passable": "Passable",
+      "assez_bien": "Assez bien",
+      "bien": "Bien",
+      "tres_bien": "Très bien"
+    },
+    "pendingChanges": "{count, plural, one {# candidat modifié} other {# candidats modifiés}}, non enregistré",
+    "noChanges": "Tout est enregistré. La liste imprimée reprend les valeurs enregistrées.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "{count, plural, =0 {Rien à enregistrer.} one {# candidat enregistré.} other {# candidats enregistrés.}}",
+    "printTitle": "Candidats au {exam} · {year}",
+    "student": "Élève",
+    "birth": "Naissance",
+    "class": "Classe",
+    "childTitle": "Examens",
+    "convocationPending": "Numéro de table et centre communiqués dès réception de la convocation.",
+    "errors": {
+      "notCandidate": "Un élève n'est pas dans une classe de cet examen.",
+      "noYear": "Aucune année scolaire en cours."
+    },
+    "mentionSuffix": ", mention {mention}"
   }
 }

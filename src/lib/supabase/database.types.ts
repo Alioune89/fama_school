@@ -1015,6 +1015,77 @@ export type Database = {
           },
         ];
       };
+      exam_candidates: {
+        Row: {
+          academic_year_id: string;
+          center: string | null;
+          created_at: string;
+          exam: string;
+          id: string;
+          mention: Database["public"]["Enums"]["exam_mention"] | null;
+          result: Database["public"]["Enums"]["exam_result"];
+          result_at: string | null;
+          school_id: string;
+          student_id: string;
+          table_number: string | null;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          center?: string | null;
+          created_at?: string;
+          exam: string;
+          id?: string;
+          mention?: Database["public"]["Enums"]["exam_mention"] | null;
+          result?: Database["public"]["Enums"]["exam_result"];
+          result_at?: string | null;
+          school_id: string;
+          student_id: string;
+          table_number?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          academic_year_id?: string;
+          center?: string | null;
+          created_at?: string;
+          exam?: string;
+          id?: string;
+          mention?: Database["public"]["Enums"]["exam_mention"] | null;
+          result?: Database["public"]["Enums"]["exam_result"];
+          result_at?: string | null;
+          school_id?: string;
+          student_id?: string;
+          table_number?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exam_candidates_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "exam_candidates_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exam_candidates_student_id_school_id_fkey";
+            columns: ["student_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       expenses: {
         Row: {
           amount: number;
@@ -3256,6 +3327,7 @@ export type Database = {
         Returns: undefined;
       };
       save_council_decisions: { Args: { p_class_id: string; p_items: Json; p_period_id: string }; Returns: undefined };
+      save_exam_candidates: { Args: { p_exam: string; p_rows: Json; p_school_id: string }; Returns: number };
       save_report_cards: { Args: { p_cards: Json; p_class_id: string; p_period_id: string }; Returns: number };
       save_subject_appreciations: {
         Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };
@@ -3338,6 +3410,8 @@ export type Database = {
       discount_kind: "sibling" | "scholarship" | "staff" | "other";
       enrollment_status: "active" | "transferred" | "left" | "completed";
       evaluation_kind: "devoir" | "interrogation" | "composition";
+      exam_mention: "passable" | "assez_bien" | "bien" | "tres_bien";
+      exam_result: "pending" | "admitted" | "second_round" | "admitted_second_round" | "failed" | "absent";
       expense_category: "salaries" | "rent" | "utilities" | "supplies" | "maintenance" | "transport" | "food" | "other";
       fee_frequency: "once" | "monthly";
       fee_kind: "registration" | "tuition" | "canteen" | "transport" | "uniform" | "parents_association" | "exam" | "other";
@@ -3480,6 +3554,8 @@ export const Constants = {
       discount_kind: ["sibling", "scholarship", "staff", "other"],
       enrollment_status: ["active", "transferred", "left", "completed"],
       evaluation_kind: ["devoir", "interrogation", "composition"],
+      exam_mention: ["passable", "assez_bien", "bien", "tres_bien"],
+      exam_result: ["pending", "admitted", "second_round", "admitted_second_round", "failed", "absent"],
       expense_category: ["salaries", "rent", "utilities", "supplies", "maintenance", "transport", "food", "other"],
       fee_frequency: ["once", "monthly"],
       fee_kind: ["registration", "tuition", "canteen", "transport", "uniform", "parents_association", "exam", "other"],

@@ -14,10 +14,11 @@ export async function renderNotification(
   params: NotificationParams,
   locale?: Locale,
 ): Promise<{ title: string; body: string }> {
-  const [t, tAttendance, tReports] = await Promise.all([
+  const [t, tAttendance, tReports, tExams] = await Promise.all([
     getTranslations({ locale: locale ?? (await getLocale()), namespace: "notifications.kinds" }),
     getTranslations({ locale: locale ?? (await getLocale()), namespace: "attendance" }),
     getTranslations({ locale: locale ?? (await getLocale()), namespace: "reports.categories" }),
+    getTranslations({ locale: locale ?? (await getLocale()), namespace: "exams" }),
   ]);
   const text = (value: unknown) => (value === null || value === undefined ? "" : String(value));
   const values: Record<string, string> = Object.fromEntries(Object.entries(params).map(([key, value]) => [key, text(value)]));
@@ -35,6 +36,10 @@ export async function renderNotification(
       break;
     case "homework":
       values.dueOn = values.dueOn ? formatDate(values.dueOn, { weekday: "long", day: "numeric", month: "long" }) : "";
+      break;
+    case "examResult":
+      values.result = tExams(`results.${values.result as "admitted"}`);
+      values.mention = values.mention ? tExams("mentionSuffix", { mention: tExams(`mentions.${values.mention as "bien"}`) }) : "";
       break;
     case "paymentReceived":
     case "paymentCancelRequested":

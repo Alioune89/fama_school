@@ -3,13 +3,14 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /** Onglets de la rubrique Notes côté direction. */
-export async function GradesTabs({ active }: { active: "evaluations" | "compositions" | "council" | "reportCards" }) {
+export async function GradesTabs({ active }: { active: "evaluations" | "compositions" | "council" | "reportCards" | "exams" }) {
   const t = await getTranslations("evaluations");
   const tabs = [
     { key: "evaluations", href: "/direction/notes", label: t("tabEvaluations") },
     { key: "compositions", href: "/direction/notes/compositions", label: t("tabCompositions") },
     { key: "council", href: "/direction/notes/conseil", label: t("tabCouncil") },
     { key: "reportCards", href: "/direction/notes/bulletins", label: t("tabReportCards") },
+    { key: "exams", href: "/direction/notes/examens", label: t("tabExams") },
   ] as const;
   return (
     <nav

@@ -17,6 +17,8 @@ export const permissions = {
   manageFinance: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "accountant"]),
   /** Élèves, inscriptions, parents (private.can_manage_people). */
   managePeople: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "secretary"]),
+  /** Candidats et résultats des examens nationaux (private.can_manage_exams : pédagogie ou scolarité). */
+  manageExams: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "secretary"]),
   /** Appel de n'importe quelle classe (private.can_take_attendance, hors enseignants de la classe). */
   takeAttendance: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "supervisor"]),
   /** Pointage des arrivées par QR code (private.can_record_arrivals). */

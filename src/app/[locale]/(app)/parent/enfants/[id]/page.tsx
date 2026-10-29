@@ -6,6 +6,8 @@ import { getTranslations } from "next-intl/server";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
+import { ChildExams } from "@/features/exams/components/child-exams";
+import { listStudentExams } from "@/features/exams/queries";
 import { ChildGrades } from "@/features/grades/components/child-grades";
 import { listChildGrades } from "@/features/grades/queries";
 import { JustificationList } from "@/features/justifications/components/justification-list";
@@ -55,6 +57,7 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
     balances,
     classId,
     payments,
+    exams,
     t,
     tArrivals,
   ] = await Promise.all([
@@ -68,6 +71,7 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
     listBalances([child.id], today),
     currentClassOf(child.id),
     listStudentPayments(child.id),
+    listStudentExams(child.id),
     getTranslations("parentSpace"),
     getTranslations("arrivals"),
   ]);
@@ -97,6 +101,11 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
         </div>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">
+        {exams.length > 0 && (
+          <section className={`${card} lg:col-span-2`} aria-labelledby="child-exams">
+            <ChildExams exams={exams} />
+          </section>
+        )}
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-report-cards">
           <h2 id="child-report-cards" className="text-lg font-semibold">
             {t("reportCardsTitle")}

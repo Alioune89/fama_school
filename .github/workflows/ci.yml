@@ -49,6 +49,8 @@ jobs:
       SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN: ci
       # Paiement en ligne de démonstration (fermé par défaut).
       ONLINE_PAYMENT_PROVIDER: simulated
+      # Envoi des notifications par SMS et WhatsApp simulé (fermé par défaut).
+      NOTIFICATION_CHANNELS: log
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

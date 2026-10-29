@@ -1444,6 +1444,60 @@ export type Database = {
           },
         ];
       };
+      notification_deliveries: {
+        Row: {
+          attempts: number;
+          channel: string;
+          created_at: string;
+          id: string;
+          last_error: string | null;
+          next_attempt_at: string;
+          notification_id: string;
+          provider_id: string | null;
+          sent_at: string | null;
+          status: string;
+          to_address: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempts?: number;
+          channel: string;
+          created_at?: string;
+          id?: string;
+          last_error?: string | null;
+          next_attempt_at?: string;
+          notification_id: string;
+          provider_id?: string | null;
+          sent_at?: string | null;
+          status?: string;
+          to_address: string;
+          user_id: string;
+        };
+        Update: {
+          attempts?: number;
+          channel?: string;
+          created_at?: string;
+          id?: string;
+          last_error?: string | null;
+          next_attempt_at?: string;
+          notification_id?: string;
+          provider_id?: string | null;
+          sent_at?: string | null;
+          status?: string;
+          to_address?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_notification_id_fkey";
+            columns: ["notification_id"];
+            isOneToOne: false;
+            referencedRelation: "notifications";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       notification_settings: {
         Row: {
           push: boolean;
@@ -2751,7 +2805,9 @@ export type Database = {
         }[];
       };
       cancel_invoice: { Args: { p_invoice_id: string; p_reason: string }; Returns: undefined };
+      claim_deliveries: { Args: { p_limit?: number }; Returns: Json };
       decide_payment_cancellation: { Args: { p_approve: boolean; p_payment_id: string }; Returns: undefined };
+      finish_delivery: { Args: { p_error?: string; p_id: string; p_ok: boolean; p_provider_id?: string }; Returns: undefined };
       import_students: { Args: { p_rows: Json; p_school_id: string }; Returns: Json };
       issue_invoices: { Args: { p_month?: string; p_year_id: string }; Returns: number };
       mark_conversation_read: { Args: { p_conversation_id: string }; Returns: undefined };
@@ -2784,6 +2840,7 @@ export type Database = {
         Args: { p_class_id: string; p_guardians: Json; p_school_id: string; p_student: Json };
         Returns: string;
       };
+      release_stuck_deliveries: { Args: Record<PropertyKey, never>; Returns: number };
       remove_student_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
       renew_student_badge: { Args: { p_student_id: string }; Returns: undefined };
       replace_level_subjects: { Args: { p_rows: Json; p_school_id: string }; Returns: number };

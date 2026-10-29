@@ -87,3 +87,53 @@ test.describe("Notifications", () => {
     }
   });
 });
+
+test.describe("Notifications par SMS et WhatsApp", () => {
+  test("un parent qui a choisi SMS et WhatsApp reçoit le signalement par ces deux canaux", async ({ page }) => {
+    test.setTimeout(90_000);
+    const admin = adminClient();
+    const { data: student } = await admin
+      .from("students")
+      .select("id, school_id, enrollments(class_id)")
+      .eq("first_name", "Mariama")
+      .eq("last_name", "Sow")
+      .single();
+    await loginWithPhone(page, DEMO.parentPhone);
+    await expect(page).toHaveURL(/\/parent$/);
+    const { data: parent } = await admin.from("profiles").select("id").eq("phone", "+221770000001").single();
+    await admin.from("notification_settings").upsert({ user_id: parent!.id, push: true, sms: true, whatsapp: true });
+    const reportId = crypto.randomUUID();
+    try {
+      await admin.from("student_reports").insert({
+        id: reportId,
+        school_id: student!.school_id,
+        student_id: student!.id,
+        class_id: student!.enrollments[0]!.class_id,
+        category: "homework",
+        message: `Devoir non fait (test ${Date.now().toString(36)})`,
+        occurred_at: new Date().toISOString(),
+        author_name: "Awa Diop",
+      });
+      // Les envois partent après l'affichage d'une page (fournisseur de démonstration en local et en CI).
+      const { data: notification } = await admin
+        .from("notifications")
+        .select("id")
+        .eq("dedupe_key", `report:${reportId}`)
+        .single();
+      await expect(async () => {
+        await page.reload();
+        const { data } = await admin
+          .from("notification_deliveries")
+          .select("channel, status, provider_id")
+          .eq("notification_id", notification!.id)
+          .order("channel");
+        expect(data?.map((row) => `${row.channel}:${row.status}`)).toEqual(["sms:sent", "whatsapp:sent"]);
+        expect(data?.every((row) => row.provider_id?.startsWith("LOG-"))).toBe(true);
+      }).toPass({ timeout: 45_000, intervals: [3_000] });
+    } finally {
+      await admin.from("notification_settings").upsert({ user_id: parent!.id, push: true, sms: false, whatsapp: false });
+      await admin.from("notifications").delete().eq("dedupe_key", `report:${reportId}`);
+      await admin.from("student_reports").delete().eq("id", reportId);
+    }
+  });
+});

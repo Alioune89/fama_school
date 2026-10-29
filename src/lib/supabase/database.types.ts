@@ -465,6 +465,55 @@ export type Database = {
           },
         ];
       };
+      chapter_progress: {
+        Row: {
+          chapter_id: string;
+          class_id: string;
+          school_id: string;
+          status: string;
+          updated_at: string;
+          updated_by: string | null;
+          validated_at: string | null;
+          validated_by: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          chapter_id: string;
+          class_id: string;
+          school_id: string;
+          status: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          validated_at?: string | null;
+          validated_by?: string | null;
+        };
+        Update: {
+          chapter_id?: string;
+          class_id?: string;
+          school_id?: string;
+          status?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+          validated_at?: string | null;
+          validated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "chapter_progress_chapter_id_fkey";
+            columns: ["chapter_id"];
+            isOneToOne: false;
+            referencedRelation: "programme_chapters";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "chapter_progress_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       classes: {
         Row: {
           academic_year_id: string;
@@ -1881,6 +1930,68 @@ export type Database = {
         };
         Relationships: [];
       };
+      programme_chapters: {
+        Row: {
+          academic_year_id: string;
+          created_at: string;
+          id: string;
+          level_id: string;
+          position: number;
+          school_id: string;
+          sessions: number;
+          subject_id: string;
+          target_month: string | null;
+          title: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          academic_year_id: string;
+          created_at?: string;
+          id?: string;
+          level_id: string;
+          position?: number;
+          school_id: string;
+          sessions?: number;
+          subject_id: string;
+          target_month?: string | null;
+          title: string;
+        };
+        Update: {
+          academic_year_id?: string;
+          created_at?: string;
+          id?: string;
+          level_id?: string;
+          position?: number;
+          school_id?: string;
+          sessions?: number;
+          subject_id?: string;
+          target_month?: string | null;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "programme_chapters_academic_year_id_school_id_fkey";
+            columns: ["academic_year_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "academic_years";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "programme_chapters_level_id_school_id_fkey";
+            columns: ["level_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "levels";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "programme_chapters_subject_id_school_id_fkey";
+            columns: ["subject_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       report_cards: {
         Row: {
           class_id: string;
@@ -2857,6 +2968,7 @@ export type Database = {
         Returns: undefined;
       };
       send_message: { Args: { p_body: string; p_conversation_id: string }; Returns: undefined };
+      set_chapter_progress: { Args: { p_chapter_id: string; p_class_id: string; p_status: string }; Returns: undefined };
       set_online_payment_checkout: { Args: { p_checkout_url: string; p_id: string; p_token: string }; Returns: undefined };
       set_period_lock: { Args: { p_lock: boolean; p_period_id: string }; Returns: undefined };
       set_primary_guardian: { Args: { p_guardian_id: string; p_school_id: string; p_student_id: string }; Returns: undefined };
@@ -2915,6 +3027,7 @@ export type Database = {
         Returns: string;
       };
       upcoming_compositions: { Args: { p_student_ids: string[] }; Returns: Json };
+      validate_chapter: { Args: { p_approve: boolean; p_chapter_id: string; p_class_id: string }; Returns: undefined };
       verify_report_card: { Args: { p_client: string; p_code: string }; Returns: Json };
       withdraw_absence_justification: { Args: { p_id: string }; Returns: string };
     };

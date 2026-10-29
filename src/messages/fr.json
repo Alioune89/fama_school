@@ -2375,6 +2375,10 @@
       "message": {
         "title": "Message de {from}",
         "body": "{subject}"
+      },
+      "chapterDone": {
+        "title": "Chapitre terminé : {chapter}",
+        "body": "{className} · {subject}, à valider"
       }
     },
     "settings": {
@@ -2558,6 +2562,71 @@
       "time": "Heure invalide.",
       "noDay": "Choisissez au moins un jour.",
       "endBeforeStart": "L'heure de fin doit suivre l'heure de début."
+    }
+  },
+  "programme": {
+    "title": "Programme et progression",
+    "teacherDescription": "Le programme de l'année, chapitre par chapitre, et l'avancement de votre classe.",
+    "directionDescription": "L'avancement de chaque classe dans le programme, et les chapitres terminés à valider.",
+    "course": "Classe et matière",
+    "class": "Classe",
+    "noCourses": "Aucune matière à suivre",
+    "noCoursesHint": "Vos classes et matières apparaîtront ici dès que la direction vous les aura affectées.",
+    "noClasses": "Aucune classe",
+    "noClassesHint": "Créez les classes de l'année dans les paramètres.",
+    "empty": "Programme pas encore rédigé",
+    "emptyHint": "Ajoutez les chapitres de l'année : ils servent à toutes les classes du niveau.",
+    "emptyHintDirection": "Le professeur de la matière ou la direction pédagogique peut ajouter les chapitres de l'année.",
+    "noProgramme": "Programme pas encore rédigé",
+    "addChapters": "Ajouter des chapitres",
+    "addHint": "Un chapitre par ligne, dans l'ordre. Ils s'ajoutent à la fin du programme du niveau.",
+    "chapters": "Chapitres",
+    "chaptersPlaceholder": "Nombres entiers\nFractions\nGéométrie plane",
+    "chaptersHint": "Vous pourrez modifier chaque chapitre ensuite.",
+    "sessions": "Séances prévues",
+    "targetMonth": "À terminer en",
+    "noTarget": "Sans échéance",
+    "add": "Ajouter",
+    "added": "{count, plural, one {# chapitre ajouté.} other {# chapitres ajoutés.}}",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "chapterTitle": "Titre du chapitre",
+    "chaptersLabel": "Chapitres du programme",
+    "sessionsCount": "{count, plural, one {# séance} other {# séances}}",
+    "target": "à terminer en {month}",
+    "status": {
+      "todo": "À faire",
+      "in_progress": "En cours",
+      "done": "Terminé",
+      "validated": "Validé"
+    },
+    "statusFor": "Avancement : {title}",
+    "validate": "Valider",
+    "sendBack": "Renvoyer",
+    "validated": "Chapitre validé.",
+    "validateFor": "Valider le chapitre « {title} »",
+    "sendBackFor": "Renvoyer « {title} » en cours",
+    "editFor": "Modifier « {title} »",
+    "deleteFor": "Supprimer « {title} »",
+    "deleteConfirm": "Supprimer le chapitre « {title} » ? Son avancement dans toutes les classes du niveau sera effacé.",
+    "doneCount": "{done}/{total} chapitres terminés",
+    "behind": "{count, plural, one {# chapitre de retard} other {# chapitres de retard}}",
+    "ahead": "{count, plural, one {# chapitre d'avance} other {# chapitres d'avance}}",
+    "onTrack": "Dans les temps",
+    "barLabel": "{validated} validés, {done} terminés à valider, {inProgress} en cours, sur {total} chapitres",
+    "pendingTitle": "{count, plural, one {# chapitre terminé à valider} other {# chapitres terminés à valider}}",
+    "subjectsLabel": "Matières de la {className}",
+    "subjectTitle": "{subject} · {className}",
+    "backToClass": "Toutes les matières de la {className}",
+    "childTitle": "Programme de l'année",
+    "childHint": "Où en est la classe dans chaque matière.",
+    "childEmpty": "Les professeurs n'ont pas encore publié le programme de l'année.",
+    "errors": {
+      "invalidStatus": "Statut inconnu.",
+      "notDone": "Ce chapitre n'est pas marqué terminé.",
+      "titleTooShort": "Un titre de chapitre fait au moins 2 caractères.",
+      "noChapter": "Saisissez au moins un chapitre.",
+      "noYear": "Aucune année scolaire en cours."
     }
   }
 }

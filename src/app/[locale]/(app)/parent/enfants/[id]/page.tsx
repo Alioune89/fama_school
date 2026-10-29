@@ -20,6 +20,8 @@ import {
   parentWindowStart,
 } from "@/features/parent/queries";
 import { listStudentPayments } from "@/features/payments/queries";
+import { ChildProgramme } from "@/features/programme/components/child-programme";
+import { currentClassOf } from "@/features/programme/queries";
 import { listStudentReportCards } from "@/features/report-cards/queries";
 import { ReportList } from "@/features/reports/components/report-list";
 import { listStudentReports } from "@/features/reports/queries";
@@ -42,20 +44,33 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
 
   const today = todayInDakar();
   const from = parentWindowStart(today);
-  const [reportCards, grades, reports, absences, justifications, arrivals, departures, balances, payments, t, tArrivals] =
-    await Promise.all([
-      listStudentReportCards(child.id),
-      listChildGrades(child.id, child.schoolId, today),
-      listStudentReports(child.id),
-      listChildrenAbsences([child.id], from),
-      listStudentJustifications([child.id], from),
-      listArrivals({ studentIds: [child.id] }, today),
-      listDepartures({ studentIds: [child.id] }, today),
-      listBalances([child.id], today),
-      listStudentPayments(child.id),
-      getTranslations("parentSpace"),
-      getTranslations("arrivals"),
-    ]);
+  const [
+    reportCards,
+    grades,
+    reports,
+    absences,
+    justifications,
+    arrivals,
+    departures,
+    balances,
+    classId,
+    payments,
+    t,
+    tArrivals,
+  ] = await Promise.all([
+    listStudentReportCards(child.id),
+    listChildGrades(child.id, child.schoolId, today),
+    listStudentReports(child.id),
+    listChildrenAbsences([child.id], from),
+    listStudentJustifications([child.id], from),
+    listArrivals({ studentIds: [child.id] }, today),
+    listDepartures({ studentIds: [child.id] }, today),
+    listBalances([child.id], today),
+    currentClassOf(child.id),
+    listStudentPayments(child.id),
+    getTranslations("parentSpace"),
+    getTranslations("arrivals"),
+  ]);
   const arrivedAt = arrivals.get(child.id);
   const leftAt = departures.get(child.id);
   const name = `${child.firstName} ${child.lastName}`;
@@ -116,6 +131,9 @@ async function ChildDetail({ params }: { params: PageProps<"/[locale]/parent/enf
         </section>
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-grades">
           <ChildGrades data={grades} firstName={child.firstName} />
+        </section>
+        <section className={`${card} lg:col-span-2`} aria-labelledby="child-programme">
+          <ChildProgramme classId={classId} today={today} />
         </section>
         <section className={`${card} lg:col-span-2`} aria-labelledby="child-payments">
           <ChildPayments childId={child.id} firstName={child.firstName} balance={balances.get(child.id)} payments={payments} />

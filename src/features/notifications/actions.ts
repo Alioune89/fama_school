@@ -37,3 +37,39 @@ export async function saveNotificationSettings(input: z.input<typeof settingsSch
   refresh();
   return ok(undefined);
 }
+
+const subscriptionSchema = z.object({
+  endpoint: z.url().startsWith("https://").max(1000),
+  keys: z.object({ p256dh: z.string().min(20).max(200), auth: z.string().min(10).max(100) }),
+  userAgent: z.string().max(300).optional(),
+});
+
+/** Abonne l'appareil du navigateur aux notifications push du compte connecté. */
+export async function savePushSubscription(input: z.input<typeof subscriptionSchema>): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user) return fail("errors.forbidden");
+  const parsed = subscriptionSchema.safeParse(input);
+  if (!parsed.success) return fail("notifications.settings.pushFailed");
+  const { endpoint, keys, userAgent } = parsed.data;
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_push_subscription", {
+    p_endpoint: endpoint,
+    p_p256dh: keys.p256dh,
+    p_auth: keys.auth,
+    p_user_agent: userAgent,
+  });
+  if (error) return fail("errors.unknown");
+  return ok(undefined);
+}
+
+/** Retire l'abonnement push de cet appareil. */
+export async function removePushSubscription(input: { endpoint: string }): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user) return fail("errors.forbidden");
+  const parsed = z.object({ endpoint: z.string().max(1000) }).safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const supabase = await createClient();
+  const { error } = await supabase.from("push_subscriptions").delete().eq("endpoint", parsed.data.endpoint);
+  if (error) return fail("errors.unknown");
+  return ok(undefined);
+}

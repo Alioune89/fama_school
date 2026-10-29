@@ -2424,7 +2424,13 @@
         "body": "Un SMS, utile si vous n'avez pas toujours internet."
       },
       "save": "Enregistrer mes notifications",
-      "saved": "Vos choix de notification sont enregistrés."
+      "saved": "Vos choix de notification sont enregistrés.",
+      "pushFailed": "Les alertes n'ont pas pu être activées sur ce téléphone. Autorisez les notifications puis réessayez.",
+      "pushSupport": {
+        "unconfigured": "Bientôt disponible : l'école n'a pas encore activé ce service. Votre choix est gardé.",
+        "unsupported": "Ce navigateur ne reçoit pas les alertes. Sur iPhone, ajoutez d'abord l'application à l'écran d'accueil.",
+        "denied": "Les notifications sont bloquées pour ce site : autorisez-les dans les réglages du navigateur."
+      }
     },
     "justNow": "à l'instant",
     "live": "Nouvelle notification"

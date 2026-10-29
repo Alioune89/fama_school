@@ -1709,7 +1709,7 @@ export type Database = {
           provider_id: string | null;
           sent_at: string | null;
           status: string;
-          to_address: string;
+          to_address: string | null;
           user_id: string;
         };
         ComputedFields: never;
@@ -1724,7 +1724,7 @@ export type Database = {
           provider_id?: string | null;
           sent_at?: string | null;
           status?: string;
-          to_address: string;
+          to_address?: string | null;
           user_id: string;
         };
         Update: {
@@ -1738,7 +1738,7 @@ export type Database = {
           provider_id?: string | null;
           sent_at?: string | null;
           status?: string;
-          to_address?: string;
+          to_address?: string | null;
           user_id?: string;
         };
         Relationships: [
@@ -2293,6 +2293,37 @@ export type Database = {
             referencedColumns: ["id", "school_id"];
           },
         ];
+      };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          endpoint: string;
+          id: string;
+          p256dh: string;
+          user_agent: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          auth: string;
+          created_at?: string;
+          endpoint: string;
+          id?: string;
+          p256dh: string;
+          user_agent?: string | null;
+          user_id?: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          endpoint?: string;
+          id?: string;
+          p256dh?: string;
+          user_agent?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
       };
       report_cards: {
         Row: {
@@ -3278,7 +3309,7 @@ export type Database = {
         }[];
       };
       cancel_invoice: { Args: { p_invoice_id: string; p_reason: string }; Returns: undefined };
-      claim_deliveries: { Args: { p_limit?: number }; Returns: Json };
+      claim_deliveries: { Args: { p_channels?: string[]; p_limit?: number }; Returns: Json };
       decide_payment_cancellation: { Args: { p_approve: boolean; p_payment_id: string }; Returns: undefined };
       enroll_preregistration: { Args: { p_class_id: string; p_id: string; p_matricule?: string }; Returns: string };
       finish_delivery: { Args: { p_error?: string; p_id: string; p_ok: boolean; p_provider_id?: string }; Returns: undefined };
@@ -3328,6 +3359,10 @@ export type Database = {
       };
       save_council_decisions: { Args: { p_class_id: string; p_items: Json; p_period_id: string }; Returns: undefined };
       save_exam_candidates: { Args: { p_exam: string; p_rows: Json; p_school_id: string }; Returns: number };
+      save_push_subscription: {
+        Args: { p_auth: string; p_endpoint: string; p_p256dh: string; p_user_agent?: string };
+        Returns: undefined;
+      };
       save_report_cards: { Args: { p_cards: Json; p_class_id: string; p_period_id: string }; Returns: number };
       save_subject_appreciations: {
         Args: { p_class_id: string; p_items: Json; p_period_id: string; p_subject_id: string };

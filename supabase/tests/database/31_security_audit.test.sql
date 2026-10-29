@@ -74,7 +74,8 @@ select is_empty(
          'publish_announcement', 'record_payment', 'report_card_download_blocked', 'request_payment_cancellation',
          'send_message', 'set_chapter_progress', 'start_conversation', 'start_online_payment', 'student_contacts',
          'student_parent_contacts', 'upcoming_compositions', 'validate_chapter', 'verify_report_card',
-         'public_school_site', 'preregistration_levels', 'submit_preregistration', 'enroll_preregistration'
+         'public_school_site', 'preregistration_levels', 'submit_preregistration', 'enroll_preregistration',
+         'save_push_subscription'
        ) $$,
   'aucune fonction à privilèges nouvelle n''est ouverte sans relecture'
 );

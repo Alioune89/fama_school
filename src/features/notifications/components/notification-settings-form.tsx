@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { BellRing, MessageCircle, MessageSquareText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -9,13 +9,30 @@ import { useActionForm } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { saveNotificationSettings } from "../actions";
+import { disablePush, enablePush, pushSupport } from "../push-client";
 import type { NotificationSettings } from "../queries";
 
-/** Canaux de notification en plus de la cloche (l'envoi par SMS et WhatsApp arrive avec le Lot 6.4). */
+const noSubscribe = () => () => {};
+
+/** Canaux de notification en plus de la cloche : push sur cet appareil, SMS, WhatsApp. */
 export function NotificationSettingsForm({ initial }: { initial: NotificationSettings }) {
   const t = useTranslations("notifications.settings");
   const [values, setValues] = useState(initial);
   const form = useActionForm(saveNotificationSettings, { onSuccess: () => toast.success(t("saved")) });
+  // Connu seulement dans le navigateur (clé, prise en charge, permission).
+  const support = useSyncExternalStore(noSubscribe, pushSupport, () => null);
+  const [subscribing, setSubscribing] = useState(false);
+
+  async function save() {
+    if (values.push && support === "ready") {
+      setSubscribing(true);
+      const subscribed = await enablePush();
+      setSubscribing(false);
+      if (!subscribed) toast.warning(t("pushFailed"));
+    }
+    if (!values.push) await disablePush();
+    form.run(values);
+  }
   const channels = [
     { key: "push", icon: BellRing },
     { key: "whatsapp", icon: MessageCircle },
@@ -34,6 +51,9 @@ export function NotificationSettingsForm({ initial }: { initial: NotificationSet
           <span className="min-w-0 flex-1">
             <span className="block font-semibold text-ink">{t(`${key}.title`)}</span>
             <span className="mt-1 block text-sm text-muted-foreground">{t(`${key}.body`)}</span>
+            {key === "push" && support && support !== "ready" && (
+              <span className="mt-1 block text-xs font-medium text-warning-700">{t(`pushSupport.${support}`)}</span>
+            )}
           </span>
           <Switch
             checked={values[key]}
@@ -43,7 +63,7 @@ export function NotificationSettingsForm({ initial }: { initial: NotificationSet
         </label>
       ))}
       <FormAlert message={form.formError} />
-      <Button type="button" size="touch" className="w-full" disabled={form.pending} onClick={() => form.run(values)}>
+      <Button type="button" size="touch" className="w-full" disabled={form.pending || subscribing} onClick={() => void save()}>
         {t("save")}
       </Button>
     </section>

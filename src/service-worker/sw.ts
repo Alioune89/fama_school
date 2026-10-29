@@ -45,4 +45,33 @@ const serwist = new Serwist({
   },
 });
 
+// Notifications push : alerte affichée même application fermée ; un appui ouvre (ou ramène) la page concernée.
+self.addEventListener("push", (event) => {
+  const data = (event.data?.json() ?? {}) as { title?: string; body?: string; url?: string; tag?: string };
+  event.waitUntil(
+    self.registration.showNotification(data.title ?? "Fama School", {
+      body: data.body,
+      tag: data.tag,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url: data.url ?? "/" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data as { url?: string } | null)?.url ?? "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (windows) => {
+      const open = windows.find((client) => client.url.startsWith(self.location.origin));
+      if (open) {
+        await open.focus();
+        return open.navigate(url);
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
+});
+
 serwist.addEventListeners();

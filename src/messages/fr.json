@@ -204,8 +204,26 @@
     }
   },
   "teacherHome": {
-    "title": "Mes classes du jour",
-    "empty": "Vos classes apparaîtront ici dès que la direction vous aura affecté à une classe."
+    "title": "Mon tableau de bord",
+    "empty": "Vos classes apparaîtront ici dès que la direction vous aura affecté à une classe.",
+    "figures": "Chiffres du jour",
+    "kpis": {
+      "classes": "Mes classes",
+      "students": "Élèves",
+      "rollCalls": "Appels du matin faits",
+      "unread": "Messages non lus"
+    },
+    "classesTitle": "Mes classes aujourd'hui",
+    "toFinishTitle": "Notes à saisir ou publier",
+    "toFinishEmpty": "Toutes vos évaluations passées sont notées et publiées.",
+    "upcomingTitle": "Évaluations des deux prochaines semaines",
+    "upcomingEmpty": "Aucune évaluation programmée.",
+    "graded": "{graded}/{total} notés",
+    "toPublish": "À publier",
+    "openToFinish": "Saisir ou publier les notes : {title}, {className}",
+    "openUpcoming": "Ouvrir l'évaluation : {title}, {className}",
+    "messagesUnread": "{count, plural, one {# conversation non lue} other {# conversations non lues}}",
+    "messagesNone": "Aucun message non lu"
   },
   "parentHome": {
     "title": "Mes enfants",

@@ -51,6 +51,7 @@ export type NavLabelKey =
   | "gradeEntry"
   | "programme"
   | "homework"
+  | "parentHomework"
   | "children"
   | "payments"
   | "schools"
@@ -111,6 +112,7 @@ const direction: SpaceNavigation = {
       ],
     },
     { label: "programme", href: "/direction/programme", icon: "programme" },
+    { label: "homework", href: "/direction/cahier-de-textes", icon: "homework" },
     { label: "announcements", href: "/direction/annonces", icon: "announcements" },
     { label: "calendar", href: "/direction/calendrier", icon: "calendar" },
     { label: "messages", href: "/direction/messages", icon: "messages" },
@@ -133,7 +135,7 @@ const professeur: SpaceNavigation = {
     { label: "announcements", href: "/professeur/annonces", icon: "announcements" },
     { label: "calendar", href: "/professeur/calendrier", icon: "calendar" },
     { label: "programme", href: "/professeur/programme", icon: "programme" },
-    { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework", soon: true },
+    { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework" },
     { label: "messages", href: "/professeur/messages", icon: "messages" },
   ],
   other: [{ label: "profile", href: "/professeur/profil", icon: "profile", soon: true }],
@@ -144,6 +146,7 @@ professeur.mobile = pick(professeur.menu, ["home", "rollCall", "reports", "messa
 const parent: SpaceNavigation = {
   menu: [
     { label: "children", href: "/parent", icon: "children" },
+    { label: "parentHomework", href: "/parent/devoirs", icon: "homework" },
     { label: "payments", href: "/parent/paiements", icon: "payments" },
     { label: "announcements", href: "/parent/annonces", icon: "announcements" },
     { label: "calendar", href: "/parent/calendrier", icon: "calendar" },

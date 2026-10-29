@@ -1366,6 +1366,74 @@ export type Database = {
           },
         ];
       };
+      lesson_entries: {
+        Row: {
+          author_name: string;
+          chapter_id: string | null;
+          class_id: string;
+          content: string;
+          created_at: string;
+          created_by: string | null;
+          homework: string | null;
+          homework_due_on: string | null;
+          id: string;
+          school_id: string;
+          subject_id: string;
+          taught_on: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_name: string;
+          chapter_id?: string | null;
+          class_id: string;
+          content: string;
+          created_at?: string;
+          created_by?: string | null;
+          homework?: string | null;
+          homework_due_on?: string | null;
+          id?: string;
+          school_id: string;
+          subject_id: string;
+          taught_on: string;
+        };
+        Update: {
+          author_name?: string;
+          chapter_id?: string | null;
+          class_id?: string;
+          content?: string;
+          created_at?: string;
+          created_by?: string | null;
+          homework?: string | null;
+          homework_due_on?: string | null;
+          id?: string;
+          school_id?: string;
+          subject_id?: string;
+          taught_on?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "lesson_entries_chapter_id_fkey";
+            columns: ["chapter_id"];
+            isOneToOne: false;
+            referencedRelation: "programme_chapters";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "lesson_entries_class_id_school_id_fkey";
+            columns: ["class_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id", "school_id"];
+          },
+          {
+            foreignKeyName: "lesson_entries_subject_id_school_id_fkey";
+            columns: ["subject_id", "school_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id", "school_id"];
+          },
+        ];
+      };
       level_subjects: {
         Row: {
           coefficient: number;

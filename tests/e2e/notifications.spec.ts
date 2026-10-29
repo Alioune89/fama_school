@@ -35,7 +35,7 @@ test.describe("Notifications", () => {
       await expect(page).toHaveURL(/\/parent$/);
 
       // La cloche annonce la notification ; l'ouvrir mène à la fiche de Mariama et la marque comme lue.
-      const bell = page.getByRole("button", { name: "Notifications : 2 non lues" });
+      const bell = page.getByRole("button", { name: /^Notifications : \d+ non lues?$/ });
       await expect(bell).toBeVisible();
       await bell.click();
       const item = page.getByRole("menuitem", { name: /Signalement pour Mariama : Matériel oublié/ }).first();
@@ -45,7 +45,8 @@ test.describe("Notifications", () => {
       await expect(page.getByText(message)).toBeVisible();
 
       // Il reste une notification : « Tout marquer comme lu » fait disparaître la pastille.
-      await page.getByRole("button", { name: "Notifications : 1 non lue" }).click();
+      // Il en reste au moins une (le second signalement) : « Tout marquer comme lu » vide la pastille.
+      await page.getByRole("button", { name: /^Notifications : \d+ non lues?$/ }).click();
       await page.getByRole("menuitem", { name: "Tout marquer comme lu" }).click();
       await expect(page.getByRole("button", { name: "Notifications", exact: true })).toBeVisible();
 

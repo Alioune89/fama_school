@@ -90,6 +90,7 @@
     "gradeEntry": "Notes",
     "programme": "Programme",
     "homework": "Cahier de textes",
+    "parentHomework": "Devoirs",
     "children": "Mes enfants",
     "payments": "Paiements",
     "schools": "Écoles",
@@ -2379,6 +2380,10 @@
       "chapterDone": {
         "title": "Chapitre terminé : {chapter}",
         "body": "{className} · {subject}, à valider"
+      },
+      "homework": {
+        "title": "Nouveau devoir de {subject}",
+        "body": "Pour le {dueOn} : {homework}"
       }
     },
     "settings": {
@@ -2627,6 +2632,57 @@
       "titleTooShort": "Un titre de chapitre fait au moins 2 caractères.",
       "noChapter": "Saisissez au moins un chapitre.",
       "noYear": "Aucune année scolaire en cours."
+    }
+  },
+  "lessonBook": {
+    "title": "Cahier de textes",
+    "teacherDescription": "Notez chaque séance et les devoirs : les parents les voient aussitôt.",
+    "directionDescription": "Séances faites et devoirs donnés, classe par classe.",
+    "parentTitle": "Devoirs et cahier de textes",
+    "parentDescription": "Les devoirs à faire de vos enfants et ce qui a été vu en classe.",
+    "course": "Classe et matière",
+    "class": "Classe",
+    "subject": "Matière",
+    "allSubjects": "Toutes les matières",
+    "noCourses": "Aucune matière",
+    "noCoursesHint": "Vos classes et matières apparaîtront ici dès que la direction vous les aura affectées.",
+    "noClasses": "Aucune classe",
+    "noClassesHint": "Créez les classes de l'année dans les paramètres.",
+    "noChildren": "Aucun enfant n'est rattaché à votre compte.",
+    "newTitle": "Nouvelle séance",
+    "date": "Date",
+    "chapter": "Chapitre du programme",
+    "noChapter": "Aucun chapitre précis",
+    "noProgramme": "Programme pas encore rédigé",
+    "content": "Ce qui a été fait",
+    "contentPlaceholder": "Ex. : correction de l'exercice 3, introduction aux fractions…",
+    "homeworkToggle": "Donner un devoir",
+    "homeworkHint": "Les parents le voient tout de suite et sont prévenus.",
+    "homework": "Devoir",
+    "homeworkPlaceholder": "Ex. : exercices 1 à 4 page 32",
+    "dueOn": "Pour le",
+    "save": "Enregistrer la séance",
+    "saved": "Séance enregistrée.",
+    "savedWithHomework": "Séance et devoir enregistrés : les parents sont prévenus.",
+    "pastTitle": "Séances précédentes",
+    "listLabel": "Séances du cahier de textes",
+    "empty": "Aucune séance notée",
+    "emptyHint": "Les séances et les devoirs apparaîtront ici.",
+    "chapterLine": "Chapitre : {title}",
+    "homeworkDue": "Devoir pour {date} :",
+    "by": "Par {name}",
+    "deleteFor": "Supprimer la séance du {date}",
+    "deleteConfirm": "Supprimer la séance du {date} ? Son devoir disparaîtra aussi chez les parents.",
+    "deleted": "Séance supprimée.",
+    "childHeading": "{name} · {className}",
+    "toDo": "Devoirs à faire",
+    "toDoFor": "Devoirs à faire de {name}",
+    "noHomework": "Pas de devoir à rendre pour {name}.",
+    "dueLine": "Pour {date} · {subject}",
+    "recentTitle": "Dernières séances en classe",
+    "errors": {
+      "dueDateRequired": "Indiquez pour quand le devoir est à rendre.",
+      "dueBeforeLesson": "La date de remise suit la séance."
     }
   }
 }

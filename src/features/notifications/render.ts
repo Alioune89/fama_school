@@ -33,6 +33,9 @@ export async function renderNotification(
       values.total = formatXOF(Number(params.total ?? 0));
       values.dueOn = values.dueOn ? formatDate(values.dueOn, { day: "numeric", month: "long" }) : "";
       break;
+    case "homework":
+      values.dueOn = values.dueOn ? formatDate(values.dueOn, { weekday: "long", day: "numeric", month: "long" }) : "";
+      break;
     case "paymentReceived":
     case "paymentCancelRequested":
       values.amount = formatXOF(Number(params.amount ?? 0));

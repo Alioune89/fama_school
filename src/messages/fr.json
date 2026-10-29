@@ -91,6 +91,8 @@
     "programme": "Programme",
     "homework": "Cahier de textes",
     "parentHomework": "Devoirs",
+    "dailyReport": "Rapport du jour",
+    "dailyReports": "Rapports journaliers",
     "children": "Mes enfants",
     "payments": "Paiements",
     "schools": "Écoles",
@@ -2683,6 +2685,42 @@
     "errors": {
       "dueDateRequired": "Indiquez pour quand le devoir est à rendre.",
       "dueBeforeLesson": "La date de remise suit la séance."
+    }
+  },
+  "dailyReports": {
+    "title": "Rapport journalier",
+    "teacherDescription": "En deux minutes : comment s'est passée votre journée, par écrit ou en note vocale. La direction le lit.",
+    "directionDescription": "Les rapports des professeurs, jour par jour, avec leurs notes vocales.",
+    "todayTitle": "Rapport d'aujourd'hui",
+    "body": "Votre journée en quelques lignes",
+    "bodyPlaceholder": "Ex. : 6e A, chapitre des fractions bien avancé ; 5e A agitée l'après-midi ; il manque des craies.",
+    "voiceTitle": "Note vocale (facultative)",
+    "voiceHint": "Parlez librement, en français ou en wolof : {max} minutes au plus.",
+    "record": "Enregistrer une note vocale",
+    "stop": "Arrêter",
+    "voicePlayer": "Votre note vocale",
+    "removeVoice": "Retirer",
+    "send": "Envoyer le rapport",
+    "update": "Mettre à jour le rapport",
+    "saved": "Rapport enregistré.",
+    "pastTitle": "Mes rapports précédents",
+    "noPast": "Pas encore de rapport précédent.",
+    "listLabel": "Rapports journaliers",
+    "voiceOf": "Note vocale de {name}",
+    "week": "Semaine du {from} au {to}",
+    "weekNav": "Choisir la semaine",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "download": "Télécharger la semaine (PDF)",
+    "emptyWeek": "Aucun rapport cette semaine",
+    "emptyWeekHint": "Les rapports des professeurs apparaîtront ici dès leur envoi.",
+    "pdfTitle": "Rapports journaliers",
+    "pdfVoice": "Note vocale de {minutes} min {seconds} s (à écouter dans Fama School)",
+    "errors": {
+      "empty": "Écrivez quelques lignes ou enregistrez une note vocale.",
+      "noRecorder": "Ce navigateur ne permet pas d'enregistrer : écrivez votre rapport.",
+      "micDenied": "Micro refusé : autorisez-le dans les réglages du navigateur, ou écrivez votre rapport.",
+      "uploadFailed": "La note vocale n'a pas pu être envoyée. Réessayez."
     }
   }
 }

@@ -52,6 +52,8 @@ export type NavLabelKey =
   | "programme"
   | "homework"
   | "parentHomework"
+  | "dailyReport"
+  | "dailyReports"
   | "children"
   | "payments"
   | "schools"
@@ -113,6 +115,7 @@ const direction: SpaceNavigation = {
     },
     { label: "programme", href: "/direction/programme", icon: "programme" },
     { label: "homework", href: "/direction/cahier-de-textes", icon: "homework" },
+    { label: "dailyReports", href: "/direction/rapports", icon: "reports" },
     { label: "announcements", href: "/direction/annonces", icon: "announcements" },
     { label: "calendar", href: "/direction/calendrier", icon: "calendar" },
     { label: "messages", href: "/direction/messages", icon: "messages" },
@@ -136,6 +139,7 @@ const professeur: SpaceNavigation = {
     { label: "calendar", href: "/professeur/calendrier", icon: "calendar" },
     { label: "programme", href: "/professeur/programme", icon: "programme" },
     { label: "homework", href: "/professeur/cahier-de-textes", icon: "homework" },
+    { label: "dailyReport", href: "/professeur/rapport", icon: "reports" },
     { label: "messages", href: "/professeur/messages", icon: "messages" },
   ],
   other: [{ label: "profile", href: "/professeur/profil", icon: "profile", soon: true }],

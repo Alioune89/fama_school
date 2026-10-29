@@ -759,6 +759,54 @@ export type Database = {
           },
         ];
       };
+      daily_reports: {
+        Row: {
+          audio_path: string | null;
+          audio_seconds: number | null;
+          author_id: string;
+          author_name: string;
+          body: string | null;
+          created_at: string;
+          id: string;
+          report_date: string;
+          school_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          audio_path?: string | null;
+          audio_seconds?: number | null;
+          author_id?: string;
+          author_name: string;
+          body?: string | null;
+          created_at?: string;
+          id?: string;
+          report_date?: string;
+          school_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          audio_path?: string | null;
+          audio_seconds?: number | null;
+          author_id?: string;
+          author_name?: string;
+          body?: string | null;
+          created_at?: string;
+          id?: string;
+          report_date?: string;
+          school_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "daily_reports_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       demo_requests: {
         Row: {
           city: string | null;

@@ -624,7 +624,15 @@
     "levels": {
       "cyclesTitle": "Cycles enseignés dans votre école",
       "seriesTitle": "Séries du lycée",
-      "seriesHint": "Une classe par série et par niveau (2nde L, 2nde S…).",
+      "seriesHint": "Une classe par série et par niveau (2nde S, 1ère S1, Tle L2…). Cochez les séries ouvertes dans votre établissement.",
+      "seriesSeconde": "Seconde",
+      "seriesUpper": "Première et Terminale",
+      "seriesGroups": {
+        "literary": "Littéraires",
+        "scientific": "Scientifiques",
+        "technical": "Techniques et tertiaire",
+        "legacy": "Anciennes séries (sans numéro)"
+      },
       "francoArabic": "École franco-arabe",
       "francoArabicHint": "Ajoute la filière arabe (Coran, langue arabe, fiqh…) et un bulletin double.",
       "gradingScale": {

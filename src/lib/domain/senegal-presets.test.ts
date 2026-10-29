@@ -29,16 +29,18 @@ describe("préréglages des cycles", () => {
     expect(exams).toEqual(["CM2:CFEE", "3e:BFEM", "Tle:BAC"]);
   });
 
-  it("décline le lycée par série (2nde L, 2nde S…)", () => {
-    const levels = expandLevels("secondaire", ["L", "S"]);
+  it("décline le lycée par série : L ou S en Seconde, séries choisies en Première et Terminale", () => {
+    const levels = expandLevels("secondaire", { seconde: ["S"], upper: ["S1", "S2", "G"] });
     expect(levels.map((level) => `${level.code} ${level.series}`)).toEqual([
-      "2nde L",
       "2nde S",
-      "1ère L",
-      "1ère S",
-      "Tle L",
-      "Tle S",
+      "1ère S1",
+      "1ère S2",
+      "1ère G",
+      "Tle S1",
+      "Tle S2",
+      "Tle G",
     ]);
+    expect(levels.find((level) => level.code === "Tle")?.exam).toBe("BAC");
   });
 });
 
@@ -58,6 +60,14 @@ describe("préréglages des matières", () => {
     expect(coefficientFor(maths.coefficient, "S")).toBe(5);
     expect(coefficientFor(maths.coefficient, "L")).toBe(2);
     expect(coefficientFor(philo.coefficient, "L")).toBe(5);
+  });
+
+  it("applique aux séries numérotées les coefficients de leur famille", () => {
+    const maths = SUBJECT_PRESETS.secondaire.find((subject) => subject.name === "Mathématiques")!;
+    expect(coefficientFor(maths.coefficient, "S1")).toBe(5);
+    expect(coefficientFor(maths.coefficient, "T2")).toBe(5);
+    expect(coefficientFor(maths.coefficient, "L'1")).toBe(2);
+    expect(coefficientFor(maths.coefficient, "G")).toBe(2);
   });
 
   it("n'enseigne la philosophie qu'en 1ère et en Terminale", () => {
@@ -80,6 +90,11 @@ describe("noms des classes", () => {
   it("numérote les classes de lycée dans la série", () => {
     expect(classNames({ code: "2nde", label: "Seconde", series: "S" }, 2)).toEqual(["2nde S1", "2nde S2"]);
     expect(classNames({ code: "Tle", label: "Terminale", series: "L" }, 1)).toEqual(["Tle L"]);
+  });
+
+  it("nomme par lettre les classes parallèles d'une série numérotée", () => {
+    expect(classNames({ code: "1ère", label: "Première", series: "S1" }, 2)).toEqual(["1ère S1 A", "1ère S1 B"]);
+    expect(classNames({ code: "Tle", label: "Terminale", series: "L2" }, 1)).toEqual(["Tle L2"]);
   });
 
   it("refuse un nombre de classes hors limites", () => {

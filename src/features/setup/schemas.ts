@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { parseYearLabel } from "@/lib/domain/academic-calendar";
 import { schoolSettingsSchema } from "@/lib/domain/school-settings";
+import { LEGACY_UPPER_SERIES, SECONDE_SERIES, UPPER_SERIES } from "@/lib/domain/senegal-presets";
 import { Constants } from "@/lib/supabase/database.types";
 import { isoDateField, optionalEmailField, optionalPhoneField, optionalText, requiredText } from "@/lib/validation";
 
@@ -53,11 +54,14 @@ export type AcademicYearInput = z.input<typeof academicYearSchema>;
 export const levelsSchema = z
   .object({
     cycles: z.array(z.enum(Constants.public.Enums.cycle_code)).min(1, { error: "setup.errors.noCycle" }),
-    series: z.array(z.enum(["L", "S"])),
+    series: z.object({
+      seconde: z.array(z.enum(SECONDE_SERIES)),
+      upper: z.array(z.enum([...UPPER_SERIES, ...LEGACY_UPPER_SERIES])),
+    }),
     francoArabic: z.boolean(),
   })
   .superRefine((value, ctx) => {
-    if (value.cycles.includes("secondaire") && value.series.length === 0) {
+    if (value.cycles.includes("secondaire") && value.series.seconde.length + value.series.upper.length === 0) {
       ctx.addIssue({ code: "custom", path: ["series"], message: "setup.errors.noSeries" });
     }
   });

@@ -11,17 +11,31 @@ import { FieldError } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { saveLevels } from "@/features/setup/actions";
 import { useRouter } from "@/i18n/navigation";
-import { CYCLE_PRESETS, expandLevels, type CycleCode } from "@/lib/domain/senegal-presets";
+import {
+  CYCLE_PRESETS,
+  expandLevels,
+  SECONDE_SERIES,
+  UPPER_SERIES_GROUPS,
+  type CycleCode,
+  type SecondeSerie,
+  type UpperSerie,
+} from "@/lib/domain/senegal-presets";
 import { cn } from "@/lib/utils";
 
-type Serie = "L" | "S";
-type Defaults = { cycles: CycleCode[]; series: Serie[]; francoArabic: boolean };
+type Series = { seconde: SecondeSerie[]; upper: UpperSerie[] };
+type Defaults = { cycles: CycleCode[]; series: Series; francoArabic: boolean };
 
 export function LevelsForm({ defaults, canEdit, nextHref }: { defaults: Defaults; canEdit: boolean; nextHref: string }) {
   const t = useTranslations("setup");
   const router = useRouter();
   const [cycles, setCycles] = useState<CycleCode[]>(defaults.cycles);
-  const [series, setSeries] = useState<Serie[]>(defaults.series);
+  const [series, setSeries] = useState<Series>(defaults.series);
+  // Séries « L » et « S » en Première et Terminale : gardées pour les écoles déjà paramétrées ainsi.
+  const legacy = defaults.series.upper.filter((serie): serie is "L" | "S" => serie === "L" || serie === "S");
+  const upperGroups: [string, readonly UpperSerie[]][] = [
+    ...Object.entries(UPPER_SERIES_GROUPS),
+    ...(legacy.length ? [["legacy", legacy] as [string, readonly UpperSerie[]]] : []),
+  ];
   const [francoArabic, setFrancoArabic] = useState(defaults.francoArabic);
 
   const form = useActionForm(saveLevels, {
@@ -89,27 +103,25 @@ export function LevelsForm({ defaults, canEdit, nextHref }: { defaults: Defaults
             {t("levels.seriesTitle")}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{t("levels.seriesHint")}</p>
-          <div className="mt-4 flex gap-3">
-            {(["L", "S"] as const).map((serie) => {
-              const checked = series.includes(serie);
-              return (
-                <button
-                  key={serie}
-                  type="button"
-                  role="checkbox"
-                  aria-checked={checked}
-                  disabled={!canEdit}
-                  onClick={() => setSeries((current) => toggle(current, serie))}
-                  className={cn(
-                    "flex h-12 w-24 items-center justify-center rounded-xl text-lg font-bold ring-1 ring-line transition-colors",
-                    checked ? "bg-azure-200 text-ink ring-2 ring-azure-400" : "bg-white text-ink-soft hover:bg-azure-50",
-                  )}
-                >
-                  {serie}
-                </button>
-              );
-            })}
-          </div>
+          <SeriesGroup
+            title={t("levels.seriesSeconde")}
+            options={SECONDE_SERIES}
+            selected={series.seconde}
+            disabled={!canEdit}
+            onToggle={(serie) => setSeries((current) => ({ ...current, seconde: toggle(current.seconde, serie) }))}
+          />
+          <h3 className="mt-6 text-sm font-semibold text-ink">{t("levels.seriesUpper")}</h3>
+          {upperGroups.map(([group, options]) => (
+            <SeriesGroup
+              key={group}
+              title={t(`levels.seriesGroups.${group as keyof typeof UPPER_SERIES_GROUPS | "legacy"}`)}
+              options={options}
+              selected={series.upper}
+              disabled={!canEdit}
+              onToggle={(serie) => setSeries((current) => ({ ...current, upper: toggle(current.upper, serie) }))}
+              small
+            />
+          ))}
           <FieldError className="mt-3">{form.fieldError("series")}</FieldError>
         </fieldset>
       )}
@@ -131,5 +143,48 @@ export function LevelsForm({ defaults, canEdit, nextHref }: { defaults: Defaults
         </div>
       )}
     </form>
+  );
+}
+
+function SeriesGroup<T extends string>({
+  title,
+  options,
+  selected,
+  disabled,
+  onToggle,
+  small = false,
+}: {
+  title: string;
+  options: readonly T[];
+  selected: readonly string[];
+  disabled: boolean;
+  onToggle: (serie: T) => void;
+  small?: boolean;
+}) {
+  return (
+    <div role="group" aria-label={title} className="mt-4">
+      <p className={cn("mb-2 font-medium", small ? "text-xs text-muted-foreground" : "text-sm text-ink")}>{title}</p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((serie) => {
+          const checked = selected.includes(serie);
+          return (
+            <button
+              key={serie}
+              type="button"
+              role="checkbox"
+              aria-checked={checked}
+              disabled={disabled}
+              onClick={() => onToggle(serie)}
+              className={cn(
+                "flex h-11 min-w-16 items-center justify-center rounded-xl px-3 text-base font-bold ring-1 ring-line transition-colors",
+                checked ? "bg-azure-200 text-ink ring-2 ring-azure-400" : "bg-white text-ink-soft hover:bg-azure-50",
+              )}
+            >
+              {serie}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

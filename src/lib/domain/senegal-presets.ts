@@ -40,7 +40,20 @@ export type SubjectPreset = {
   optional?: boolean;
 };
 
-export const LYCEE_SERIES = ["L", "S"] as const;
+/** Séries de Seconde (tronc commun littéraire ou scientifique). */
+export const SECONDE_SERIES = ["L", "S"] as const;
+/** Séries de Première et Terminale, par famille ; « L » et « S » restent acceptées pour les écoles déjà paramétrées ainsi. */
+export const UPPER_SERIES_GROUPS = {
+  literary: ["L1", "L2", "L'1", "LA"],
+  scientific: ["S1", "S2", "S3", "S4", "S5"],
+  technical: ["T1", "T2", "G"],
+} as const;
+export const UPPER_SERIES = [...UPPER_SERIES_GROUPS.literary, ...UPPER_SERIES_GROUPS.scientific, ...UPPER_SERIES_GROUPS.technical] as const;
+export const LEGACY_UPPER_SERIES = ["L", "S"] as const;
+export type SecondeSerie = (typeof SECONDE_SERIES)[number];
+export type UpperSerie = (typeof UPPER_SERIES)[number] | (typeof LEGACY_UPPER_SERIES)[number];
+export type LyceeSeries = { seconde: readonly SecondeSerie[]; upper: readonly UpperSerie[] };
+export const DEFAULT_LYCEE_SERIES: LyceeSeries = { seconde: ["L", "S"], upper: ["L1", "L2", "S1", "S2"] };
 
 export const CYCLE_PRESETS: CyclePreset[] = [
   {
@@ -163,15 +176,27 @@ export function cyclePreset(code: CycleCode): CyclePreset {
   return preset;
 }
 
-/** Niveaux d'un cycle ; au lycée, un niveau par série choisie (2nde L, 2nde S…). */
-export function expandLevels(code: CycleCode, series: readonly string[] = LYCEE_SERIES): LevelPreset[] {
+/** Niveaux d'un cycle ; au lycée, un niveau par série choisie (2nde L, 2nde S, 1ère S1, Tle L2…). */
+export function expandLevels(code: CycleCode, series: LyceeSeries = DEFAULT_LYCEE_SERIES): LevelPreset[] {
   const { levels } = cyclePreset(code);
   if (code !== "secondaire") return levels;
-  return levels.flatMap((level) => series.map((serie) => ({ ...level, series: serie })));
+  return levels.flatMap((level) =>
+    (level.code === "2nde" ? series.seconde : series.upper).map((serie) => ({ ...level, series: serie })),
+  );
 }
 
+/** Famille d'une série pour les coefficients : littéraire (L…) ou scientifique et technique industrielle (S…, T…). */
+export function seriesFamily(series: string): "L" | "S" | null {
+  if (series.startsWith("L")) return "L";
+  if (series.startsWith("S") || series.startsWith("T")) return "S";
+  return null;
+}
+
+/** Coefficient pour une série : valeur propre à la série, sinon celle de sa famille, sinon la valeur commune. */
 export function coefficientFor(rule: CoefficientRule, series?: string): number {
-  return (series ? rule.bySeries?.[series] : undefined) ?? rule.default;
+  if (!series) return rule.default;
+  const family = seriesFamily(series);
+  return rule.bySeries?.[series] ?? (family ? rule.bySeries?.[family] : undefined) ?? rule.default;
 }
 
 export function appliesToLevel(subject: SubjectPreset, level: LevelPreset): boolean {
@@ -184,10 +209,14 @@ export function classLetters(count: number): string[] {
   return Array.from({ length: count }, (_, index) => String.fromCharCode(65 + index));
 }
 
-/** Noms des classes d'un niveau : « CM2 A », « CM2 B » ; au lycée « 2nde S1 », « 2nde S2 » (ou « 2nde S » s'il n'y en a qu'une). */
+/**
+ * Noms des classes d'un niveau : « CM2 A », « CM2 B » ; au lycée « 2nde S1 », « 2nde S2 » (ou « 2nde S » s'il n'y en a
+ * qu'une), et pour une série numérotée « 1ère S1 A », « 1ère S1 B » (ou « 1ère S1 »).
+ */
 export function classNames(level: LevelPreset, count: number): string[] {
   if (level.series) {
     if (count === 1) return [`${level.code} ${level.series}`];
+    if (level.series.length > 1) return classLetters(count).map((letter) => `${level.code} ${level.series} ${letter}`);
     return Array.from({ length: count }, (_, index) => `${level.code} ${level.series}${index + 1}`);
   }
   return classLetters(count).map((letter) => `${level.code} ${letter}`);

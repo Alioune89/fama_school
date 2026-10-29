@@ -51,9 +51,12 @@ export async function Topbar({ space }: { space: Space }) {
       )}
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
-        <Suspense fallback={null}>
-          <SyncStatus />
-        </Suspense>
+        {/* Les parents n'enregistrent rien hors ligne : pas de moteur de synchronisation à charger chez eux. */}
+        {space !== "parent" && (
+          <Suspense fallback={null}>
+            <SyncStatus />
+          </Suspense>
+        )}
         {messagesHref && (
           <Link href={messagesHref} className={iconButton} aria-label={tCommon("messages")}>
             <MessagesSquare className="size-[18px]" aria-hidden strokeWidth={1.75} />

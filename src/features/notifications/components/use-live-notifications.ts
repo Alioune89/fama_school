@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
-import { createClient } from "@/lib/supabase/client";
 
 /**
  * Cloche en temps réel : à chaque notification qui arrive pour ce compte (Supabase Realtime, filtré par la RLS),
@@ -23,23 +22,30 @@ export function useLiveNotifications(userId: string) {
       timer = setTimeout(() => router.refresh(), 400);
     };
 
-    const supabase = createClient();
-    const channel = supabase
-      .channel(`notifications:${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-        () => {
-          toast(t("live"));
-          refreshSoon();
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-        refreshSoon,
-      )
-      .subscribe();
+    // Le client Supabase (temps réel) se charge après l'affichage de la page, pas avant.
+    let cancelled = false;
+    let unsubscribe = () => {};
+    void import("@/lib/supabase/client").then(({ createClient }) => {
+      if (cancelled) return;
+      const supabase = createClient();
+      const channel = supabase
+        .channel(`notifications:${userId}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          () => {
+            toast(t("live"));
+            refreshSoon();
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          refreshSoon,
+        )
+        .subscribe();
+      unsubscribe = () => void supabase.removeChannel(channel);
+    });
 
     const onVisible = () => {
       if (document.visibilityState === "visible") refreshSoon();
@@ -48,7 +54,8 @@ export function useLiveNotifications(userId: string) {
     return () => {
       clearTimeout(timer);
       document.removeEventListener("visibilitychange", onVisible);
-      void supabase.removeChannel(channel);
+      cancelled = true;
+      unsubscribe();
     };
   }, [userId, router, t]);
 }

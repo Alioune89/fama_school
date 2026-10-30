@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp, ArrowUpRight, Ellipsis } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { formatInteger } from "@/lib/format";
+import { bigNumber, formatInteger } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const tones = {
@@ -60,7 +60,7 @@ export async function KpiCard({
         )}
       </div>
       <div>
-        <p className="tabular text-3xl font-bold tracking-tight">{display}</p>
+        <p className="tabular big-number text-3xl font-bold tracking-tight">{bigNumber(display)}</p>
         <p className="mt-1 text-sm font-medium text-ink/80">{label}</p>
       </div>
     </>

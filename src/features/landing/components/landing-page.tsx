@@ -2,14 +2,11 @@ import type { ReactNode } from "react";
 import {
   BellRing,
   BookOpenCheck,
-  Bus,
   Check,
   ClipboardCheck,
   FileText,
   GraduationCap,
-  Megaphone,
   MessageCircle,
-  QrCode,
   Receipt,
   School,
   Smartphone,
@@ -24,7 +21,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { whatsappLink } from "@/config/contact";
 import { PUBLIC_PLANS, yearlyPrice } from "@/config/plans";
 import { Link } from "@/i18n/navigation";
-import { formatInteger, formatXOF } from "@/lib/format";
+import { bigNumber, formatInteger, formatXOF } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { DemoForm } from "./demo-form";
 
@@ -33,7 +30,7 @@ const SECTIONS = { features: "fonctionnalites", pricing: "tarifs", demo: "demo",
 
 function Section({ id, className, children }: { id?: string; className?: string; children: ReactNode }) {
   return (
-    <section id={id} className={cn("mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24", className)}>
+    <section id={id} className={cn("mx-auto max-w-6xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16 lg:py-24", className)}>
       {children}
     </section>
   );
@@ -78,8 +75,11 @@ async function Header() {
   );
 }
 
-/** Arrivée des notifications, en boucle de 12 s : chaque carte entre à son tour, la cloche sonne, puis tout recommence. */
-const NOTIFICATION_STARTS = [4, 20, 36, 52];
+/**
+ * Arrivée des notifications, en boucle de 12 s : les quatre cartes entrent en 3 s (le téléphone n'a pas l'air
+ * vide au premier regard), la cloche sonne à chacune, puis tout recommence.
+ */
+const NOTIFICATION_STARTS = [1, 9, 17, 25];
 const PHONE_CSS = `
 ${NOTIFICATION_STARTS.map(
   (start, index) => `@keyframes phone-notification-${index} {
@@ -119,7 +119,8 @@ async function PhoneMockup() {
     { icon: BookOpenCheck, tone: "bg-sun-100 text-sun-700", title: t("homework"), detail: null },
   ];
   return (
-    <div aria-hidden className="relative mx-auto w-full max-w-[19rem] select-none">
+    // Sur téléphone, le haut de page suffit : l'illustration est réservée aux grands écrans (page plus courte).
+    <div aria-hidden className="relative mx-auto hidden w-full max-w-[19rem] select-none lg:block">
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-lavender-200 via-azure-100 to-sun-100 blur-2xl" />
       <style dangerouslySetInnerHTML={{ __html: PHONE_CSS }} />
       <div className="rounded-[2.5rem] bg-ink p-2.5 shadow-float">
@@ -203,25 +204,40 @@ async function Hero() {
 async function Spaces() {
   const t = await getTranslations("landing.spaces");
   const spaces = [
-    { key: "direction", icon: School, tone: "bg-lavender-200" },
-    { key: "teachers", icon: GraduationCap, tone: "bg-sun-200" },
-    { key: "parents", icon: Users, tone: "bg-azure-200" },
+    {
+      key: "direction",
+      icon: School,
+      tone: "bg-lavender-200",
+      items: [t("direction.items.first"), t("direction.items.second"), t("direction.items.third"), t("direction.items.fourth")],
+    },
+    {
+      key: "teachers",
+      icon: GraduationCap,
+      tone: "bg-sun-200",
+      items: [t("teachers.items.first"), t("teachers.items.second"), t("teachers.items.third")],
+    },
+    {
+      key: "parents",
+      icon: Users,
+      tone: "bg-azure-200",
+      items: [t("parents.items.first"), t("parents.items.second"), t("parents.items.third")],
+    },
   ] as const;
   return (
-    <Section>
+    <Section id={SECTIONS.features}>
       <SectionTitle title={t("title")} body={t("body")} />
       <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {spaces.map(({ key, icon: Icon, tone }) => (
+        {spaces.map(({ key, icon: Icon, tone, items }) => (
           <article key={key} className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-line/70">
             <span className={cn("grid size-12 place-items-center rounded-xl text-ink", tone)}>
               <Icon className="size-6" aria-hidden strokeWidth={1.75} />
             </span>
             <h3 className="mt-5 text-lg font-bold">{t(`${key}.title`)}</h3>
             <ul className="mt-3 space-y-2 text-sm text-ink-soft">
-              {(["first", "second", "third"] as const).map((item) => (
+              {items.map((item) => (
                 <li key={item} className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-success-500" aria-hidden />
-                  {t(`${key}.items.${item}`)}
+                  {item}
                 </li>
               ))}
             </ul>
@@ -229,43 +245,6 @@ async function Spaces() {
         ))}
       </div>
     </Section>
-  );
-}
-
-async function Features() {
-  const t = await getTranslations("landing.features");
-  const features = [
-    { key: "students", icon: Users },
-    { key: "grades", icon: FileText },
-    { key: "attendance", icon: QrCode },
-    { key: "payments", icon: Wallet },
-    { key: "messages", icon: Megaphone },
-    { key: "transport", icon: Bus },
-  ] as const;
-  return (
-    <div className="bg-white">
-      <Section id={SECTIONS.features}>
-        <SectionTitle title={t("title")} body={t("body")} />
-        <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ key, icon: Icon }) => (
-            <article key={key}>
-              <span className="grid size-11 place-items-center rounded-xl bg-azure-50 text-azure-700">
-                <Icon className="size-5" aria-hidden />
-              </span>
-              <h3 className="mt-4 flex items-center gap-2 text-base font-bold">
-                {t(`${key}.title`)}
-                {key === "transport" && (
-                  <span className="rounded-full bg-sun-100 px-2 py-0.5 text-[11px] font-semibold text-sun-700">
-                    {t("transport.badge")}
-                  </span>
-                )}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{t(`${key}.body`)}</p>
-            </article>
-          ))}
-        </div>
-      </Section>
-    </div>
   );
 }
 
@@ -322,7 +301,9 @@ async function Pricing() {
               <p className="mt-5">
                 {plan.monthly ? (
                   <>
-                    <span className="tabular text-3xl font-extrabold tracking-tight">{formatXOF(plan.monthly)}</span>
+                    <span className="tabular big-number text-3xl font-extrabold tracking-tight">
+                      {bigNumber(formatXOF(plan.monthly))}
+                    </span>
                     <span className="block text-sm text-muted-foreground">{t("perMonth")}</span>
                   </>
                 ) : (
@@ -342,32 +323,20 @@ async function Pricing() {
           ))}
         </div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-2">
-          <div>
-            <h3 className="text-base font-bold">{t("includedTitle")}</h3>
-            <ul className="mt-4 grid gap-2.5 text-sm text-ink-soft sm:grid-cols-2">
-              {(["students", "grades", "attendance", "programme", "parents", "receipts"] as const).map((item) => (
-                <li key={item} className="flex gap-2">
-                  <Check className="mt-0.5 size-4 shrink-0 text-success-500" aria-hidden />
-                  {t(`included.${item}`)}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-base font-bold">{t("optionsTitle")}</h3>
-            <dl className="mt-4 divide-y divide-line rounded-xl ring-1 ring-line">
-              {options.map((key) => (
-                <div key={key} className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:justify-between sm:gap-6">
-                  <dt className="text-ink">{t(`options.${key}.name`)}</dt>
-                  <dd className="shrink-0 text-ink-soft sm:text-right">
-                    {t(`options.${key}.price`)}
-                    {key === "setup" && <span className="block text-xs text-success-700">{t("options.setup.note")}</span>}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+        <div className="mt-12 max-w-2xl">
+          <h3 className="text-base font-bold">{t("optionsTitle")}</h3>
+          <dl className="mt-4 divide-y divide-line rounded-xl ring-1 ring-line">
+            {options.map((key) => (
+              <div key={key} className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:justify-between sm:gap-6">
+                <dt className="text-ink">{t(`options.${key}.name`)}</dt>
+                <dd className="shrink-0 text-ink-soft sm:text-right">
+                  {t(`options.${key}.price`)}
+                  {key === "setup" && <span className="block text-xs text-success-700">{t("options.setup.note")}</span>}
+                  {key === "transport" && <span className="block text-xs text-sun-700">{t("options.transport.note")}</span>}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </Section>
     </div>
@@ -425,16 +394,15 @@ async function Faq() {
   );
 }
 
-/** Page d'accueil Fama School : promesse, espaces, modules, formules et tarifs, demande de démo. */
+/** Page d'accueil Fama School : promesse, impayés, un espace par public, formules, demande de démo, questions. */
 export async function LandingPage() {
   return (
     <>
       <Header />
       <main>
         <Hero />
-        <Spaces />
-        <Features />
         <Recovery />
+        <Spaces />
         <Pricing />
         <Demo />
         <Faq />

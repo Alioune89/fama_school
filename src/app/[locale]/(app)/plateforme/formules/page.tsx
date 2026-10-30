@@ -10,7 +10,7 @@ import { monthlyPrice, PUBLIC_PLANS, recommendedPlan, yearlyPrice } from "@/conf
 import { SchoolPlanForm } from "@/features/platform/components/school-plan-form";
 import { countActiveStudents, listSchools } from "@/features/platform/queries";
 import { requireSpace } from "@/lib/auth/session";
-import { formatInteger, formatXOF } from "@/lib/format";
+import { bigNumber, formatInteger, formatXOF } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -82,7 +82,9 @@ async function Plans() {
                 <p className="mt-3">
                   {plan.monthly ? (
                     <>
-                      <span className="tabular text-2xl font-extrabold tracking-tight">{formatXOF(plan.monthly)}</span>{" "}
+                      <span className="tabular big-number text-2xl font-extrabold tracking-tight">
+                        {bigNumber(formatXOF(plan.monthly))}
+                      </span>{" "}
                       <span className="text-sm text-muted-foreground">{tPricing("perMonth")}</span>
                     </>
                   ) : (

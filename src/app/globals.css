@@ -163,6 +163,10 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
+  /* Espace des milliers lisible dans les grands chiffres (voir bigNumber dans src/lib/format.ts). */
+  .big-number {
+    word-spacing: 0.18em;
+  }
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }

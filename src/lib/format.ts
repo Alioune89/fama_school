@@ -15,6 +15,13 @@ export function formatXOF(amount: number | bigint): string {
   return `${integerFormatter.format(amount)} FCFA`;
 }
 
+/**
+ * Pour les grands chiffres (tarifs, indicateurs) : l'espace fine des milliers est presque invisible dans
+ * la police de l'application à grande taille (« 60000 »). On la remplace par une espace insécable,
+ * élargie par la classe `big-number` (word-spacing).
+ */
+export const bigNumber = (text: string) => text.replace(/\u202f/g, "\u00a0");
+
 /** Nombre entier avec séparateur de milliers (effectifs, compteurs). */
 export function formatInteger(value: number | bigint): string {
   return integerFormatter.format(value);

@@ -378,59 +378,31 @@
     },
     "spaces": {
       "title": "Un espace pour chacun",
-      "body": "Chacun se connecte avec son numéro de téléphone et voit ce qui le concerne.",
+      "body": "Chacun se connecte avec son numéro de téléphone et ne voit que ce qui le concerne. Tout est inclus dans chaque formule.",
       "direction": {
         "title": "Direction et administration",
         "items": {
-          "first": "Inscriptions, classes et enseignants",
-          "second": "Encaissements, reçus et relances des impayés",
-          "third": "Tableau de bord de l'école en temps réel"
+          "first": "Inscriptions, et import de la liste de l'école depuis Excel",
+          "second": "Bulletins en PDF, y compris le bulletin franco-arabe",
+          "third": "Encaissements, reçus et relances des impayés",
+          "fourth": "Pointage des élèves par carte QR à l'entrée"
         }
       },
       "teachers": {
         "title": "Enseignants",
         "items": {
           "first": "Appel en un toucher, même sans réseau",
-          "second": "Saisie des notes de devoirs et de compositions",
+          "second": "Notes de devoirs et de compositions, moyennes calculées",
           "third": "Cahier de textes et suivi du programme"
         }
       },
       "parents": {
         "title": "Parents",
         "items": {
-          "first": "Présences, notes et bulletins de chaque enfant",
+          "first": "Absences, notes et bulletins de chaque enfant",
           "second": "Paiement par Wave ou Orange Money, reçu immédiat",
           "third": "Annonces et messages de l'école"
         }
-      }
-    },
-    "features": {
-      "title": "Tout le suivi scolaire, au même endroit",
-      "body": "Les fonctions de base sont incluses dans toutes les formules : c'est ce qui fait adopter l'outil par les familles.",
-      "students": {
-        "title": "Élèves et inscriptions",
-        "body": "Fiches élèves, parents et tuteurs, matricules automatiques. Import de la liste de l'école depuis Excel."
-      },
-      "grades": {
-        "title": "Notes et bulletins",
-        "body": "Moyennes, rangs et mentions selon vos coefficients. Bulletins en PDF, y compris le bulletin franco-arabe."
-      },
-      "attendance": {
-        "title": "Présences et pointage",
-        "body": "Appel en classe et pointage par carte QR à l'entrée. Les parents sont prévenus des absences."
-      },
-      "payments": {
-        "title": "Paiements et reçus",
-        "body": "Mensualités, inscriptions et cantine. Paiement en ligne ou au guichet, reçus numérotés, relances automatiques."
-      },
-      "messages": {
-        "title": "Annonces et messages",
-        "body": "Annonces à toute l'école, à une classe ou aux familles en retard de paiement. Calendrier des événements."
-      },
-      "transport": {
-        "title": "Transport scolaire",
-        "body": "Les parents suivent le bus et sont prévenus à l'approche de l'arrêt.",
-        "badge": "En option"
       }
     },
     "recovery": {
@@ -456,15 +428,6 @@
         "group": "Groupe scolaire"
       },
       "choose": "Demander une démo",
-      "includedTitle": "Inclus dans toutes les formules",
-      "included": {
-        "students": "Élèves, classes et inscriptions",
-        "grades": "Notes, compositions et bulletins",
-        "attendance": "Présences et appel",
-        "programme": "Programmes et cahier de textes",
-        "parents": "Application parents",
-        "receipts": "Reçus de paiement"
-      },
       "optionsTitle": "Options",
       "options": {
         "setup": {
@@ -474,7 +437,8 @@
         },
         "transport": {
           "name": "Transport GPS",
-          "price": "15 000 à 25 000 FCFA par bus et par mois"
+          "price": "15 000 à 25 000 FCFA par bus et par mois",
+          "note": "Bientôt"
         },
         "cards": {
           "name": "Cartes élèves QR pour le pointage",

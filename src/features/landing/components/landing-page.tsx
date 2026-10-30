@@ -2,16 +2,20 @@ import type { ReactNode } from "react";
 import {
   BellRing,
   BookOpenCheck,
+  Bus,
   Check,
   ClipboardCheck,
   FileText,
   GraduationCap,
+  MessageSquareText,
+  QrCode,
   Receipt,
   School,
   Smartphone,
   Users,
   Wallet,
   WifiOff,
+  Wrench,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
@@ -276,7 +280,13 @@ async function Pricing() {
       ? t("from", { min: formatInteger(previous + 1), max: formatInteger(plan.maxStudents) })
       : t("upTo", { count: formatInteger(plan.maxStudents) });
   };
-  const options = ["setup", "transport", "cards", "sms"] as const;
+  // Options : une carte chacune ; la pastille dit ce qui est offert ou pas encore disponible.
+  const options = [
+    { key: "setup", icon: Wrench, badge: { label: t("options.setup.badge"), tone: "bg-success-50 text-success-700" } },
+    { key: "transport", icon: Bus, badge: { label: t("options.transport.badge"), tone: "bg-sun-100 text-sun-700" } },
+    { key: "cards", icon: QrCode, badge: null },
+    { key: "sms", icon: MessageSquareText, badge: null },
+  ] as const;
 
   return (
     <div className="bg-white">
@@ -323,20 +333,29 @@ async function Pricing() {
           ))}
         </div>
 
-        <div className="mt-12 max-w-2xl">
-          <h3 className="text-base font-bold">{t("optionsTitle")}</h3>
-          <dl className="mt-4 divide-y divide-line rounded-xl ring-1 ring-line">
-            {options.map((key) => (
-              <div key={key} className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:justify-between sm:gap-6">
-                <dt className="text-ink">{t(`options.${key}.name`)}</dt>
-                <dd className="shrink-0 text-ink-soft sm:text-right">
-                  {t(`options.${key}.price`)}
-                  {key === "setup" && <span className="block text-xs text-success-700">{t("options.setup.note")}</span>}
-                  {key === "transport" && <span className="block text-xs text-sun-700">{t("options.transport.note")}</span>}
-                </dd>
-              </div>
+        <div className="mt-14">
+          <h3 className="text-xl font-bold">{t("optionsTitle")}</h3>
+          <p className="mt-1 text-sm text-ink-soft">{t("optionsBody")}</p>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {options.map(({ key, icon: Icon, badge }) => (
+              <li key={key} className="flex flex-col rounded-2xl bg-background p-5 ring-1 ring-line">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-azure-50 text-azure-700">
+                    <Icon className="size-5" aria-hidden />
+                  </span>
+                  {badge && (
+                    <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-semibold", badge.tone)}>{badge.label}</span>
+                  )}
+                </div>
+                <h4 className="mt-4 font-bold text-ink">{t(`options.${key}.name`)}</h4>
+                <p className="mt-1 mb-4 text-sm leading-relaxed text-ink-soft">{t(`options.${key}.detail`)}</p>
+                <p className="mt-auto border-t border-line pt-4">
+                  <span className="block font-bold text-ink">{t(`options.${key}.price`)}</span>
+                  <span className="block text-xs text-muted-foreground">{t(`options.${key}.unit`)}</span>
+                </p>
+              </li>
             ))}
-          </dl>
+          </ul>
         </div>
       </Section>
     </div>

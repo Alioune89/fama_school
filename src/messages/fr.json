@@ -431,24 +431,33 @@
       "optionsTitle": "Options",
       "options": {
         "setup": {
-          "name": "Mise en place (import des élèves, paramétrage, formation)",
-          "price": "150 000 à 500 000 FCFA, une fois",
-          "note": "Offerte aux écoles pilotes"
+          "name": "Mise en place",
+          "detail": "Import des élèves, paramétrage de l'école et formation de l'équipe.",
+          "price": "150 000 à 500 000 FCFA",
+          "unit": "une seule fois",
+          "badge": "Offerte aux écoles pilotes"
         },
         "transport": {
           "name": "Transport GPS",
-          "price": "15 000 à 25 000 FCFA par bus et par mois",
-          "note": "Bientôt"
+          "detail": "Les parents suivent le bus et sont prévenus à l'approche de l'arrêt.",
+          "price": "15 000 à 25 000 FCFA",
+          "unit": "par bus et par mois",
+          "badge": "Bientôt"
         },
         "cards": {
-          "name": "Cartes élèves QR pour le pointage",
-          "price": "Prix des cartes imprimées"
+          "name": "Cartes élèves QR",
+          "detail": "Cartes imprimées pour le pointage des élèves à l'entrée.",
+          "price": "Prix d'impression",
+          "unit": "selon la quantité"
         },
         "sms": {
           "name": "Packs SMS et WhatsApp",
-          "price": "Au volume"
+          "detail": "Avis d'absence, de bulletin et de paiement envoyés aux parents.",
+          "price": "Au volume",
+          "unit": "par pack de messages"
         }
-      }
+      },
+      "optionsBody": "À ajouter selon les besoins de votre école."
     },
     "demo": {
       "title": "Voyons ensemble si Fama School convient à votre école",

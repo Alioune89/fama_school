@@ -98,10 +98,10 @@ async function Dashboard() {
   return (
     <div className="space-y-6">
       <section aria-label={t("figures")} className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <KpiCard tone="azure" label={t("kpis.classes")} value={classes.length} />
-        <KpiCard tone="lavender" label={t("kpis.students")} value={students} />
-        <KpiCard tone="white" label={t("kpis.rollCalls")} value={`${rollCalls}/${classes.length}`} />
-        <KpiCard tone="sun" label={t("kpis.unread")} value={unread} />
+        <KpiCard tone="azure" label={t("kpis.classes")} value={classes.length} href="/professeur/classes" />
+        <KpiCard tone="lavender" label={t("kpis.students")} value={students} href="/professeur/classes" />
+        <KpiCard tone="white" label={t("kpis.rollCalls")} value={`${rollCalls}/${classes.length}`} href="/professeur/appel" />
+        <KpiCard tone="sun" label={t("kpis.unread")} value={unread} href="/professeur/messages" />
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">

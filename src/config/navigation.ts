@@ -136,7 +136,7 @@ direction.mobile = pick(direction.menu, ["dashboard", "students", "attendance", 
 const professeur: SpaceNavigation = {
   menu: [
     { label: "home", href: "/professeur", icon: "home" },
-    { label: "myClasses", href: "/professeur/classes", icon: "classes", soon: true },
+    { label: "myClasses", href: "/professeur/classes", icon: "classes" },
     { label: "rollCall", href: "/professeur/appel", icon: "rollCall" },
     { label: "reports", href: "/professeur/signalements", icon: "reports" },
     { label: "gradeEntry", href: "/professeur/notes", icon: "grades" },

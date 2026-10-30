@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ArrowRight, Building2, GraduationCap, House, ShieldCheck, UserRoundSearch } from "lucide-react";
+import { ArrowRight, Building2, GraduationCap, House, LogOut, ShieldCheck, UserRoundSearch } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/layout/empty-state";
-import { enterSpace } from "@/features/auth/actions";
+import { buttonVariants } from "@/components/ui/button";
+import { enterSpace, signOut } from "@/features/auth/actions";
 import { redirect } from "@/i18n/navigation";
 import { spaceEntry } from "@/features/consents/queries";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -28,6 +29,7 @@ async function SpaceList() {
   if (!user) redirect({ href: "/connexion", locale });
   const t = await getTranslations("spaces");
   const tRoles = await getTranslations("roles");
+  const tCommon = await getTranslations("common");
 
   if (user!.spaces.length === 0) {
     return (
@@ -35,6 +37,15 @@ async function SpaceList() {
         icon={UserRoundSearch}
         title={t("noAccessTitle")}
         body={user!.phone ? t("noAccessBody", { phone: formatPhone(user!.phone) }) : t("noAccessBodyNoPhone")}
+        action={
+          // Mauvais numéro, ou compte qui n'existe plus : seule issue, se déconnecter (la connexion renvoie ici).
+          <form action={signOut.bind(null, locale)}>
+            <button type="submit" className={buttonVariants({ variant: "outline" })}>
+              <LogOut aria-hidden />
+              {tCommon("signOut")}
+            </button>
+          </form>
+        }
       />
     );
   }

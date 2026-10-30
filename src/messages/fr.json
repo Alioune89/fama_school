@@ -3051,5 +3051,19 @@
     "empty": "Aucun parent enregistré",
     "emptyHint": "Les parents sont ajoutés avec l'inscription de leurs enfants.",
     "noResults": "Aucun parent ne correspond à la recherche."
+  },
+  "teacherClasses": {
+    "hint": "Vos classes de l'année : matières enseignées, appel du jour et liste des élèves.",
+    "empty": "Aucune classe pour le moment",
+    "emptyHint": "La direction vous affecte à vos classes et matières.",
+    "homeroom": "Professeur principal",
+    "headcount": "{count, plural, =0 {aucun élève} one {# élève} other {# élèves}} ({girls} F · {boys} G)",
+    "morningDone": "Appel du matin fait · {absent} abs. · {late} ret.",
+    "morningPending": "Appel du matin à faire",
+    "subjects": "Matières enseignées",
+    "rollCall": "Faire l'appel",
+    "grades": "Notes",
+    "lessonBook": "Cahier de textes",
+    "students": "{count, plural, =0 {Aucun élève} one {# élève} other {Les # élèves}}"
   }
 }

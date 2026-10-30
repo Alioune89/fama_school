@@ -29,6 +29,7 @@ export type NavIconName =
 export type NavLabelKey =
   | "dashboard"
   | "students"
+  | "guardians"
   | "teachers"
   | "staff"
   | "classes"
@@ -97,6 +98,7 @@ const direction: SpaceNavigation = {
   menu: [
     { label: "dashboard", shortLabel: "home", href: "/direction", icon: "home" },
     { label: "students", href: "/direction/eleves", icon: "students" },
+    { label: "guardians", href: "/direction/parents", icon: "children" },
     { label: "teachers", href: "/direction/professeurs", icon: "teachers" },
     { label: "staff", href: "/direction/personnel", icon: "staff" },
     { label: "classes", href: "/direction/classes", icon: "classes" },

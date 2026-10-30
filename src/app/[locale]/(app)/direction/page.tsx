@@ -42,10 +42,15 @@ async function Kpis() {
   const [data, t] = await Promise.all([dashboard(), getTranslations("dashboard")]);
   return (
     <>
-      <KpiCard label={t("students")} value={data.students} tone="lavender" />
-      <KpiCard label={t("teachers")} value={data.teachers} tone="sun" />
-      <KpiCard label={t("classes")} value={data.classesCount} tone="azure" />
-      <KpiCard label={t("connectedParents", { total: data.guardians })} value={data.connectedGuardians} tone="white" />
+      <KpiCard label={t("students")} value={data.students} tone="lavender" href="/direction/eleves" />
+      <KpiCard label={t("teachers")} value={data.teachers} tone="sun" href="/direction/professeurs" />
+      <KpiCard label={t("classes")} value={data.classesCount} tone="azure" href="/direction/classes" />
+      <KpiCard
+        label={t("connectedParents", { total: data.guardians })}
+        value={data.connectedGuardians}
+        tone="white"
+        href="/direction/parents"
+      />
     </>
   );
 }

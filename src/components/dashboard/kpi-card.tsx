@@ -1,5 +1,6 @@
-import { ArrowDown, ArrowUp, Ellipsis } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpRight, Ellipsis } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { formatInteger } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -12,12 +13,13 @@ const tones = {
 
 export type KpiTone = keyof typeof tones;
 
-/** Carte d'indicateur pastel (maquettes : « 124 684 Élèves », tendance ↑ 15 %). */
+/** Carte d'indicateur pastel (maquettes : « 124 684 Élèves », tendance ↑ 15 %) ; avec `href`, elle ouvre le détail. */
 export async function KpiCard({
   label,
   value,
   tone = "lavender",
   trend,
+  href,
   className,
 }: {
   label: string;
@@ -25,13 +27,15 @@ export async function KpiCard({
   tone?: KpiTone;
   /** Variation en points de pourcentage depuis la période précédente. */
   trend?: number;
+  /** Page qui détaille l'indicateur : toute la carte devient un lien. */
+  href?: string;
   className?: string;
 }) {
   const t = await getTranslations("common");
   const display = value === null ? "—" : typeof value === "number" ? formatInteger(value) : value;
 
-  return (
-    <div className={cn("flex min-h-36 flex-col justify-between rounded-xl p-5 text-ink shadow-card", tones[tone], className)}>
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         {trend !== undefined ? (
           <span
@@ -47,13 +51,33 @@ export async function KpiCard({
         ) : (
           <span />
         )}
-        <Ellipsis className="size-5 text-ink/50" aria-hidden />
+        {href ? (
+          <span className="flex size-8 items-center justify-center rounded-full bg-white/70 text-ink ring-1 ring-ink/10 transition-colors group-hover:bg-white">
+            <ArrowUpRight className="size-4" aria-hidden />
+          </span>
+        ) : (
+          <Ellipsis className="size-5 text-ink/50" aria-hidden />
+        )}
       </div>
       <div>
         <p className="tabular text-3xl font-bold tracking-tight">{display}</p>
         <p className="mt-1 text-sm font-medium text-ink/80">{label}</p>
       </div>
-    </div>
+    </>
+  );
+  const base = cn("flex min-h-36 flex-col justify-between rounded-xl p-5 text-ink shadow-card", tones[tone], className);
+
+  if (!href) return <div className={base}>{content}</div>;
+  return (
+    <Link
+      href={href}
+      className={cn(
+        base,
+        "group transition-[box-shadow,translate] hover:-translate-y-0.5 hover:shadow-float focus-visible:ring-2 focus-visible:ring-ink focus-visible:outline-none",
+      )}
+    >
+      {content}
+    </Link>
   );
 }
 

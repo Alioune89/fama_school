@@ -67,6 +67,7 @@
     "sectionOther": "Autre",
     "dashboard": "Tableau de bord",
     "students": "Élèves",
+    "guardians": "Parents",
     "teachers": "Enseignants",
     "staff": "Personnel",
     "classes": "Classes",
@@ -3028,5 +3029,27 @@
       "noYear": "Aucune année scolaire en cours."
     },
     "mentionSuffix": ", mention {mention}"
+  },
+  "guardians": {
+    "title": "Parents",
+    "hint": "Tous les parents de l'école, leurs enfants, et qui utilise déjà l'application. Invitez les autres en un message WhatsApp.",
+    "summary": "{connected, plural, =0 {Aucun parent connecté} one {# parent connecté} other {# parents connectés}} sur {total}",
+    "rateLabel": "Part des parents connectés",
+    "rateHint": "{rate} % des parents suivent la scolarité de leurs enfants dans l'application.",
+    "search": "Rechercher un parent",
+    "searchPlaceholder": "Nom ou téléphone",
+    "filterLabel": "Connexion",
+    "all": "Tous les parents",
+    "connected": "Connecté",
+    "notConnected": "Pas encore connecté",
+    "count": "{count, plural, one {# parent} other {# parents}}",
+    "noPhone": "Pas de téléphone",
+    "childrenOf": "Enfants de {name}",
+    "call": "Appeler",
+    "invite": "Inviter par WhatsApp",
+    "invitation": "Bonjour, {school} vous invite à suivre la scolarité de votre enfant sur Fama School : absences, notes, bulletins et paiements. Connectez-vous avec votre numéro de téléphone : {url}",
+    "empty": "Aucun parent enregistré",
+    "emptyHint": "Les parents sont ajoutés avec l'inscription de leurs enfants.",
+    "noResults": "Aucun parent ne correspond à la recherche."
   }
 }

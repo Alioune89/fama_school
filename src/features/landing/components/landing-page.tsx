@@ -6,7 +6,6 @@ import {
   ClipboardCheck,
   FileText,
   GraduationCap,
-  MessageCircle,
   Receipt,
   School,
   Smartphone,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { Footer } from "@/components/layout/footer";
 import { buttonVariants } from "@/components/ui/button";
 import { whatsappLink } from "@/config/contact";
@@ -356,7 +356,7 @@ async function Demo() {
           rel="noreferrer"
           className={cn(buttonVariants({ size: "touch", variant: "outline" }), "mt-6")}
         >
-          <MessageCircle aria-hidden />
+          <WhatsAppIcon />
           {t("whatsapp")}
         </a>
         <p className="mt-6 rounded-xl bg-sun-100 px-4 py-3 text-sm text-ink">{t("pilot")}</p>

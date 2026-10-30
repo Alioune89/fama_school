@@ -1,4 +1,5 @@
 import "server-only";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /** Écoles clientes (lecture réservée à l'équipe Fama School par la RLS). */
@@ -14,6 +15,26 @@ export async function listSchools() {
     ...school,
     members: school_memberships[0]?.count ?? 0,
   }));
+}
+
+/**
+ * Effectif (élèves actifs) de chaque école, pour le choix de la formule. L'équipe Fama School ne lit pas
+ * les élèves : seuls les nombres sortent, par la clé de service. À n'appeler qu'après requireSpace("plateforme").
+ */
+export async function countActiveStudents(schoolIds: string[]): Promise<Map<string, number>> {
+  const admin = createAdminClient();
+  const counts = await Promise.all(
+    schoolIds.map(async (id) => {
+      const { count, error } = await admin
+        .from("students")
+        .select("id", { count: "exact", head: true })
+        .eq("school_id", id)
+        .eq("status", "active");
+      if (error) throw error;
+      return [id, count ?? 0] as const;
+    }),
+  );
+  return new Map(counts);
 }
 
 /** Demandes de démo de la page d'accueil, les plus récentes d'abord (RLS : équipe Fama School). */

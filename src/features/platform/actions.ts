@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Constants } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
-import { createSchoolSchema, type CreateSchoolInput } from "./schemas";
+import { createSchoolSchema, schoolPlanSchema, type CreateSchoolInput } from "./schemas";
 
 /**
  * Crée une école cliente et inscrit son directeur au répertoire (ce qui l'invite).
@@ -77,6 +77,25 @@ export async function setDemoRequestStatus(input: z.input<typeof demoStatusSchem
     .from("demo_requests")
     .update({ status: parsed.data.status, handled_by: user.id })
     .eq("id", parsed.data.id)
+    .select("id");
+  if (error) return fail("errors.unknown");
+  if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
+}
+
+/** Formule et statut d'une école (suivi commercial de l'équipe Fama School). */
+export async function updateSchoolPlan(input: z.input<typeof schoolPlanSchema>): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user?.isPlatformAdmin) return fail("errors.forbidden");
+  const parsed = schoolPlanSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+
+  // Colonnes fermées à l'école elle-même : seule la clé de service peut les écrire.
+  const { data, error } = await createAdminClient()
+    .from("schools")
+    .update({ plan: parsed.data.plan, status: parsed.data.status })
+    .eq("id", parsed.data.schoolId)
     .select("id");
   if (error) return fail("errors.unknown");
   if (!data?.length) return fail("errors.notFound");

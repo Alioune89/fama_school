@@ -306,11 +306,28 @@
       "statusFor": "Suivi de la demande de {name}",
       "updated": "Suivi mis à jour.",
       "students": "{range} élèves"
+    },
+    "plansPage": {
+      "hint": "La grille tarifaire, le revenu attendu et la formule de chaque école selon son nombre d'élèves.",
+      "monthlyRevenue": "Revenu mensuel attendu",
+      "payingSchools": "Écoles payantes",
+      "trialSchools": "En essai ou pilote",
+      "toReview": "Formules à revoir",
+      "grid": "Grille des formules",
+      "gridHint": "Forfait mensuel facturé sur 10 mois, d'octobre à juillet. Les mêmes prix sont affichés sur la page d'accueil du site.",
+      "schoolsOnPlan": "{count, plural, =0 {Aucune école} one {# école} other {# écoles}}",
+      "schools": "Formule de chaque école",
+      "schoolsHint": "La formule conseillée couvre le nombre d'élèves actifs de l'école.",
+      "students": "{count, plural, =0 {aucun élève} one {# élève} other {# élèves}}",
+      "pilot": "Pilote gratuit · ensuite : {plan}",
+      "recommended": "Formule conseillée : {plan}",
+      "fits": "Formule adaptée",
+      "planOf": "Formule de {school}",
+      "statusOf": "Statut de {school}",
+      "save": "Enregistrer",
+      "saved": "{school} : formule enregistrée.",
+      "statusHint": "Le revenu attendu compte les écoles au statut « Active ». Le statut sert au suivi commercial : une école suspendue garde pour l'instant l'accès à l'application."
     }
-  },
-  "comingSoon": {
-    "title": "Module en préparation",
-    "body": "Ce module arrive dans une prochaine version de Fama School."
   },
   "landing": {
     "nav": {

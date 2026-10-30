@@ -170,7 +170,7 @@ const plateforme: SpaceNavigation = {
   menu: [
     { label: "schools", href: "/plateforme", icon: "schools" },
     { label: "demoRequests", href: "/plateforme/demandes", icon: "demoRequests" },
-    { label: "plans", href: "/plateforme/formules", icon: "plans", soon: true },
+    { label: "plans", href: "/plateforme/formules", icon: "plans" },
   ],
   other: [],
   mobile: [],
@@ -178,13 +178,3 @@ const plateforme: SpaceNavigation = {
 plateforme.mobile = plateforme.menu;
 
 export const NAVIGATION: Record<Space, SpaceNavigation> = { direction, professeur, parent, plateforme };
-
-/** Modules prévus mais pas encore livrés, par espace (pages « Bientôt »). */
-export function plannedModuleSlugs(space: Space): string[][] {
-  const { menu, other } = NAVIGATION[space];
-  const home = NAVIGATION[space].menu[0]!.href;
-  return [...menu, ...other]
-    .flatMap((item) => [item, ...(item.children ?? [])])
-    .filter((item) => item.soon && item.href !== home)
-    .map((item) => item.href.slice(home.length + 1).split("/"));
-}

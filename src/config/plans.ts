@@ -25,3 +25,11 @@ export const PUBLIC_PLANS: PublicPlan[] = [
 
 /** Prix annuel payé d'avance : 10 mois facturés, dont 2 offerts. */
 export const yearlyPrice = (monthly: number) => monthly * (BILLED_MONTHS - FREE_MONTHS_YEARLY);
+
+/** Formule adaptée à un effectif : la plus petite qui le couvre, sinon « Groupe scolaire » (sur devis). */
+export function recommendedPlan(students: number): PublicPlan {
+  return PUBLIC_PLANS.find((plan) => plan.maxStudents !== null && students <= plan.maxStudents) ?? PUBLIC_PLANS.at(-1)!;
+}
+
+/** Prix mensuel d'une formule (null : pilote gratuit ou sur devis). */
+export const monthlyPrice = (plan: Enums<"school_plan">) => PUBLIC_PLANS.find((entry) => entry.id === plan)?.monthly ?? null;

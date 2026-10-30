@@ -23,3 +23,11 @@ export const createSchoolSchema = z
   });
 
 export type CreateSchoolInput = z.input<typeof createSchoolSchema>;
+
+export const SCHOOL_STATUSES = Constants.public.Enums.school_status;
+
+export const schoolPlanSchema = z.object({
+  schoolId: z.uuid(),
+  plan: z.enum(SCHOOL_PLANS, { error: "validation.required" }),
+  status: z.enum(SCHOOL_STATUSES, { error: "validation.required" }),
+});

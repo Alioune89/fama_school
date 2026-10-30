@@ -126,7 +126,7 @@ const direction: SpaceNavigation = {
   ],
   other: [
     { label: "schoolSite", href: "/direction/site", icon: "website" },
-    { label: "profile", href: "/direction/profil", icon: "profile", soon: true },
+    { label: "profile", href: "/direction/profil", icon: "profile" },
     { label: "settings", href: "/direction/parametres", icon: "settings" },
   ],
   mobile: [],
@@ -147,7 +147,7 @@ const professeur: SpaceNavigation = {
     { label: "dailyReport", href: "/professeur/rapport", icon: "reports" },
     { label: "messages", href: "/professeur/messages", icon: "messages" },
   ],
-  other: [{ label: "profile", href: "/professeur/profil", icon: "profile", soon: true }],
+  other: [{ label: "profile", href: "/professeur/profil", icon: "profile" }],
   mobile: [],
 };
 professeur.mobile = pick(professeur.menu, ["home", "rollCall", "reports", "messages"]);

@@ -3065,5 +3065,27 @@
     "grades": "Notes",
     "lessonBook": "Cahier de textes",
     "students": "{count, plural, =0 {Aucun élève} one {# élève} other {Les # élèves}}"
+  },
+  "profile": {
+    "hint": "Vos informations, vos écoles, votre mot de passe et la façon dont vous êtes prévenu.",
+    "schools": "Mes écoles et mes rôles",
+    "identityHint": "Une erreur dans votre nom ou votre numéro ? La direction de l'école peut la corriger dans la liste du personnel.",
+    "password": {
+      "title": "Mot de passe",
+      "hint": "Pour la connexion par e-mail. Choisissez un mot de passe que vous n'utilisez nulle part ailleurs.",
+      "current": "Mot de passe actuel",
+      "password": "Nouveau mot de passe",
+      "confirm": "Confirmer le nouveau mot de passe",
+      "rules": "8 caractères au moins, avec des lettres et des chiffres.",
+      "save": "Changer le mot de passe",
+      "saved": "Votre mot de passe est changé.",
+      "errors": {
+        "tooShort": "8 caractères au moins.",
+        "lettersDigits": "Mettez des lettres et des chiffres.",
+        "mismatch": "Les deux mots de passe ne sont pas identiques.",
+        "same": "Le nouveau mot de passe doit être différent de l'actuel.",
+        "wrongCurrent": "Mot de passe actuel incorrect."
+      }
+    }
   }
 }

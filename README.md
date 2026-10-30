@@ -79,3 +79,4 @@ Le développement suit des lots : 0 socle, 1 paramétrage et annuaire, 2 présen
 
 - [Staging](docs/deploiement-staging.md) : démonstrations, mis à jour à chaque push sur `main`.
 - [Production](docs/mise-en-production.md) : comptes, variables, mise en ligne d'une version, services (SMS, paiement, push, Sentry).
+- [Fama School de A à Z](docs/fama-school-de-a-a-z.md) : rôles, fonctionnalités, formules, comptes de démo et ce qui reste à faire.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FormAlert } from "@/components/forms/form-alert";
 import { submitForm, useActionForm } from "@/components/forms/use-action-form";
@@ -36,6 +36,8 @@ export function DemoForm() {
     );
   }
 
+  // Une erreur dans les précisions facultatives les garde ouvertes.
+  const hasDetailError = ["city", "email", "message"].some((name) => form.hasError(name));
   const field = (name: string) => ({ id: `demo-${name}`, name, "aria-invalid": form.hasError(name) || undefined });
 
   return (
@@ -44,7 +46,7 @@ export function DemoForm() {
         form.run({
           fullName: text(formData, "fullName"),
           schoolName: text(formData, "schoolName"),
-          role: text(formData, "role") as DemoRequestInput["role"],
+          role: (text(formData, "role") || null) as DemoRequestInput["role"],
           phone: text(formData, "phone"),
           email: text(formData, "email"),
           city: text(formData, "city"),
@@ -56,61 +58,70 @@ export function DemoForm() {
       noValidate
       className="grid gap-4 rounded-2xl bg-white p-6 shadow-float ring-1 ring-line/70 sm:grid-cols-2 sm:p-8"
     >
+      {/* L'essentiel en trois champs ; le reste se précise au téléphone. */}
       <Field data-invalid={form.hasError("fullName") || undefined}>
         <FieldLabel htmlFor="demo-fullName">{t("fullName")}</FieldLabel>
         <Input {...field("fullName")} autoComplete="name" required />
         <FieldError>{form.fieldError("fullName")}</FieldError>
-      </Field>
-      <Field data-invalid={form.hasError("role") || undefined}>
-        <FieldLabel htmlFor="demo-role">{t("role")}</FieldLabel>
-        <NativeSelect {...field("role")} defaultValue="" required>
-          <option value="" disabled>
-            {t("choose")}
-          </option>
-          {DEMO_ROLES.map((role) => (
-            <option key={role} value={role}>
-              {t(`roles.${role}`)}
-            </option>
-          ))}
-        </NativeSelect>
-        <FieldError>{form.fieldError("role")}</FieldError>
-      </Field>
-      <Field data-invalid={form.hasError("schoolName") || undefined} className="sm:col-span-2">
-        <FieldLabel htmlFor="demo-schoolName">{t("schoolName")}</FieldLabel>
-        <Input {...field("schoolName")} autoComplete="organization" required />
-        <FieldError>{form.fieldError("schoolName")}</FieldError>
       </Field>
       <Field data-invalid={form.hasError("phone") || undefined}>
         <FieldLabel htmlFor="demo-phone">{t("phone")}</FieldLabel>
         <Input {...field("phone")} type="tel" inputMode="tel" autoComplete="tel" placeholder="77 123 45 67" required />
         <FieldError>{form.fieldError("phone")}</FieldError>
       </Field>
-      <Field data-invalid={form.hasError("email") || undefined}>
-        <FieldLabel htmlFor="demo-email">{t("email")}</FieldLabel>
-        <Input {...field("email")} type="email" inputMode="email" autoComplete="email" />
-        <FieldError>{form.fieldError("email")}</FieldError>
+      <Field data-invalid={form.hasError("schoolName") || undefined} className="sm:col-span-2">
+        <FieldLabel htmlFor="demo-schoolName">{t("schoolName")}</FieldLabel>
+        <Input {...field("schoolName")} autoComplete="organization" required />
+        <FieldError>{form.fieldError("schoolName")}</FieldError>
       </Field>
-      <Field data-invalid={form.hasError("city") || undefined}>
-        <FieldLabel htmlFor="demo-city">{t("city")}</FieldLabel>
-        <Input {...field("city")} autoComplete="address-level2" placeholder="Dakar" />
-        <FieldError>{form.fieldError("city")}</FieldError>
-      </Field>
-      <Field>
-        <FieldLabel htmlFor="demo-studentsRange">{t("studentsRange")}</FieldLabel>
-        <NativeSelect {...field("studentsRange")} defaultValue="">
-          <option value="">{t("choose")}</option>
-          {STUDENT_RANGES.map((range) => (
-            <option key={range} value={range}>
-              {t(`ranges.${range}`)}
-            </option>
-          ))}
-        </NativeSelect>
-      </Field>
-      <Field data-invalid={form.hasError("message") || undefined} className="sm:col-span-2">
-        <FieldLabel htmlFor="demo-message">{t("message")}</FieldLabel>
-        <Textarea {...field("message")} rows={3} placeholder={t("messagePlaceholder")} />
-        <FieldError>{form.fieldError("message")}</FieldError>
-      </Field>
+
+      <details className="group sm:col-span-2" open={hasDetailError || undefined}>
+        <summary className="cursor-pointer list-none text-sm font-semibold text-azure-700 marker:hidden">
+          <span className="inline-flex items-center gap-1.5">
+            <Plus className="size-4 transition-transform group-open:rotate-45" aria-hidden />
+            {t("moreDetails")}
+          </span>
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Field>
+            <FieldLabel htmlFor="demo-role">{t("role")}</FieldLabel>
+            <NativeSelect {...field("role")} defaultValue="">
+              <option value="">{t("choose")}</option>
+              {DEMO_ROLES.map((role) => (
+                <option key={role} value={role}>
+                  {t(`roles.${role}`)}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+          <Field data-invalid={form.hasError("city") || undefined}>
+            <FieldLabel htmlFor="demo-city">{t("city")}</FieldLabel>
+            <Input {...field("city")} autoComplete="address-level2" placeholder="Dakar" />
+            <FieldError>{form.fieldError("city")}</FieldError>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="demo-studentsRange">{t("studentsRange")}</FieldLabel>
+            <NativeSelect {...field("studentsRange")} defaultValue="">
+              <option value="">{t("choose")}</option>
+              {STUDENT_RANGES.map((range) => (
+                <option key={range} value={range}>
+                  {t(`ranges.${range}`)}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+          <Field data-invalid={form.hasError("email") || undefined}>
+            <FieldLabel htmlFor="demo-email">{t("email")}</FieldLabel>
+            <Input {...field("email")} type="email" inputMode="email" autoComplete="email" />
+            <FieldError>{form.fieldError("email")}</FieldError>
+          </Field>
+          <Field data-invalid={form.hasError("message") || undefined} className="sm:col-span-2">
+            <FieldLabel htmlFor="demo-message">{t("message")}</FieldLabel>
+            <Textarea {...field("message")} rows={3} placeholder={t("messagePlaceholder")} />
+            <FieldError>{form.fieldError("message")}</FieldError>
+          </Field>
+        </div>
+      </details>
       {/* Champ piège : invisible pour les personnes, rempli par les robots. */}
       <div aria-hidden className="absolute -left-[9999px] h-0 overflow-hidden">
         <label>

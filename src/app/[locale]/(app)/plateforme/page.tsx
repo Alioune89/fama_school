@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Building2, Plus } from "lucide-react";
+import { Building2, ChevronRight, Inbox, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { StatusPill, type StatusTone } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { buttonVariants } from "@/components/ui/button";
-import { listSchools } from "@/features/platform/queries";
+import { countNewDemoRequests, listSchools } from "@/features/platform/queries";
 import { Link } from "@/i18n/navigation";
 import { requireSpace } from "@/lib/auth/session";
 import { formatInteger } from "@/lib/format";
@@ -65,6 +65,25 @@ async function SchoolsTable() {
   );
 }
 
+/** Écoles qui attendent d'être rappelées : le premier geste de la journée pour l'équipe. */
+async function NewDemoRequests() {
+  await requireSpace("plateforme");
+  const [count, t] = await Promise.all([countNewDemoRequests(), getTranslations("platform.demoRequests")]);
+  if (count === 0) return null;
+  return (
+    <Link
+      href="/plateforme/demandes"
+      className="mb-6 flex items-center gap-3 rounded-xl bg-sun-50 px-4 py-3 ring-1 ring-sun-200 transition-colors hover:bg-sun-100"
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-sun-200">
+        <Inbox className="size-5" aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1 font-medium text-ink">{t("toCall", { count })}</span>
+      <ChevronRight className="size-5 shrink-0 text-ink-soft" aria-hidden />
+    </Link>
+  );
+}
+
 export default async function PlatformSchoolsPage() {
   const t = await getTranslations("platform");
   return (
@@ -78,6 +97,9 @@ export default async function PlatformSchoolsPage() {
           </Link>
         }
       />
+      <Suspense fallback={null}>
+        <NewDemoRequests />
+      </Suspense>
       <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-white shadow-card" aria-hidden />}>
         <SchoolsTable />
       </Suspense>

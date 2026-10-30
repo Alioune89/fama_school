@@ -7,7 +7,7 @@ export const STUDENT_RANGES = ["lt200", "200to500", "500to1000", "gt1000"] as co
 export const demoRequestSchema = z.object({
   fullName: requiredText(120, 2),
   schoolName: requiredText(160, 2),
-  role: z.enum(DEMO_ROLES, { error: "validation.required" }),
+  role: z.enum(DEMO_ROLES).nullable().catch(null),
   phone: phoneField,
   email: optionalEmailField,
   city: optionalText(80),

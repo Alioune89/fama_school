@@ -72,6 +72,7 @@ Les prix changent : les vérifier au moment de souscrire.
    | `SUPABASE_SECRET_KEY` | clé secret | oui |
    | `APP_URL` | `https://app.famaschool.sn` (liens des SMS et invitations) | oui |
    | `CRON_SECRET` | une longue valeur aléatoire : `openssl rand -hex 32` | oui |
+   | `TEAM_ALERT_PHONE` | numéro prévenu par SMS à chaque demande de démo (par défaut : +221 77 765 09 80) | non |
    | `ONLINE_PAYMENT_PROVIDER` | `paydunya` (vide : paiement simulé) | section 6 |
    | `PAYDUNYA_MODE` | `live` | section 6 |
    | `PAYDUNYA_MASTER_KEY`, `PAYDUNYA_PRIVATE_KEY`, `PAYDUNYA_TOKEN` | clés PayDunya de production | section 6 |

@@ -48,3 +48,11 @@ export async function listDemoRequests() {
   if (error) throw error;
   return data ?? [];
 }
+
+/** Demandes de démo pas encore rappelées (bandeau de l'espace plateforme). */
+export async function countNewDemoRequests() {
+  const supabase = await createClient();
+  const { count, error } = await supabase.from("demo_requests").select("id", { count: "exact", head: true }).eq("status", "new");
+  if (error) throw error;
+  return count ?? 0;
+}

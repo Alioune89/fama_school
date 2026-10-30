@@ -38,7 +38,9 @@ async function DemoRequests() {
             <div className="min-w-0">
               <p className="font-semibold text-ink">{request.full_name}</p>
               <p className="text-xs text-muted-foreground">
-                {tLanding(`roles.${request.role as "founder"}`)} · {formatDate(request.created_at.slice(0, 10))}
+                {[request.role && tLanding(`roles.${request.role as "founder"}`), formatDate(request.created_at.slice(0, 10))]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
               <a
                 href={`tel:${request.phone}`}

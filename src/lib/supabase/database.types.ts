@@ -834,7 +834,7 @@ export type Database = {
           id: string;
           message: string | null;
           phone: string;
-          role: string;
+          role: string | null;
           school_name: string;
           status: Database["public"]["Enums"]["demo_request_status"];
           students_range: string | null;
@@ -850,7 +850,7 @@ export type Database = {
           id?: string;
           message?: string | null;
           phone: string;
-          role: string;
+          role?: string | null;
           school_name: string;
           status?: Database["public"]["Enums"]["demo_request_status"];
           students_range?: string | null;
@@ -865,7 +865,7 @@ export type Database = {
           id?: string;
           message?: string | null;
           phone?: string;
-          role?: string;
+          role?: string | null;
           school_name?: string;
           status?: Database["public"]["Enums"]["demo_request_status"];
           students_range?: string | null;

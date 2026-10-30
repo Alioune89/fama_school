@@ -122,7 +122,7 @@
   },
   "footer": {
     "email": "contact@famaschool.sn",
-    "phone": "+221 33 000 00 00",
+    "phone": "+221 77 765 09 80",
     "terms": "Conditions d'utilisation",
     "privacy": "Confidentialité",
     "copyright": "© {year} Fama School"
@@ -318,7 +318,8 @@
       },
       "statusFor": "Suivi de la demande de {name}",
       "updated": "Suivi mis à jour.",
-      "students": "{range} élèves"
+      "students": "{range} élèves",
+      "toCall": "{count, plural, one {# nouvelle demande de démo à rappeler} other {# nouvelles demandes de démo à rappeler}}"
     },
     "plansPage": {
       "hint": "La grille tarifaire, le revenu attendu et la formule de chaque école selon son nombre d'élèves.",
@@ -487,7 +488,7 @@
     },
     "demo": {
       "title": "Voyons ensemble si Fama School convient à votre école",
-      "body": "Laissez vos coordonnées : nous vous appelons pour une démonstration de 30 minutes, sur place ou à distance.",
+      "body": "Laissez votre nom et votre numéro : nous vous appelons pour une démonstration de 30 minutes, sur place ou à distance.",
       "pilot": "Écoles pilotes : mise en place offerte et un trimestre gratuit (Dakar, Pikine, Rufisque).",
       "fullName": "Votre nom",
       "schoolName": "Nom de l'école",
@@ -515,10 +516,14 @@
       "submit": "Être rappelé",
       "sending": "Envoi…",
       "successTitle": "Merci, votre demande est bien reçue.",
-      "successBody": "Nous vous appelons sous 48 heures ouvrées au numéro indiqué.",
+      "successBody": "Nous vous appelons sous 24 heures (jours ouvrables) au numéro indiqué.",
       "again": "Envoyer une autre demande",
       "tooMany": "Vous avez déjà envoyé plusieurs demandes aujourd'hui : nous vous rappelons très vite.",
-      "privacy": "Vos coordonnées servent uniquement à vous recontacter."
+      "privacy": "Vos coordonnées servent uniquement à vous recontacter.",
+      "moreDetails": "Ajouter des précisions (facultatif)",
+      "whatsapp": "Écrire sur WhatsApp",
+      "whatsappText": "Bonjour Fama School, je souhaite une démonstration pour mon école.",
+      "teamAlert": "Fama School : nouvelle demande de démo de {name} ({school}), {phone}. À rappeler."
     },
     "faq": {
       "title": "Questions fréquentes",

@@ -8,6 +8,7 @@ import {
   FileText,
   GraduationCap,
   Megaphone,
+  MessageCircle,
   QrCode,
   Receipt,
   School,
@@ -20,6 +21,7 @@ import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/brand/logo";
 import { Footer } from "@/components/layout/footer";
 import { buttonVariants } from "@/components/ui/button";
+import { whatsappLink } from "@/config/contact";
 import { PUBLIC_PLANS, yearlyPrice } from "@/config/plans";
 import { Link } from "@/i18n/navigation";
 import { formatInteger, formatXOF } from "@/lib/format";
@@ -378,6 +380,16 @@ async function Demo() {
     <Section id={SECTIONS.demo} className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
       <div>
         <SectionTitle title={t("title")} body={t("body")} />
+        {/* Au Sénégal, beaucoup préfèrent écrire directement : message pré-rempli, réponse sur WhatsApp. */}
+        <a
+          href={whatsappLink(t("whatsappText"))}
+          target="_blank"
+          rel="noreferrer"
+          className={cn(buttonVariants({ size: "touch", variant: "outline" }), "mt-6")}
+        >
+          <MessageCircle aria-hidden />
+          {t("whatsapp")}
+        </a>
         <p className="mt-6 rounded-xl bg-sun-100 px-4 py-3 text-sm text-ink">{t("pilot")}</p>
       </div>
       <DemoForm />

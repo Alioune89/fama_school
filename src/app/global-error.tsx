@@ -1,7 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
+import { reportError } from "@/lib/monitoring";
+
 // Dernier filet de sécurité (erreur dans le layout racine) : pas de traductions disponibles ici.
-export default function GlobalError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
+export default function GlobalError({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
+  useEffect(() => reportError(error), [error]);
+
   return (
     <html lang="fr">
       <body style={{ fontFamily: "system-ui, sans-serif", background: "#f4f5fa", color: "#1e2433", margin: 0 }}>

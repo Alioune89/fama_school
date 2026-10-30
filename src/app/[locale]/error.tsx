@@ -5,12 +5,14 @@ import { TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { EmptyState } from "@/components/layout/empty-state";
 import { Button } from "@/components/ui/button";
+import { reportError } from "@/lib/monitoring";
 
 export default function ErrorPage({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
   const t = useTranslations("errorPage");
 
   useEffect(() => {
     console.error(error);
+    reportError(error);
   }, [error]);
 
   return (

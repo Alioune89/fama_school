@@ -1,4 +1,5 @@
-import { CalendarDays, ClipboardPen, GraduationCap, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { CalendarDays, ClipboardPen, GraduationCap, Mail, MapPin, Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/brand/logo";
 import { Link } from "@/i18n/navigation";
@@ -89,7 +90,7 @@ export async function PublicSiteView({ site, preview }: { site: PublicSite; prev
                 rel="noreferrer"
                 className="inline-flex h-12 items-center gap-2 rounded-full px-6 font-semibold text-white ring-1 ring-white/70"
               >
-                <MessageCircle className="size-5" aria-hidden />
+                <WhatsAppIcon />
                 {t("whatsappCta")}
               </a>
             )}
@@ -258,7 +259,7 @@ export async function PublicSiteView({ site, preview }: { site: PublicSite; prev
               </ContactLine>
             )}
             {whatsappHref && (
-              <ContactLine icon={<MessageCircle className="size-5" aria-hidden />} label={t("whatsapp")}>
+              <ContactLine icon={<WhatsAppIcon />} label={t("whatsapp")}>
                 <a href={whatsappHref} target="_blank" rel="noreferrer" className="underline-offset-4 hover:underline">
                   {formatPhone(site.whatsapp!)}
                 </a>

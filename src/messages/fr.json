@@ -3106,5 +3106,113 @@
     "title": "Rubrique réservée",
     "body": "Cette rubrique est réservée à : {roles}.",
     "back": "Revenir au tableau de bord"
+  },
+  "legal": {
+    "updated": "Dernière mise à jour : 30 octobre 2026",
+    "back": "Retour à l'accueil",
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "intro": "Les règles d'utilisation de Fama School, pour les écoles, les enseignants et les familles.",
+      "sections": {
+        "s1": {
+          "title": "Objet",
+          "body": "Les présentes conditions encadrent l'utilisation de Fama School, la plateforme de gestion scolaire qui relie la direction des écoles, les enseignants et les parents d'élèves. Elles s'appliquent à toute personne qui se connecte à l'application ou visite le site."
+        },
+        "s2": {
+          "title": "Qui fait quoi",
+          "body": "- L'école cliente souscrit un abonnement à Fama School. Elle décide des informations enregistrées sur ses élèves et des personnes qui y ont accès.\n- Fama School fournit l'application, l'héberge et en assure la maintenance pour le compte de l'école.\n- Les membres de la direction, les enseignants et les parents utilisent l'application selon le rôle que l'école leur a attribué."
+        },
+        "s3": {
+          "title": "Accès et comptes",
+          "body": "On se connecte avec son numéro de téléphone et un code reçu par SMS, ou, pour le personnel, avec une adresse e-mail et un mot de passe. Le compte est personnel : il ne doit pas être prêté. Chacun ne voit que ce qui relève de son rôle : un parent ne voit que ses enfants, un enseignant ses classes, et chaque membre de la direction les rubriques de son métier.\n\nEn cas de perte du téléphone ou de doute sur l'usage de votre compte, prévenez l'école ou Fama School sans attendre."
+        },
+        "s4": {
+          "title": "Engagements de l'école",
+          "body": "L'école s'engage à saisir des informations exactes, à n'inviter que les personnes concernées (personnel, enseignants, parents ou tuteurs) et à informer les familles de l'utilisation de Fama School. Elle reste responsable des notes, bulletins, décisions et montants qu'elle publie."
+        },
+        "s5": {
+          "title": "Engagements des utilisateurs",
+          "body": "Chaque utilisateur s'engage à utiliser l'application dans le cadre scolaire, à respecter la confidentialité des informations qu'il consulte, et à ne pas diffuser de contenu injurieux, faux ou contraire à la loi dans les messages et annonces."
+        },
+        "s6": {
+          "title": "Paiements en ligne",
+          "body": "Les paiements des frais de scolarité par Wave, Orange Money, Free Money ou carte passent par un prestataire de paiement agréé (PayDunya). Fama School ne conserve jamais vos codes de paiement. Le reçu est émis au nom de l'école, qui reste la seule bénéficiaire des sommes versées. Toute contestation sur un montant se règle avec l'école."
+        },
+        "s7": {
+          "title": "Disponibilité",
+          "body": "Fama School fait le nécessaire pour que l'application reste disponible et fonctionne même avec une connexion faible. Des interruptions peuvent survenir pour maintenance ou en cas de panne d'un prestataire ; les saisies faites hors ligne sont envoyées au retour du réseau."
+        },
+        "s8": {
+          "title": "Tarifs",
+          "body": "L'abonnement de l'école suit la formule choisie (voir la page d'accueil). L'application est gratuite pour les parents. Les SMS et messages WhatsApp envoyés aux familles peuvent faire l'objet de packs facturés à l'école."
+        },
+        "s9": {
+          "title": "Propriété",
+          "body": "Le logiciel, la marque et le design de Fama School appartiennent à Fama School. Les données saisies par l'école restent celles de l'école : à la fin de l'abonnement, elle peut en obtenir une copie avant leur suppression."
+        },
+        "s10": {
+          "title": "Suspension et fin du service",
+          "body": "Un compte peut être suspendu en cas d'usage contraire aux présentes conditions. L'école peut mettre fin à son abonnement selon son contrat ; ses données sont alors restituées puis supprimées dans les délais indiqués dans la politique de confidentialité."
+        },
+        "s11": {
+          "title": "Droit applicable",
+          "body": "Les présentes conditions sont régies par le droit sénégalais. En cas de différend, une solution amiable sera recherchée avant toute action devant les juridictions compétentes de Dakar."
+        },
+        "s12": {
+          "title": "Contact",
+          "body": "Pour toute question : contact@famaschool.sn ou +221 77 765 09 80."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Quelles données Fama School utilise, pourquoi, qui y a accès, et comment exercer vos droits.",
+      "sections": {
+        "s1": {
+          "title": "Qui est responsable",
+          "body": "Pour les données des élèves, des parents et du personnel, l'école est responsable du traitement : c'est elle qui décide de ce qui est enregistré. Fama School agit pour son compte, comme sous-traitant, et n'utilise ces données que pour faire fonctionner l'application.\n\nPour les demandes de démonstration envoyées depuis le site, Fama School est responsable du traitement."
+        },
+        "s2": {
+          "title": "Données collectées",
+          "body": "- Élèves : nom, prénom, sexe, date et lieu de naissance, classe, photo si l'école l'ajoute, présences, notes, bulletins, signalements, frais et paiements.\n- Parents et tuteurs : nom, numéro de téléphone, adresse e-mail facultative, lien avec l'enfant, messages échangés avec l'école.\n- Personnel : nom, téléphone ou e-mail, fonction, classes et matières.\n- Demandes de démonstration : nom, numéro, nom de l'école et précisions facultatives.\n- Données techniques : journaux de connexion et rapports d'erreur, sans contenu des formulaires."
+        },
+        "s3": {
+          "title": "Pourquoi",
+          "body": "Ces données servent uniquement au suivi scolaire : appel et présences, notes et bulletins, frais et reçus, communication entre l'école et les familles, et sécurité de l'application. Elles ne sont jamais vendues ni utilisées pour de la publicité."
+        },
+        "s4": {
+          "title": "Qui y a accès",
+          "body": "- Les parents ne voient que leurs enfants.\n- Les enseignants ne voient que leurs classes.\n- Chaque membre de la direction ne voit que les rubriques de son métier : par exemple, la comptabilité voit les paiements mais pas les notes.\n- Une école ne voit jamais les données d'une autre école.\n- L'équipe Fama School n'accède aux données d'une école que pour l'assistance demandée par celle-ci ou pour la sécurité du service."
+        },
+        "s5": {
+          "title": "Prestataires",
+          "body": "Fama School s'appuie sur des prestataires choisis pour leur sécurité, liés par des engagements de confidentialité :\n- hébergement de la base de données et des fichiers : Supabase, serveurs situés à Paris (Union européenne) ;\n- hébergement de l'application : Vercel ;\n- paiements en ligne : PayDunya ;\n- envoi des SMS et messages WhatsApp : Twilio ;\n- suivi des erreurs : Sentry, sans données personnelles.\n\nCertains prestataires sont situés hors du Sénégal. Ces transferts sont encadrés conformément à la loi n° 2008-12 sur la protection des données à caractère personnel."
+        },
+        "s6": {
+          "title": "Durée de conservation",
+          "body": "Les données scolaires sont conservées tant que l'élève est inscrit dans l'école, puis selon les obligations de l'école (archives scolaires et comptables). À la fin de l'abonnement d'une école, ses données lui sont restituées sur demande puis supprimées. Les demandes de démonstration sont conservées au plus deux ans."
+        },
+        "s7": {
+          "title": "Sécurité",
+          "body": "Les échanges sont chiffrés (HTTPS). Les accès sont cloisonnés par école et par rôle, au niveau même de la base de données. Les codes de connexion sont envoyés par SMS, les mots de passe sont stockés chiffrés, et les sauvegardes sont régulières."
+        },
+        "s8": {
+          "title": "Cookies",
+          "body": "Fama School n'utilise que les cookies nécessaires au fonctionnement : garder votre session ouverte et retenir l'école choisie. Aucun cookie publicitaire ni de mesure d'audience."
+        },
+        "s9": {
+          "title": "Vos droits",
+          "body": "Conformément à la loi n° 2008-12, vous pouvez demander l'accès à vos données et à celles de vos enfants mineurs, leur rectification, leur suppression ou vous opposer à certains usages. Adressez-vous d'abord à l'école, responsable du traitement, ou écrivez à contact@famaschool.sn : nous transmettrons votre demande à l'école et l'aiderons à y répondre.\n\nVous pouvez aussi saisir la Commission de Protection des Données Personnelles du Sénégal (CDP)."
+        },
+        "s10": {
+          "title": "Enfants",
+          "body": "Les données des élèves mineurs sont enregistrées par l'école dans le cadre de sa mission éducative. Les parents donnent leur accord au suivi scolaire lors de leur première connexion et peuvent modifier à tout moment leurs choix (photos, géolocalisation) depuis leur profil."
+        },
+        "s11": {
+          "title": "Contact",
+          "body": "Pour toute question sur vos données : contact@famaschool.sn ou +221 77 765 09 80."
+        }
+      }
+    }
   }
 }

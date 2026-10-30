@@ -1,6 +1,7 @@
 import { Mail, Phone } from "lucide-react";
 import { cacheLife } from "next/cache";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 async function currentYear() {
@@ -29,8 +30,12 @@ export async function Footer({ className }: { className?: string }) {
         {t("phone")}
       </a>
       <span className="ml-auto flex flex-wrap gap-x-6 gap-y-2">
-        <span>{t("terms")}</span>
-        <span>{t("privacy")}</span>
+        <Link href="/conditions-utilisation" className="hover:text-ink hover:underline">
+          {t("terms")}
+        </Link>
+        <Link href="/confidentialite" className="hover:text-ink hover:underline">
+          {t("privacy")}
+        </Link>
         <span>{t("copyright", { year })}</span>
       </span>
     </footer>

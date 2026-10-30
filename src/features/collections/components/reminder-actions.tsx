@@ -1,8 +1,9 @@
 "use client";
 
-import { MessageCircle, MessageSquareText, Phone } from "lucide-react";
+import { MessageSquareText, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { useMessage } from "@/components/forms/use-action-form";
 import { whatsappNumber } from "@/lib/domain/collections";
 import { logReminder } from "../actions";
@@ -50,7 +51,7 @@ export function ReminderActions({
         aria-label={t("whatsappFor", { name: studentName })}
         className={link}
       >
-        <MessageCircle className="size-4 text-success-700" aria-hidden />
+        <WhatsAppIcon className="size-4" />
         {t("whatsapp")}
       </a>
       <a

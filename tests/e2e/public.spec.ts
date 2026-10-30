@@ -48,6 +48,25 @@ test.describe("pages publiques", () => {
   });
 });
 
+test.describe("pages juridiques", () => {
+  test("les conditions d'utilisation et la confidentialité s'ouvrent depuis le pied de page", async ({ page }) => {
+    await page.goto("/");
+    const footer = page.getByRole("contentinfo");
+    await footer.getByRole("link", { name: "Conditions d'utilisation" }).click();
+    await expect(page).toHaveURL(/\/conditions-utilisation$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Conditions d'utilisation" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "6. Paiements en ligne" })).toBeVisible();
+
+    await page.getByRole("contentinfo").getByRole("link", { name: "Confidentialité" }).click();
+    await expect(page).toHaveURL(/\/confidentialite$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Politique de confidentialité" })).toBeVisible();
+    // Le sommaire mène à la section.
+    await page.getByRole("link", { name: "9. Vos droits" }).click();
+    await expect(page).toHaveURL(/#section-9$/);
+    await expect(page.getByText(/Commission de Protection des Données Personnelles/)).toBeVisible();
+  });
+});
+
 test.describe("page d'accueil : demande de démo", () => {
   test("un visiteur demande une démo, l'équipe Fama School la suit", async ({ page, browser }) => {
     const digits = String(Date.now()).slice(-7);

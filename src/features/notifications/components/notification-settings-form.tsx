@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { BellRing, MessageCircle, MessageSquareText } from "lucide-react";
+import { BellRing, MessageSquareText } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { toast } from "sonner";
 import { FormAlert } from "@/components/forms/form-alert";
 import { useActionForm } from "@/components/forms/use-action-form";
@@ -35,7 +36,7 @@ export function NotificationSettingsForm({ initial }: { initial: NotificationSet
   }
   const channels = [
     { key: "push", icon: BellRing },
-    { key: "whatsapp", icon: MessageCircle },
+    { key: "whatsapp", icon: WhatsAppIcon },
     { key: "sms", icon: MessageSquareText },
   ] as const;
 

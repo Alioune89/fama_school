@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ArrowLeft, MessageCircle, Phone, UsersRound } from "lucide-react";
+import { ArrowLeft, Phone, UsersRound } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { FilterSelect } from "@/components/data/filter-select";
 import { SearchInput } from "@/components/data/search-input";
 import { StatusPill } from "@/components/dashboard/status-pill";
@@ -120,7 +121,7 @@ async function Guardians({ searchParams }: { searchParams: SearchParams }) {
                     rel="noreferrer"
                     className={buttonVariants({ variant: "outline", size: "sm" })}
                   >
-                    <MessageCircle aria-hidden />
+                    <WhatsAppIcon className="size-4" />
                     {t("invite")}
                   </a>
                 )}

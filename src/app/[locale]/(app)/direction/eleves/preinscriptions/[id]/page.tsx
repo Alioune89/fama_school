@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ArrowLeft, FileText, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, FileText, Phone } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { buttonVariants } from "@/components/ui/button";
@@ -105,7 +106,7 @@ async function Detail({ params }: Props) {
               {t("call")}
             </a>
             <a href={whatsapp} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "sm" })}>
-              <MessageCircle aria-hidden />
+              <WhatsAppIcon className="size-4" />
               {t("whatsapp")}
             </a>
           </div>

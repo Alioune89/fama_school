@@ -36,16 +36,18 @@ function age(birthDate: string) {
 export async function StudentDetailView({ id }: { id: string }) {
   const { entry } = await requireSpace("direction");
   const canEdit = permissions.managePeople(entry.roles);
+  // Chaque bloc ne paraît qu'aux rôles qui lisent ces données (règles de la base, migration role_scoped_reads).
+  const canSeeReports = permissions.readAttendance(entry.roles);
+  const canSeeFinance = permissions.manageFinance(entry.roles);
   const [detail, options, reports] = await Promise.all([
     getStudent(entry.schoolId!, id),
     canEdit ? listClassOptions(entry.schoolId!) : Promise.resolve({ yearLabel: null, classes: [] }),
-    listStudentReports(id),
+    canSeeReports ? listStudentReports(id) : [],
   ]);
   if (!detail) notFound();
   const { student, photoUrl, documents, current, enrollments, guardians } = detail;
-  const canSeeFinance = permissions.manageFinance(entry.roles) || permissions.manageSchool(entry.roles);
   const [fees, invoices, payments] = await Promise.all([
-    current?.status === "active" ? getStudentFees(entry.schoolId!, student.id, current.classId) : null,
+    canSeeFinance && current?.status === "active" ? getStudentFees(entry.schoolId!, student.id, current.classId) : null,
     canSeeFinance ? listStudentInvoices(student.id, todayInDakar()) : [],
     canSeeFinance ? listStudentPayments(student.id) : [],
   ]);
@@ -133,12 +135,14 @@ export async function StudentDetailView({ id }: { id: string }) {
           <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
             <StudentDocuments schoolId={entry.schoolId!} studentId={student.id} documents={documents} canEdit={canEdit} />
           </section>
-          <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70" aria-labelledby="student-reports">
-            <h2 id="student-reports" className="text-lg font-semibold">
-              {tReports("studentTitle")}
-            </h2>
-            <ReportList reports={reports} emptyLabel={tReports("studentEmpty")} />
-          </section>
+          {canSeeReports && (
+            <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70" aria-labelledby="student-reports">
+              <h2 id="student-reports" className="text-lg font-semibold">
+                {tReports("studentTitle")}
+              </h2>
+              <ReportList reports={reports} emptyLabel={tReports("studentEmpty")} />
+            </section>
+          )}
         </div>
 
         <div className="space-y-6">

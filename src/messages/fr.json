@@ -3123,5 +3123,10 @@
         "wrongCurrent": "Mot de passe actuel incorrect."
       }
     }
+  },
+  "sectionGate": {
+    "title": "Rubrique réservée",
+    "body": "Cette rubrique est réservée à : {roles}.",
+    "back": "Revenir au tableau de bord"
   }
 }

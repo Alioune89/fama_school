@@ -13,7 +13,11 @@ export const permissions = {
   manageAcademics: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor"]),
   /** Déverrouiller une période de notes (public.set_period_lock) : le censeur verrouille, sans pouvoir rouvrir. */
   unlockPeriods: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director"]),
-  /** Frais, factures, encaissements, dépenses (private.can_manage_finance). */
+  /** Lecture des notes, bulletins, conseils et examens (private.can_read_grades). */
+  readGrades: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "secretary"]),
+  /** Lecture des présences, justificatifs, pointage et signalements (private.can_read_attendance). */
+  readAttendance: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "censor", "supervisor"]),
+  /** Frais, factures, encaissements, dépenses (private.can_manage_finance) : lecture comme écriture. */
   manageFinance: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "accountant"]),
   /** Élèves, inscriptions, parents (private.can_manage_people). */
   managePeople: (roles: readonly AppRole[]) => hasAny(roles, ["owner", "director", "secretary"]),

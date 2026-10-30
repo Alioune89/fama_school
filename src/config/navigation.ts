@@ -209,3 +209,9 @@ export function navigationFor(space: Space, roles: readonly AppRole[] | null): S
     mobile: mobile.filter(visible).slice(0, 4),
   };
 }
+
+/** Rôles qui voient la rubrique `href` d'un espace (null : tous). Sert aussi à verrouiller ses pages. */
+export function sectionRoles(space: Space, href: string): readonly AppRole[] | null {
+  const { menu, other } = NAVIGATION[space];
+  return [...menu, ...other].find((item) => item.href === href)?.roles ?? null;
+}

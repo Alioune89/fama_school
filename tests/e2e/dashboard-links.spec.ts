@@ -110,10 +110,28 @@ test.describe("Tableau de bord de la direction", () => {
     await expect(nav.getByRole("link", { name: "Personnel" })).toHaveCount(0);
   });
 
-  for (const { role, phone, sees, hidden } of [
-    { role: "la comptable", phone: DEMO.accountantPhone, sees: ["Parents"], hidden: ["Présences", "Classes", "Messages"] },
-    { role: "la secrétaire", phone: DEMO.secretaryPhone, sees: ["Personnel", "Parents"], hidden: ["Présences", "Programme"] },
-    { role: "le surveillant", phone: DEMO.supervisorPhone, sees: ["Présences", "Classes"], hidden: ["Personnel", "Programme"] },
+  for (const { role, phone, sees, hidden, blocked } of [
+    {
+      role: "la comptable",
+      phone: DEMO.accountantPhone,
+      sees: ["Parents"],
+      hidden: ["Présences", "Classes", "Messages"],
+      blocked: "/direction/notes",
+    },
+    {
+      role: "la secrétaire",
+      phone: DEMO.secretaryPhone,
+      sees: ["Personnel", "Parents"],
+      hidden: ["Présences", "Programme"],
+      blocked: "/direction/presences",
+    },
+    {
+      role: "le surveillant",
+      phone: DEMO.supervisorPhone,
+      sees: ["Présences", "Classes"],
+      hidden: ["Personnel", "Programme"],
+      blocked: "/direction/finances",
+    },
   ]) {
     test(`${role} voit le menu de son métier`, async ({ page }) => {
       test.setTimeout(90_000);
@@ -129,6 +147,11 @@ test.describe("Tableau de bord de la direction", () => {
       for (const label of hidden) await expect(nav.getByRole("link", { name: label, exact: true })).toHaveCount(0);
       // Les finances : la comptable seulement (parmi ces trois rôles).
       await expect(nav.getByRole("button", { name: "Finances" })).toHaveCount(role === "la comptable" ? 1 : 0);
+
+      // Une rubrique hors de son métier reste fermée, même en tapant son adresse.
+      await page.goto(blocked);
+      await expect(page.getByText("Rubrique réservée")).toBeVisible();
+      await expect(page.getByRole("link", { name: "Revenir au tableau de bord" })).toBeVisible();
     });
   }
 });

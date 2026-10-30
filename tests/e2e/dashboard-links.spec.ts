@@ -7,6 +7,11 @@ test.describe("Tableau de bord de la direction", () => {
     await loginWithEmail(page, DEMO.director);
     await expect(page).toHaveURL(/\/direction$/);
 
+    // Le logo ramène à la page d'accueil du site, même connecté.
+    await page.getByRole("link", { name: "Fama School" }).filter({ visible: true }).first().click();
+    await expect(page).toHaveURL(/:\d+\/$/);
+    await page.goto("/direction");
+
     await page.getByRole("link", { name: /Élèves inscrits/ }).click();
     await expect(page).toHaveURL(/\/direction\/eleves$/);
     await page.goto("/direction");

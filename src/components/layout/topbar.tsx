@@ -22,13 +22,12 @@ const iconButton =
 export async function Topbar({ space }: { space: Space }) {
   const t = await getTranslations("topbar");
   const tCommon = await getTranslations("common");
-  const home = NAVIGATION[space].menu[0]!.href;
   const messagesHref = NAVIGATION[space].menu.find((item) => item.label === "messages")?.href;
   const searchHref = space === "direction" ? "/direction/eleves" : null;
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 bg-background/85 px-4 backdrop-blur sm:px-6 lg:h-20 lg:px-8">
-      <Link href={home} className="lg:hidden" aria-label="Fama School">
+      <Link href="/" className="lg:hidden" aria-label="Fama School">
         <LogoMark />
       </Link>
 

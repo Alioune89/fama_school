@@ -162,11 +162,11 @@ export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: (
 }
 
 export function Sidebar({ space }: { space: Space }) {
-  const home = NAVIGATION[space].menu[0]!.href;
   return (
     <aside className="sticky top-0 hidden h-dvh w-70 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
       <div className="px-6 pt-7 pb-6">
-        <Link href={home} className="inline-flex rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+        {/* Le logo ramène à la page d'accueil du site ; « Tableau de bord » (menu) ramène à l'espace. */}
+        <Link href="/" className="inline-flex rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
           <Logo />
         </Link>
       </div>

@@ -206,6 +206,19 @@
       "past": "Terminé",
       "upcoming": "À venir",
       "yearRange": "Année scolaire du {start} au {end}"
+    },
+    "today": {
+      "title": "À faire aujourd'hui",
+      "allClear": "Rien d'urgent aujourd'hui.",
+      "allClearHint": "Tout est à jour pour ce qui vous concerne.",
+      "tasks": {
+        "rollCalls": "{count, plural, one {# classe sans appel ce matin} other {# classes sans appel ce matin}}",
+        "justifications": "{count, plural, one {# justificatif d'absence à valider} other {# justificatifs d'absence à valider}}",
+        "preregistrations": "{count, plural, one {# pré-inscription à traiter} other {# pré-inscriptions à traiter}}",
+        "cancellations": "{count, plural, one {# annulation d'encaissement à décider} other {# annulations d'encaissement à décider}}",
+        "overdue": "{count, plural, one {# famille en retard de paiement} other {# familles en retard de paiement}}",
+        "messages": "{count, plural, one {# conversation non lue} other {# conversations non lues}}"
+      }
     }
   },
   "teacherHome": {

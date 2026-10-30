@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { DEMO, loginWithEmail, loginWithPhone } from "./helpers";
+import { adminClient, DEMO, loginWithEmail, loginWithPhone } from "./helpers";
 
 test.describe("Tableau de bord de la direction", () => {
   test("chaque indicateur ouvre son détail ; les parents se filtrent et s'invitent", async ({ page }) => {
@@ -57,5 +57,52 @@ test.describe("Tableau de bord de la direction", () => {
     await page.goto("/professeur");
     await page.getByRole("link", { name: /Messages non lus/ }).click();
     await expect(page).toHaveURL(/\/professeur\/messages$/);
+  });
+
+  test("« À faire aujourd'hui » mène à la tâche ; le menu suit le rôle", async ({ page }) => {
+    test.setTimeout(90_000);
+    const admin = adminClient();
+    const { data: school } = await admin.from("schools").select("id").eq("slug", "les-baobabs").single();
+    const reference = `P2026-${String(Date.now()).slice(-6)}`;
+    const { data: request } = await admin
+      .from("preregistrations")
+      .insert({
+        school_id: school!.id,
+        reference,
+        child_first_name: "Tâche",
+        child_last_name: "Dujour",
+        child_sex: "F",
+        guardian_name: "Parent Dujour",
+        guardian_phone: "+221770009999",
+      })
+      .select("id")
+      .single();
+    try {
+      await loginWithEmail(page, DEMO.director);
+      await expect(page).toHaveURL(/\/direction$/);
+      const today = page.getByRole("region", { name: "À faire aujourd'hui" });
+      await today.getByRole("link", { name: /pré-inscriptions? à traiter/ }).click();
+      await expect(page).toHaveURL(/\/direction\/eleves\/preinscriptions$/);
+      // Le directeur voit toutes les rubriques, dont les finances (menu latéral ou onglet mobile).
+      await page.goto("/direction");
+      await expect(page.getByText("Finances", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    } finally {
+      await admin.from("preregistrations").delete().eq("id", request!.id);
+    }
+  });
+
+  test("le censeur : pédagogie au menu, pas de finances", async ({ page }) => {
+    test.setTimeout(90_000);
+    await loginWithPhone(page, DEMO.censorPhone);
+    await expect(page).toHaveURL(/\/direction$/);
+    await expect(page.getByRole("region", { name: "À faire aujourd'hui" })).toBeVisible();
+    await page.goto("/direction/notes");
+    const menu = page.getByRole("navigation", { name: "Menu" }).filter({ visible: true }).first();
+    if (page.viewportSize()!.width < 1024) await page.getByRole("button", { name: "Plus" }).click();
+    const nav = page.viewportSize()!.width < 1024 ? page.getByRole("dialog").getByRole("navigation") : menu;
+    await expect(nav.getByRole("link", { name: "Notes et bulletins" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Programme" })).toBeVisible();
+    await expect(nav.getByRole("button", { name: "Finances" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Personnel" })).toHaveCount(0);
   });
 });

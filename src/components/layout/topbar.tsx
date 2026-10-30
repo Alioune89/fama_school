@@ -2,10 +2,10 @@ import { Suspense } from "react";
 import { Bell, MessagesSquare, Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/brand/logo";
-import { NAVIGATION } from "@/config/navigation";
+import { navigationFor } from "@/config/navigation";
 import { NotificationBell } from "@/features/notifications/components/notification-bell";
 import { Link } from "@/i18n/navigation";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUser, requireSpace } from "@/lib/auth/session";
 import type { Space } from "@/lib/auth/spaces";
 import { SyncIndicator } from "./sync-indicator";
 import { UserMenu, UserMenuSkeleton } from "./user-menu";
@@ -16,13 +16,24 @@ async function SyncStatus() {
   return user ? <SyncIndicator userId={user.id} /> : null;
 }
 
+/** Raccourci vers la messagerie, pour les rôles qui ont une boîte de réception. */
+async function MessagesLink({ space, label }: { space: Space; label: string }) {
+  const { entry } = await requireSpace(space);
+  const href = navigationFor(space, entry.roles).menu.find((item) => item.label === "messages")?.href;
+  if (!href) return null;
+  return (
+    <Link href={href} className={iconButton} aria-label={label}>
+      <MessagesSquare className="size-[18px]" aria-hidden strokeWidth={1.75} />
+    </Link>
+  );
+}
+
 const iconButton =
   "relative inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-card ring-1 ring-line/70 transition-colors hover:bg-azure-50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
 
 export async function Topbar({ space }: { space: Space }) {
   const t = await getTranslations("topbar");
   const tCommon = await getTranslations("common");
-  const messagesHref = NAVIGATION[space].menu.find((item) => item.label === "messages")?.href;
   const searchHref = space === "direction" ? "/direction/eleves" : null;
 
   return (
@@ -56,11 +67,9 @@ export async function Topbar({ space }: { space: Space }) {
             <SyncStatus />
           </Suspense>
         )}
-        {messagesHref && (
-          <Link href={messagesHref} className={iconButton} aria-label={tCommon("messages")}>
-            <MessagesSquare className="size-[18px]" aria-hidden strokeWidth={1.75} />
-          </Link>
-        )}
+        <Suspense fallback={null}>
+          <MessagesLink space={space} label={tCommon("messages")} />
+        </Suspense>
         <Suspense
           fallback={
             <span className={iconButton} aria-hidden>

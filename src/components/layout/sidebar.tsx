@@ -6,10 +6,10 @@ import { useLocale, useTranslations } from "next-intl";
 import { Logo } from "@/components/brand/logo";
 import { InstallCard } from "@/components/layout/install-card";
 import { NavIcon } from "@/components/layout/nav-icon";
-import { NAVIGATION, type NavItem, type NavLeaf } from "@/config/navigation";
+import { navigationFor, type NavItem, type NavLeaf } from "@/config/navigation";
 import { signOut } from "@/features/auth/actions";
 import { Link, usePathname } from "@/i18n/navigation";
-import type { Space } from "@/lib/auth/spaces";
+import type { AppRole, Space } from "@/lib/auth/spaces";
 import { cn } from "@/lib/utils";
 
 export function isActiveHref(pathname: string, href: string, home: string, exact = false): boolean {
@@ -100,11 +100,23 @@ function NavLeafLink({
  * Menu d'un espace. Le chemin courant n'est connu qu'à la requête sur les routes dynamiques
  * (/professeurs/[id]) : le menu est prérendu sans rubrique active, puis surligné (voir SidebarNav).
  */
-function SidebarNavContent({ space, pathname, onNavigate }: { space: Space; pathname: string | null; onNavigate?: () => void }) {
+type Roles = readonly AppRole[] | null;
+
+function SidebarNavContent({
+  space,
+  roles,
+  pathname,
+  onNavigate,
+}: {
+  space: Space;
+  roles: Roles;
+  pathname: string | null;
+  onNavigate?: () => void;
+}) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const locale = useLocale();
-  const { menu, other } = NAVIGATION[space];
+  const { menu, other } = navigationFor(space, roles);
   const home = menu[0]!.href;
 
   return (
@@ -148,20 +160,21 @@ function SidebarNavContent({ space, pathname, onNavigate }: { space: Space; path
   );
 }
 
-function SidebarNavLive({ space, onNavigate }: { space: Space; onNavigate?: () => void }) {
+function SidebarNavLive({ space, roles, onNavigate }: { space: Space; roles: Roles; onNavigate?: () => void }) {
   const pathname = usePathname();
-  return <SidebarNavContent space={space} pathname={pathname} onNavigate={onNavigate} />;
+  return <SidebarNavContent space={space} roles={roles} pathname={pathname} onNavigate={onNavigate} />;
 }
 
-export function SidebarNav({ space, onNavigate }: { space: Space; onNavigate?: () => void }) {
+/** Menu de l'espace, réduit aux rubriques des rôles de l'utilisateur (`roles` null : entrées communes). */
+export function SidebarNav({ space, roles = null, onNavigate }: { space: Space; roles?: Roles; onNavigate?: () => void }) {
   return (
-    <Suspense fallback={<SidebarNavContent space={space} pathname={null} onNavigate={onNavigate} />}>
-      <SidebarNavLive space={space} onNavigate={onNavigate} />
+    <Suspense fallback={<SidebarNavContent space={space} roles={roles} pathname={null} onNavigate={onNavigate} />}>
+      <SidebarNavLive space={space} roles={roles} onNavigate={onNavigate} />
     </Suspense>
   );
 }
 
-export function Sidebar({ space }: { space: Space }) {
+export function Sidebar({ space, roles = null }: { space: Space; roles?: Roles }) {
   return (
     <aside className="sticky top-0 hidden h-dvh w-70 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
       <div className="px-6 pt-7 pb-6">
@@ -171,7 +184,7 @@ export function Sidebar({ space }: { space: Space }) {
         </Link>
       </div>
       <div className="flex-1 overflow-y-auto px-3 pb-4">
-        <SidebarNav space={space} />
+        <SidebarNav space={space} roles={roles} />
       </div>
       <div className="p-4">
         <InstallCard />

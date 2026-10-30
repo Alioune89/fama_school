@@ -1,4 +1,4 @@
-import type { Space } from "@/lib/auth/spaces";
+import type { AppRole, Space } from "@/lib/auth/spaces";
 
 export type NavIconName =
   | "home"
@@ -70,6 +70,8 @@ export type NavLeaf = {
   soon?: boolean;
   /** Actif sur cette adresse seulement (vue d'ensemble d'une rubrique dont les pages sont ses sous-adresses). */
   exact?: boolean;
+  /** Rôles qui voient l'entrée (absent : tous). Le menu suit le métier ; la base garde seule l'accès aux données. */
+  roles?: readonly AppRole[];
 };
 export type NavItem = NavLeaf & {
   icon: NavIconName;
@@ -81,7 +83,7 @@ export type NavItem = NavLeaf & {
 export type SpaceNavigation = {
   menu: NavItem[];
   other: NavItem[];
-  /** Entrées de la barre d'onglets mobile (4 au plus, la 5e ouvre le menu complet). */
+  /** Entrées de la barre d'onglets mobile, par priorité : les 4 premières visibles du rôle (la 5e ouvre le menu). */
   mobile: NavItem[];
 };
 
@@ -94,20 +96,31 @@ function pick(items: NavItem[], labels: NavLabelKey[]): NavItem[] {
   });
 }
 
+// Rôles de direction par métier : pédagogie (censeur), vie scolaire (surveillant), caisse (comptable),
+// scolarité (secrétaire). Le fondateur et le directeur voient tout.
+const LEAD = ["owner", "director"] as const satisfies readonly AppRole[];
+const PEDAGOGY = [...LEAD, "censor"] as const satisfies readonly AppRole[];
+
 const direction: SpaceNavigation = {
   menu: [
     { label: "dashboard", shortLabel: "home", href: "/direction", icon: "home" },
     { label: "students", href: "/direction/eleves", icon: "students" },
-    { label: "guardians", href: "/direction/parents", icon: "children" },
-    { label: "teachers", href: "/direction/professeurs", icon: "teachers" },
-    { label: "staff", href: "/direction/personnel", icon: "staff" },
-    { label: "classes", href: "/direction/classes", icon: "classes" },
-    { label: "attendance", href: "/direction/presences", icon: "attendance" },
-    { label: "grades", href: "/direction/notes", icon: "grades" },
+    {
+      label: "guardians",
+      href: "/direction/parents",
+      icon: "children",
+      roles: [...LEAD, "supervisor", "accountant", "secretary"],
+    },
+    { label: "teachers", href: "/direction/professeurs", icon: "teachers", roles: [...PEDAGOGY, "secretary"] },
+    { label: "staff", href: "/direction/personnel", icon: "staff", roles: [...LEAD, "secretary"] },
+    { label: "classes", href: "/direction/classes", icon: "classes", roles: [...PEDAGOGY, "supervisor", "secretary"] },
+    { label: "attendance", href: "/direction/presences", icon: "attendance", roles: [...PEDAGOGY, "supervisor"] },
+    { label: "grades", href: "/direction/notes", icon: "grades", roles: [...PEDAGOGY, "secretary"] },
     {
       label: "finance",
       href: "/direction/finances",
       icon: "finance",
+      roles: [...LEAD, "accountant"],
       children: [
         { label: "financeOverview", href: "/direction/finances", exact: true },
         { label: "feesCollection", href: "/direction/finances/encaissements" },
@@ -117,21 +130,22 @@ const direction: SpaceNavigation = {
         { label: "expenses", href: "/direction/finances/depenses" },
       ],
     },
-    { label: "programme", href: "/direction/programme", icon: "programme" },
-    { label: "homework", href: "/direction/cahier-de-textes", icon: "homework" },
-    { label: "dailyReports", href: "/direction/rapports", icon: "reports" },
+    { label: "programme", href: "/direction/programme", icon: "programme", roles: PEDAGOGY },
+    { label: "homework", href: "/direction/cahier-de-textes", icon: "homework", roles: PEDAGOGY },
+    { label: "dailyReports", href: "/direction/rapports", icon: "reports", roles: PEDAGOGY },
     { label: "announcements", href: "/direction/annonces", icon: "announcements" },
     { label: "calendar", href: "/direction/calendrier", icon: "calendar" },
-    { label: "messages", href: "/direction/messages", icon: "messages" },
+    // Boîte de réception de l'école (private.inbox_roles) : le comptable n'y a pas accès.
+    { label: "messages", href: "/direction/messages", icon: "messages", roles: [...PEDAGOGY, "supervisor", "secretary"] },
   ],
   other: [
-    { label: "schoolSite", href: "/direction/site", icon: "website" },
+    { label: "schoolSite", href: "/direction/site", icon: "website", roles: [...PEDAGOGY, "secretary"] },
     { label: "profile", href: "/direction/profil", icon: "profile" },
-    { label: "settings", href: "/direction/parametres", icon: "settings" },
+    { label: "settings", href: "/direction/parametres", icon: "settings", roles: PEDAGOGY },
   ],
   mobile: [],
 };
-direction.mobile = pick(direction.menu, ["dashboard", "students", "attendance", "finance"]);
+direction.mobile = pick(direction.menu, ["dashboard", "students", "attendance", "finance", "grades", "guardians", "calendar"]);
 
 const professeur: SpaceNavigation = {
   menu: [
@@ -178,3 +192,20 @@ const plateforme: SpaceNavigation = {
 plateforme.mobile = plateforme.menu;
 
 export const NAVIGATION: Record<Space, SpaceNavigation> = { direction, professeur, parent, plateforme };
+
+const visibleTo = (roles: readonly AppRole[] | null) => (item: NavLeaf) =>
+  !item.roles || (roles !== null && item.roles.some((role) => roles.includes(role)));
+
+/**
+ * Menu d'un espace pour les rôles de l'utilisateur. Sans rôles (coquille prérendue, avant la session),
+ * seules les entrées communes à tous apparaissent ; les autres arrivent avec la session.
+ */
+export function navigationFor(space: Space, roles: readonly AppRole[] | null): SpaceNavigation {
+  const { menu, other, mobile } = NAVIGATION[space];
+  const visible = visibleTo(roles);
+  return {
+    menu: menu.filter(visible),
+    other: other.filter(visible),
+    mobile: mobile.filter(visible).slice(0, 4),
+  };
+}

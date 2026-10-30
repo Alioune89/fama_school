@@ -8,15 +8,17 @@ import { InstallCard } from "@/components/layout/install-card";
 import { NavIcon } from "@/components/layout/nav-icon";
 import { SidebarNav, isActiveHref } from "@/components/layout/sidebar";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { NAVIGATION } from "@/config/navigation";
+import { navigationFor } from "@/config/navigation";
 import { Link, usePathname } from "@/i18n/navigation";
-import type { Space } from "@/lib/auth/spaces";
+import type { AppRole, Space } from "@/lib/auth/spaces";
 import { cn } from "@/lib/utils";
 
 /** Barre d'onglets en bas d'écran sur téléphone (grosses cibles tactiles), menu complet dans un tiroir. */
-function TabLinks({ space, pathname }: { space: Space; pathname: string | null }) {
+type Roles = readonly AppRole[] | null;
+
+function TabLinks({ space, roles, pathname }: { space: Space; roles: Roles; pathname: string | null }) {
   const t = useTranslations("nav");
-  const { mobile, menu } = NAVIGATION[space];
+  const { mobile, menu } = navigationFor(space, roles);
   const home = menu[0]!.href;
   return mobile.map((item) => {
     const active = pathname !== null && isActiveHref(pathname, item.href, home);
@@ -37,11 +39,11 @@ function TabLinks({ space, pathname }: { space: Space; pathname: string | null }
   });
 }
 
-function TabLinksLive({ space }: { space: Space }) {
-  return <TabLinks space={space} pathname={usePathname()} />;
+function TabLinksLive({ space, roles }: { space: Space; roles: Roles }) {
+  return <TabLinks space={space} roles={roles} pathname={usePathname()} />;
 }
 
-export function MobileNav({ space }: { space: Space }) {
+export function MobileNav({ space, roles = null }: { space: Space; roles?: Roles }) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const [open, setOpen] = useState(false);
@@ -53,8 +55,8 @@ export function MobileNav({ space }: { space: Space }) {
         className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 backdrop-blur lg:hidden"
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">
-          <Suspense fallback={<TabLinks space={space} pathname={null} />}>
-            <TabLinksLive space={space} />
+          <Suspense fallback={<TabLinks space={space} roles={roles} pathname={null} />}>
+            <TabLinksLive space={space} roles={roles} />
           </Suspense>
           <li>
             <button
@@ -80,7 +82,7 @@ export function MobileNav({ space }: { space: Space }) {
             <SheetDescription className="sr-only">{tCommon("menu")}</SheetDescription>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-3 pb-4">
-            <SidebarNav space={space} onNavigate={() => setOpen(false)} />
+            <SidebarNav space={space} roles={roles} onNavigate={() => setOpen(false)} />
           </div>
           <div className="p-4">
             <InstallCard />

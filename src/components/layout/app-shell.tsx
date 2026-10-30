@@ -12,6 +12,17 @@ async function SpaceGuard({ space }: { space: Space }) {
   return null;
 }
 
+/** Menus réduits aux rubriques des rôles de l'utilisateur, une fois la session lue. */
+async function RoleSidebar({ space }: { space: Space }) {
+  const { entry } = await requireSpace(space);
+  return <Sidebar space={space} roles={entry.roles} />;
+}
+
+async function RoleMobileNav({ space }: { space: Space }) {
+  const { entry } = await requireSpace(space);
+  return <MobileNav space={space} roles={entry.roles} />;
+}
+
 /**
  * Coquille commune aux espaces (d'après les maquettes) : barre latérale, barre du haut, contenu, pied de page.
  * Tout ce qui ne dépend pas de l'utilisateur est prérendu ; l'identité et les données arrivent en streaming.
@@ -21,7 +32,9 @@ export function AppShell({ space, children }: { space: Space; children: ReactNod
   return (
     <div className="min-h-dvh lg:flex">
       <div className="contents print:hidden">
-        <Sidebar space={space} />
+        <Suspense fallback={<Sidebar space={space} />}>
+          <RoleSidebar space={space} />
+        </Suspense>
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="contents print:hidden">
@@ -36,7 +49,9 @@ export function AppShell({ space, children }: { space: Space; children: ReactNod
         <Footer className="hidden lg:flex print:hidden" />
       </div>
       <div className="contents print:hidden">
-        <MobileNav space={space} />
+        <Suspense fallback={<MobileNav space={space} />}>
+          <RoleMobileNav space={space} />
+        </Suspense>
       </div>
     </div>
   );

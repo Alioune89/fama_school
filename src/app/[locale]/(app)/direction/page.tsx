@@ -9,7 +9,10 @@ import { CalendarCard } from "@/features/dashboard/components/calendar-card";
 import { GenderSplit } from "@/features/dashboard/components/gender-split";
 import { HeadcountChart } from "@/features/dashboard/components/headcount-chart";
 import { SetupBanner } from "@/features/dashboard/components/setup-banner";
+import { TodayTasks, TodayTasksSkeleton } from "@/features/dashboard/components/today-tasks";
+import { todayInDakar } from "@/features/dashboard/calendar";
 import { getDirectionDashboard } from "@/features/dashboard/queries";
+import { getTodayTasks } from "@/features/dashboard/today";
 import { requireSpace } from "@/lib/auth/session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,6 +39,12 @@ async function Greeting() {
 async function Setup() {
   const data = await dashboard();
   return <SetupBanner status={data.setup} />;
+}
+
+async function Today() {
+  const { user, entry } = await requireSpace("direction");
+  const tasks = await getTodayTasks(entry.schoolId!, user.id, entry.roles, todayInDakar());
+  return <TodayTasks tasks={tasks} />;
 }
 
 async function Kpis() {
@@ -100,6 +109,10 @@ export default async function DirectionDashboardPage() {
 
       <Suspense fallback={null}>
         <Setup />
+      </Suspense>
+
+      <Suspense fallback={<TodayTasksSkeleton />}>
+        <Today />
       </Suspense>
 
       <section className="grid grid-cols-2 gap-4 xl:grid-cols-4" aria-label={tNav("dashboard")}>

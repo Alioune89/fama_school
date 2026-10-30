@@ -109,4 +109,26 @@ test.describe("Tableau de bord de la direction", () => {
     await expect(nav.getByRole("button", { name: "Finances" })).toHaveCount(0);
     await expect(nav.getByRole("link", { name: "Personnel" })).toHaveCount(0);
   });
+
+  for (const { role, phone, sees, hidden } of [
+    { role: "la comptable", phone: DEMO.accountantPhone, sees: ["Parents"], hidden: ["Présences", "Classes", "Messages"] },
+    { role: "la secrétaire", phone: DEMO.secretaryPhone, sees: ["Personnel", "Parents"], hidden: ["Présences", "Programme"] },
+    { role: "le surveillant", phone: DEMO.supervisorPhone, sees: ["Présences", "Classes"], hidden: ["Personnel", "Programme"] },
+  ]) {
+    test(`${role} voit le menu de son métier`, async ({ page }) => {
+      test.setTimeout(90_000);
+      await loginWithPhone(page, phone);
+      await expect(page).toHaveURL(/\/direction$/);
+      await expect(page.getByRole("region", { name: "À faire aujourd'hui" })).toBeVisible();
+      const mobile = page.viewportSize()!.width < 1024;
+      const nav = mobile
+        ? page.getByRole("dialog").getByRole("navigation")
+        : page.getByRole("navigation", { name: "Menu" }).filter({ visible: true }).first();
+      if (mobile) await clickUntilVisible(page.getByRole("button", { name: "Plus" }), nav.getByRole("link", { name: sees[0] }));
+      for (const label of sees) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+      for (const label of hidden) await expect(nav.getByRole("link", { name: label, exact: true })).toHaveCount(0);
+      // Les finances : la comptable seulement (parmi ces trois rôles).
+      await expect(nav.getByRole("button", { name: "Finances" })).toHaveCount(role === "la comptable" ? 1 : 0);
+    });
+  }
 });

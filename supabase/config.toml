@@ -274,6 +274,10 @@ max_frequency = "5s"
 221770000002 = "123456"
 221770000003 = "123456"
 221770000004 = "123456"
+# Comptable, secrétaire et surveillant général des Baobabs (menus selon le rôle).
+221770990007 = "123456"
+221770990008 = "123456"
+221770990009 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]

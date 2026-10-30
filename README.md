@@ -28,6 +28,9 @@ Supabase Studio : http://127.0.0.1:54323 · Base : `postgresql://postgres:postgr
 | 77 000 00 02 | téléphone, code `123456` | Professeur — Les Baobabs et Al Amine (vacataire) |
 | 77 000 00 03 | téléphone, code `123456` | Censeur — Les Baobabs |
 | 77 000 00 04 | téléphone, code `123456` | Directeur — Institut Franco-Arabe Al Amine |
+| 77 099 00 07 | téléphone, code `123456` | Comptable — Les Baobabs |
+| 77 099 00 08 | téléphone, code `123456` | Secrétaire — Les Baobabs |
+| 77 099 00 09 | téléphone, code `123456` | Surveillant général — Les Baobabs |
 
 Les comptes téléphone n'existent qu'après la première connexion : l'invitation correspondante est alors rattachée automatiquement.
 

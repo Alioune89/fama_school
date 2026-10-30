@@ -55,6 +55,9 @@ Compter environ 45 minutes la première fois. Ensuite, chaque push sur `main` me
      | 221770000002 | 123456 | professeure vacataire (2 écoles) |
      | 221770000003 | 123456 | censeur |
      | 221770000004 | 123456 | directeur d'Al Amine (école à configurer) |
+     | 221770990007 | 123456 | comptable des Baobabs |
+     | 221770990008 | 123456 | secrétaire des Baobabs |
+     | 221770990009 | 123456 | surveillant général des Baobabs |
 
      Supabase demande une date de fin de validité des numéros de test (*Test OTPs Valid Until*) :
      31 juillet 2027 pour le staging. Passé cette date, la repousser au même endroit.
@@ -111,6 +114,8 @@ E2E_BASE_URL=https://fama-school.vercel.app E2E_DEMO_PASSWORD='<mot de passe de 
 - **Direction** : `directeur@famaschool.test` avec le mot de passe de démo (Groupe Scolaire Les Baobabs, 10 classes).
 - **Parent** : `77 000 00 01`, code `123456`.
 - **Mise en route d'une école vide** : `77 000 00 04`, code `123456` (Institut Al Amine).
+- **Menus selon le rôle** : censeur `77 000 00 03`, comptable `77 099 00 07`, secrétaire `77 099 00 08`,
+  surveillant général `77 099 00 09`, code `123456`.
 - Les demandes de démo reçues sur la page d'accueil s'affichent dans l'espace plateforme
   (*Demandes de démo*), avec le compte `admin@famaschool.test`.
 

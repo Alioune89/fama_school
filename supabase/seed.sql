@@ -159,7 +159,8 @@ begin
     (v_school, 'Abdoulaye Diallo', '+221770990005', 'teacher', 'Professeur d''EPS', 'vacataire', 'M', 'moyen', v_director),
     (v_school, 'Aïssatou Cissé', '+221770990006', 'teacher', 'Institutrice', 'permanent', 'F', 'elementaire', v_director),
     (v_school, 'Bineta Gueye', '+221770990007', 'accountant', 'Comptable', null, 'F', null, v_director),
-    (v_school, 'Rokhaya Mbaye', '+221770990008', 'secretary', 'Secrétaire', null, 'F', null, v_director);
+    (v_school, 'Rokhaya Mbaye', '+221770990008', 'secretary', 'Secrétaire', null, 'F', null, v_director),
+    (v_school, 'Pape Diouf', '+221770990009', 'supervisor', 'Surveillant général', null, 'M', null, v_director);
 
   -- Affectations
   insert into public.teaching_assignments (school_id, class_id, subject_id, staff_id)

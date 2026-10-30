@@ -40,6 +40,13 @@ insert into public.guardians (id, school_id, full_name, user_id) values
 insert into public.student_guardians (school_id, student_id, guardian_id, is_primary) values
   ('35000000-0000-4000-8000-00000000000c', 'a5000000-0000-4000-8000-0000000000c1', 'c5000000-0000-4000-8000-0000000000c1', true);
 
+-- Heure d'aujourd'hui déjà passée, en fraction du temps écoulé depuis minuit : le test passe à toute heure
+-- (juste après minuit, « 8 h » ou « il y a 20 minutes » seraient dans le futur ou la veille).
+create function pg_temp.today_at(p_fraction numeric) returns timestamptz language sql stable as $f$
+  select date_trunc('day', now()) + (now() - date_trunc('day', now())) * p_fraction
+$f$;
+grant execute on function pg_temp.today_at(numeric) to authenticated;
+
 set local role authenticated;
 
 -- Le professeur principal fait l'appel du matin à 8 h.
@@ -47,7 +54,7 @@ select set_config('request.jwt.claims', '{"sub": "45000000-0000-4000-8000-000000
 
 select is(
   public.submit_roll_call('d5000000-0000-4000-8000-000000000001', '95000000-0000-4000-8000-0000000000c1', current_date, 'morning',
-    date_trunc('day', now()) + interval '8 hours',
+    pg_temp.today_at(0.5),
     '{"a5000000-0000-4000-8000-0000000000c1": "absent", "a5000000-0000-4000-8000-0000000000c2": "present", "a5000000-0000-4000-8000-0000000000c3": "present"}'),
   'applied',
   'le professeur de la classe fait l''appel'
@@ -61,7 +68,7 @@ select results_eq(
 
 select is(
   public.submit_roll_call('d5000000-0000-4000-8000-000000000001', '95000000-0000-4000-8000-0000000000c1', current_date, 'morning',
-    date_trunc('day', now()) + interval '8 hours',
+    pg_temp.today_at(0.5),
     '{"a5000000-0000-4000-8000-0000000000c1": "present"}'),
   'duplicate',
   'une opération renvoyée par le téléphone n''est appliquée qu''une fois'
@@ -76,7 +83,7 @@ select is(
 -- Correction à 8 h 20 : Awa est arrivée en retard.
 select is(
   public.submit_roll_call('d5000000-0000-4000-8000-000000000002', '95000000-0000-4000-8000-0000000000c1', current_date, 'morning',
-    date_trunc('day', now()) + interval '8 hours 20 minutes',
+    pg_temp.today_at(0.7),
     '{"a5000000-0000-4000-8000-0000000000c1": "late", "a5000000-0000-4000-8000-0000000000c2": "present"}'),
   'applied',
   'une correction plus récente est appliquée'
@@ -85,7 +92,7 @@ select is(
 -- Un appel de 8 h 10 resté sur un autre téléphone arrive après la correction.
 select is(
   public.submit_roll_call('d5000000-0000-4000-8000-000000000003', '95000000-0000-4000-8000-0000000000c1', current_date, 'morning',
-    date_trunc('day', now()) + interval '8 hours 10 minutes',
+    pg_temp.today_at(0.6),
     '{"a5000000-0000-4000-8000-0000000000c1": "absent"}'),
   'stale',
   'un appel plus ancien arrivé en retard ne remplace pas la correction'

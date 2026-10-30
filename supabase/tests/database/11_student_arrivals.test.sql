@@ -41,31 +41,38 @@ select ok(
   'chaque élève reçoit un jeton de carte aléatoire et unique'
 );
 
+-- Heure d'aujourd'hui déjà passée, en fraction du temps écoulé depuis minuit : le test passe à toute heure
+-- (juste après minuit, « 8 h » ou « il y a 20 minutes » seraient dans le futur ou la veille).
+create function pg_temp.today_at(p_fraction numeric) returns timestamptz language sql stable as $f$
+  select date_trunc('day', now()) + (now() - date_trunc('day', now())) * p_fraction
+$f$;
+grant execute on function pg_temp.today_at(numeric) to authenticated;
+
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub": "48000000-0000-4000-8000-0000000000f1", "role": "authenticated"}', true);
 
 select is(
-  public.record_arrival('e8000000-0000-4000-8000-000000000001', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '20 minutes'),
+  public.record_arrival('e8000000-0000-4000-8000-000000000001', 'a8000000-0000-4000-8000-0000000000f1', pg_temp.today_at(0.5)),
   'applied',
   'le surveillant pointe l''arrivée de Coumba'
 );
 select is(
-  public.record_arrival('e8000000-0000-4000-8000-000000000001', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '20 minutes'),
+  public.record_arrival('e8000000-0000-4000-8000-000000000001', 'a8000000-0000-4000-8000-0000000000f1', pg_temp.today_at(0.5)),
   'duplicate',
   'un scan renvoyé par le téléphone n''est compté qu''une fois'
 );
 select is(
-  public.record_arrival('e8000000-0000-4000-8000-000000000002', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '5 minutes'),
+  public.record_arrival('e8000000-0000-4000-8000-000000000002', 'a8000000-0000-4000-8000-0000000000f1', pg_temp.today_at(0.8)),
   'stale',
   'un second passage plus tard ne change pas l''heure d''arrivée'
 );
 select is(
-  public.record_arrival('e8000000-0000-4000-8000-000000000003', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '30 minutes'),
+  public.record_arrival('e8000000-0000-4000-8000-000000000003', 'a8000000-0000-4000-8000-0000000000f1', pg_temp.today_at(0.4)),
   'applied',
   'un scan plus ancien reçu en retard (téléphone hors ligne) avance l''heure d''arrivée'
 );
 select results_eq(
-  $$ select count(*)::int, bool_and(scanned_at < now() - interval '25 minutes'), bool_and(date = current_date)
+  $$ select count(*)::int, bool_and(scanned_at = pg_temp.today_at(0.4)), bool_and(date = current_date)
      from public.student_arrivals $$,
   $$ values (1, true, true) $$,
   'une seule arrivée par jour, à l''heure du premier passage'
@@ -94,12 +101,12 @@ select throws_ok(
 
 -- Sorties : mêmes règles que les arrivées.
 select is(
-  public.record_departure('e8000000-0000-4000-8000-000000000011', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '2 minutes'),
+  public.record_departure('e8000000-0000-4000-8000-000000000011', 'a8000000-0000-4000-8000-0000000000f1', pg_temp.today_at(0.9)),
   'applied',
   'le surveillant pointe la sortie de Coumba'
 );
 select is(
-  public.record_departure('e8000000-0000-4000-8000-000000000011', 'a8000000-0000-4000-8000-0000000000f1', now() - interval '2 minutes'),
+  public.record_departure('e8000000-0000-4000-8000-000000000011', 'a8000000-0000-4000-8000-0000000000f1', pg_temp.today_at(0.9)),
   'duplicate',
   'une sortie renvoyée par le téléphone n''est comptée qu''une fois'
 );

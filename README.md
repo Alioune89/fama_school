@@ -71,3 +71,8 @@ supabase/                  config, migrations, seed, tests pgTAP
 ## Feuille de route
 
 Le développement suit des lots : 0 socle, 1 paramétrage et annuaire, 2 présence, 3 notes et bulletins, 4 paiements (PayDunya), 5 espace parents, 6 notifications, 7 espace professeur complet et préparation du pilote, 8 site vitrine et préinscription.
+
+## Déploiement
+
+- [Staging](docs/deploiement-staging.md) : démonstrations, mis à jour à chaque push sur `main`.
+- [Production](docs/mise-en-production.md) : comptes, variables, mise en ligne d'une version, services (SMS, paiement, push, Sentry).

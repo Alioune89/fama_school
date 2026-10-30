@@ -5,10 +5,19 @@ import { AlertTriangle, CheckCircle2, Download, FileSpreadsheet, RotateCcw, Uplo
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/components/forms/use-action-form";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { importStudents, type ImportResult } from "@/features/students/actions";
-import { IMPORT_TEMPLATE_CSV, parseImport, type CellValue, type ParsedImport } from "@/features/students/import-parser";
+import {
+  findDuplicates,
+  IMPORT_TEMPLATE_CSV,
+  parseImport,
+  type CellValue,
+  type ExistingStudent,
+  type ParsedImport,
+} from "@/features/students/import-parser";
 import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
@@ -37,7 +46,7 @@ type Step =
   | { kind: "preview"; fileName: string; parsed: ParsedImport }
   | { kind: "done"; result: ImportResult; skipped: number };
 
-export function StudentImport({ classNames }: { classNames: string[] }) {
+export function StudentImport({ classNames, existing }: { classNames: string[]; existing: ExistingStudent[] }) {
   const t = useTranslations("students.import");
   const tIssues = useTranslations("students.import.issues");
   const message = useMessage();
@@ -48,6 +57,8 @@ export function StudentImport({ classNames }: { classNames: string[] }) {
   const [progress, setProgress] = useState(0);
   const [pending, startTransition] = useTransition();
   const [dragging, setDragging] = useState(false);
+  // Lignes repérées comme doublons que l'utilisateur importe quand même (homonymes).
+  const [allowed, setAllowed] = useState<Set<number>>(new Set());
 
   const knownClasses = new Set(classNames.map(normalizeClass));
 
@@ -60,6 +71,7 @@ export function StudentImport({ classNames }: { classNames: string[] }) {
       const sheet = await readFile(file);
       const parsed = parseImport(sheet);
       if (parsed.valid.length === 0 && parsed.invalid.length === 0) return setReadError(t("empty"));
+      setAllowed(new Set());
       setStep({ kind: "preview", fileName: file.name, parsed });
     } catch {
       setReadError(t("unreadable"));
@@ -129,8 +141,20 @@ export function StudentImport({ classNames }: { classNames: string[] }) {
     const { parsed, fileName } = step;
     const unknownClassRows = parsed.valid.filter((row) => !knownClasses.has(normalizeClass(row.className)));
     const unknownClasses = [...new Set(unknownClassRows.map((row) => row.className))];
-    const importable = parsed.valid.filter((row) => knownClasses.has(normalizeClass(row.className)));
-    const skipped = parsed.invalid.length + unknownClassRows.length;
+    const candidates = parsed.valid.filter((row) => knownClasses.has(normalizeClass(row.className)));
+    const duplicates = findDuplicates(candidates, existing);
+    const held = new Set(duplicates.filter(({ row }) => !allowed.has(row.row)).map(({ row }) => row.row));
+    const importable = candidates
+      .filter((row) => !held.has(row.row))
+      .map((row) => (allowed.has(row.row) ? { ...row, allowDuplicate: true } : row));
+    const skipped = parsed.invalid.length + unknownClassRows.length + held.size;
+    const toggleAllowed = (row: number, checked: boolean) =>
+      setAllowed((current) => {
+        const next = new Set(current);
+        if (checked) next.add(row);
+        else next.delete(row);
+        return next;
+      });
 
     const submit = () => {
       setSubmitError(null);
@@ -190,6 +214,48 @@ export function StudentImport({ classNames }: { classNames: string[] }) {
                   {row.issues.map((issue) => tIssues(issue)).join(", ")}
                 </li>
               ))}
+            </ul>
+          </Notice>
+        )}
+
+        {duplicates.length > 0 && (
+          <Notice tone="warning" title={t("duplicates", { count: duplicates.length })}>
+            <p>{t("duplicatesHint")}</p>
+            <ul className="mt-2 max-h-72 space-y-1.5 overflow-y-auto">
+              {duplicates.map(({ row, existing: known }) => {
+                const name = `${row.student.first_name} ${row.student.last_name}`;
+                return (
+                  <li key={row.row}>
+                    <label className="flex items-start gap-3 rounded-lg bg-white/70 px-3 py-2 text-ink">
+                      <Checkbox
+                        className="mt-0.5"
+                        checked={allowed.has(row.row)}
+                        onCheckedChange={(checked) => toggleAllowed(row.row, checked === true)}
+                        aria-label={t("importAnyway", { name })}
+                      />
+                      <span className="min-w-0">
+                        <span className="font-medium">
+                          {t("rowError", { row: row.row })} {name}
+                        </span>{" "}
+                        <span className="text-ink-soft">
+                          {[row.student.birth_date ? formatDate(row.student.birth_date) : null, row.className]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </span>
+                        <span className="block text-xs text-ink-soft">
+                          {known
+                            ? t("alreadyEnrolled", {
+                                details: [known.birthDate ? formatDate(known.birthDate) : null, known.className]
+                                  .filter(Boolean)
+                                  .join(" · "),
+                              })
+                            : t("twiceInFile")}
+                        </span>
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
             </ul>
           </Notice>
         )}

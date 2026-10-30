@@ -960,6 +960,11 @@
       "unknownClassesHint": "Ces classes n'existent pas pour l'année en cours : {classes}. Corrigez le fichier ou créez-les.",
       "manageClasses": "Gérer les classes",
       "invalidRows": "{count, plural, one {# ligne à corriger} other {# lignes à corriger}}",
+      "duplicates": "{count, plural, one {# élève peut-être déjà inscrit} other {# élèves peut-être déjà inscrits}}",
+      "duplicatesHint": "Ces lignes ne seront pas importées, pour éviter les doublons. Cochez un élève s'il s'agit d'un autre enfant portant le même nom.",
+      "alreadyEnrolled": "Déjà inscrit : {details}",
+      "twiceInFile": "Déjà présent plus haut dans le fichier",
+      "importAnyway": "Importer quand même {name}",
       "rowError": "Ligne {row} :",
       "previewTitle": "Aperçu ({count} sur {total})",
       "confirm": "{count, plural, =0 {Rien à importer} one {Importer # élève} other {Importer # élèves}}",
@@ -968,7 +973,7 @@
       "doneTitle": "{count, plural, =0 {Aucun élève importé} one {# élève importé} other {# élèves importés}}",
       "doneHint": "Les parents pourront se connecter avec leur numéro de téléphone.",
       "notImported": "{count, plural, one {# ligne non importée} other {# lignes non importées}}",
-      "skippedHint": "{count, plural, one {# ligne écartée} other {# lignes écartées}} à l'aperçu (données à corriger ou classe inconnue).",
+      "skippedHint": "{count, plural, one {# ligne écartée} other {# lignes écartées}} à l'aperçu (données à corriger, classe inconnue ou élève déjà inscrit).",
       "seeStudents": "Voir les élèves",
       "again": "Importer un autre fichier",
       "fields": {
@@ -1007,7 +1012,8 @@
       "invalidGuardian": "Le nom du parent est obligatoire.",
       "noYear": "Aucune année scolaire en cours : créez-la dans les paramètres.",
       "forbidden": "Vous n'avez pas les droits pour inscrire des élèves.",
-      "leftBeforeEnrollment": "La date de départ précède la date d'inscription."
+      "leftBeforeEnrollment": "La date de départ précède la date d'inscription.",
+      "duplicateStudent": "Cet élève est déjà inscrit (même nom et même date de naissance, ou même classe)."
     },
     "enrollment": {
       "changeClass": "Changer de classe",

@@ -22,6 +22,7 @@ import {
 const REGISTRATION_CODES = [
   "unknownClass",
   "duplicateMatricule",
+  "duplicateStudent",
   "invalidValue",
   "invalidGuardian",
   "noYear",
@@ -125,6 +126,7 @@ export async function importStudents(input: { rows: ImportRow[] }): Promise<Acti
     p_rows: parsed.data.rows.map((row) => ({
       row: row.row,
       class_name: row.className,
+      allow_duplicate: row.allowDuplicate ?? false,
       student: row.student,
       guardians: row.guardians,
     })),

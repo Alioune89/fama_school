@@ -1,5 +1,6 @@
 import "server-only";
 import { sanitizeSearch } from "@/lib/search";
+import type { ExistingStudent } from "./import-parser";
 import { createClient } from "@/lib/supabase/server";
 
 export type StudentListFilters = { q?: string; classId?: string | null };
@@ -45,6 +46,35 @@ export async function listClassOptions(schoolId: string) {
 }
 
 export type ClassOption = Awaited<ReturnType<typeof listClassOptions>>["classes"][number];
+
+/** Tous les élèves de l'école (nom, naissance, classe de l'année), pour repérer les doublons à l'import. */
+export async function listExistingStudents(schoolId: string): Promise<ExistingStudent[]> {
+  const year = await currentYear(schoolId);
+  const supabase = await createClient();
+  const result: ExistingStudent[] = [];
+  // L'API renvoie 1 000 lignes au plus par requête : lecture par pages.
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase
+      .from("students")
+      .select(
+        "first_name, last_name, birth_date, enrollments(status, academic_year_id, class:classes!enrollments_class_id_school_id_fkey(name))",
+      )
+      .eq("school_id", schoolId)
+      .order("id")
+      .range(from, from + 999);
+    if (error) throw error;
+    for (const student of data) {
+      const current = student.enrollments.find((e) => e.status === "active" && e.academic_year_id === year?.id);
+      result.push({
+        firstName: student.first_name,
+        lastName: student.last_name,
+        birthDate: student.birth_date,
+        className: current?.class?.name ?? null,
+      });
+    }
+    if (data.length < 1000) return result;
+  }
+}
 
 /** Élèves inscrits pour l'année en cours, avec leur classe et leur parent principal. */
 export async function listStudents(schoolId: string, filters: StudentListFilters = {}) {

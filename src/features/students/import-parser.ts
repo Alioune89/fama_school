@@ -247,3 +247,60 @@ export const IMPORT_TEMPLATE_CSV = [
   "Nom;Prénom;Sexe;Date de naissance;Lieu de naissance;Classe;Matricule;Nom du parent;Téléphone du parent;Lien;Nom du parent 2;Téléphone du parent 2;Lien parent 2",
   "Diop;Awa;F;14/03/2015;Dakar;CM2 A;;Moussa Diop;77 123 45 67;Père;Fatou Sow;76 987 65 43;Mère",
 ].join("\r\n");
+
+/** Même table que private.name_key (base) : minuscules, sans accents, espaces simples. */
+const ACCENTED = "àáâãäåçèéêëìíîïñòóôõöùúûüýÿœæ";
+const PLAIN = "aaaaaaceeeeiiiinooooouuuuyyoa";
+
+export function nameKey(value: string): string {
+  return [...value.toLowerCase()]
+    .map((char) => {
+      const index = ACCENTED.indexOf(char);
+      return index >= 0 ? PLAIN[index] : char;
+    })
+    .join("")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+/** Élève déjà inscrit dans l'école, pour la détection des doublons. */
+export type ExistingStudent = {
+  firstName: string;
+  lastName: string;
+  birthDate: string | null;
+  /** Classe de l'année en cours (null : pas inscrit cette année). */
+  className: string | null;
+};
+
+export type DuplicateMatch = { row: ImportRow; existing: ExistingStudent | null };
+
+const sameClass = (a: string | null, b: string | null) => a !== null && b !== null && nameKey(a) === nameKey(b);
+
+/**
+ * Règle de import_students (base) : mêmes prénom et nom, et même date de naissance si les deux sont
+ * connues, sinon même classe cette année. Une ligne qui répète une ligne précédente du fichier est aussi
+ * un doublon (existing = null).
+ */
+export function findDuplicates(rows: ImportRow[], existing: ExistingStudent[]): DuplicateMatch[] {
+  const matches = (row: ImportRow, other: ExistingStudent) =>
+    nameKey(other.firstName) === nameKey(row.student.first_name) &&
+    nameKey(other.lastName) === nameKey(row.student.last_name) &&
+    (other.birthDate && row.student.birth_date
+      ? other.birthDate === row.student.birth_date
+      : sameClass(other.className, row.className));
+
+  const seen: ExistingStudent[] = [];
+  const duplicates: DuplicateMatch[] = [];
+  for (const row of rows) {
+    const known = existing.find((other) => matches(row, other));
+    if (known) duplicates.push({ row, existing: known });
+    else if (seen.some((other) => matches(row, other))) duplicates.push({ row, existing: null });
+    seen.push({
+      firstName: row.student.first_name,
+      lastName: row.student.last_name,
+      birthDate: row.student.birth_date,
+      className: row.className,
+    });
+  }
+  return duplicates;
+}

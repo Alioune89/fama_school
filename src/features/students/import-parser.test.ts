@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { mapHeaders, parseDate, parseImport, parseRelationship, parseSex, splitFullName, titleCase } from "./import-parser";
+import {
+  findDuplicates,
+  mapHeaders,
+  nameKey,
+  parseDate,
+  parseImport,
+  parseRelationship,
+  parseSex,
+  splitFullName,
+  titleCase,
+} from "./import-parser";
+import type { ImportRow } from "./schemas";
 
 describe("mapHeaders", () => {
   it("reconnaît les en-têtes usuels, accents et majuscules compris", () => {
@@ -162,5 +173,48 @@ describe("parseImport", () => {
 
   it("indique les colonnes obligatoires absentes", () => {
     expect(parseImport([["Nom", "Prénom"]]).missingRequired).toEqual(["className", "sex"]);
+  });
+});
+
+describe("findDuplicates", () => {
+  const row = (n: number, first: string, last: string, birthDate: string | null, className = "CM2 A"): ImportRow => ({
+    row: n,
+    className,
+    student: {
+      first_name: first,
+      last_name: last,
+      sex: "F",
+      birth_date: birthDate,
+      birth_place: null,
+      nationality: null,
+      matricule: null,
+    },
+    guardians: [],
+  });
+  const existing = [
+    { firstName: "Aïda", lastName: "Diop", birthDate: "2015-03-14", className: "CM2 A" },
+    { firstName: "Malick", lastName: "Sy", birthDate: null, className: "CM2 A" },
+  ];
+
+  it("ignore casse, accents et espaces dans les noms", () => {
+    expect(nameKey("  NDÈYE   Fatou ")).toBe("ndeye fatou");
+  });
+
+  it("repère un élève déjà inscrit : même date de naissance, ou même classe sans date", () => {
+    const rows = [
+      row(2, "AIDA", "diop", "2015-03-14", "CM1 A"),
+      row(3, "Malick", "Sy", null, "cm2  a"),
+      row(4, "Malick", "Sy", null, "CM1 A"),
+      row(5, "Aïda", "Diop", "2016-01-02"),
+    ];
+    expect(findDuplicates(rows, existing).map((match) => [match.row.row, match.existing?.firstName])).toEqual([
+      [2, "Aïda"],
+      [3, "Malick"],
+    ]);
+  });
+
+  it("repère un élève présent deux fois dans le fichier", () => {
+    const rows = [row(2, "Fatou", "Ndiaye", "2016-05-05"), row(3, "Fatou", "Ndiaye", "2016-05-05")];
+    expect(findDuplicates(rows, [])).toEqual([{ row: rows[1], existing: null }]);
   });
 });

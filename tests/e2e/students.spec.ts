@@ -84,6 +84,46 @@ test.describe("Lot 1 — élèves", () => {
     await page.getByPlaceholder("Nom, prénom ou matricule…").fill(`Import${tag}`);
     await expect(page.getByText("2 élèves").filter({ visible: true })).toBeVisible();
   });
+
+  test("importer : les élèves déjà inscrits et les lignes répétées sont mis de côté", async ({ page }) => {
+    const tag = `Doublon${Date.now().toString(36)}`;
+    const header = "Nom;Prénom;Sexe;Date de naissance;Classe";
+    const drop = async (csv: string, expected: string) => {
+      await expect(async () => {
+        await page.locator("#student-import-file").setInputFiles({
+          name: "eleves.csv",
+          mimeType: "text/csv",
+          buffer: Buffer.from("\uFEFF" + csv, "utf8"),
+        });
+        await expect(visibleText(page, expected)).toBeVisible({ timeout: 2_000 });
+      }).toPass();
+    };
+
+    await page.goto("/direction/eleves/importer");
+    await drop([header, `${tag};Awa;F;14/03/2015;CM2 A`].join("\r\n"), "1 élève prêt à importer · aucune ligne écartée");
+    await page.getByRole("button", { name: "Importer 1 élève" }).click();
+    await expect(visibleText(page, "1 élève importé")).toBeVisible();
+
+    // Même fichier réimporté (écrit autrement) + un élève présent deux fois.
+    await page.goto("/direction/eleves/importer");
+    await drop(
+      [
+        header,
+        `${tag.toUpperCase()};AWA;F;14/03/2015;CM2 A`,
+        `${tag};Binta;F;01/02/2016;CM2 A`,
+        `${tag};Binta;F;01/02/2016;CM2 A`,
+      ].join("\r\n"),
+      "2 élèves peut-être déjà inscrits",
+    );
+    await expect(visibleText(page, "Déjà présent plus haut dans le fichier")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Importer 1 élève" })).toBeVisible();
+
+    // Un homonyme : on l'importe quand même.
+    await page.getByRole("checkbox", { name: new RegExp(`^Importer quand même Awa ${tag}$`, "i") }).click();
+    await page.getByRole("button", { name: "Importer 2 élèves" }).click();
+    await expect(visibleText(page, "2 élèves importés")).toBeVisible();
+    await expect(visibleText(page, "1 ligne écartée à l'aperçu")).toBeVisible();
+  });
 });
 
 /** PNG 1×1 (photo d'identité de test) et PDF minimal (extrait de naissance). */

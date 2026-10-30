@@ -43,6 +43,8 @@ export type UpdateStudentInput = z.input<typeof updateStudentSchema>;
 /** Ligne d'import déjà normalisée par le lecteur (côté navigateur), revérifiée côté serveur. */
 export const importRowSchema = z.object({
   row: z.number().int().min(1),
+  /** Doublon probable confirmé par l'utilisateur (homonyme) : la base ne le refuse pas. */
+  allowDuplicate: z.boolean().optional(),
   className: requiredText(40),
   student: z.object({
     first_name: requiredText(80),

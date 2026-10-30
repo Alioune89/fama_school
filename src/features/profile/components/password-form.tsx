@@ -7,7 +7,7 @@ import { FormAlert } from "@/components/forms/form-alert";
 import { submitForm, useActionForm } from "@/components/forms/use-action-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { changePassword } from "../actions";
 
 /** Changement du mot de passe (comptes e-mail du personnel). */
@@ -47,7 +47,7 @@ export function PasswordForm() {
         {fields.map(({ name, autoComplete }) => (
           <Field key={name} data-invalid={form.hasError(name) || undefined}>
             <FieldLabel htmlFor={`password-${name}`}>{t(`${name}`)}</FieldLabel>
-            <Input id={`password-${name}`} name={name} type="password" autoComplete={autoComplete} required />
+            <PasswordInput id={`password-${name}`} name={name} autoComplete={autoComplete} required />
             {name === "password" && <FieldDescription>{t("rules")}</FieldDescription>}
             <FieldError>{form.fieldError(name)}</FieldError>
           </Field>

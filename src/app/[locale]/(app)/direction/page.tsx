@@ -9,6 +9,7 @@ import { CalendarCard } from "@/features/dashboard/components/calendar-card";
 import { GenderSplit } from "@/features/dashboard/components/gender-split";
 import { HeadcountChart } from "@/features/dashboard/components/headcount-chart";
 import { SetupBanner } from "@/features/dashboard/components/setup-banner";
+import { ReadyNextSteps } from "@/features/setup/components/ready-next-steps";
 import { TodayTasks, TodayTasksSkeleton } from "@/features/dashboard/components/today-tasks";
 import { todayInDakar } from "@/features/dashboard/calendar";
 import { getDirectionDashboard } from "@/features/dashboard/queries";
@@ -36,8 +37,10 @@ async function Greeting() {
   );
 }
 
+/** Mise en route en cours, puis, tant qu'aucun élève n'est inscrit, les boutons pour faire entrer élèves et équipe. */
 async function Setup() {
-  const data = await dashboard();
+  const [data, { entry }] = await Promise.all([dashboard(), requireSpace("direction")]);
+  if (!data.setup.nextStep && data.students === 0) return <ReadyNextSteps roles={entry.roles} className="mb-6" />;
   return <SetupBanner status={data.setup} />;
 }
 

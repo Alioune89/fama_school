@@ -32,7 +32,9 @@
     "settings": "Paramètres",
     "switchSpace": "Changer d'espace",
     "trendUp": "en hausse de {value} %",
-    "trendDown": "en baisse de {value} %"
+    "trendDown": "en baisse de {value} %",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "metadata": {
     "title": "Fama School",
@@ -568,7 +570,6 @@
     "save": "Enregistrer",
     "saved": "Enregistré.",
     "readOnly": "Vous pouvez consulter ces réglages ; seule la direction peut les modifier.",
-    "allDone": "Votre école est prête. Vous pouvez maintenant inscrire vos élèves et votre personnel.",
     "steps": {
       "school": {
         "title": "Identité de l'école",
@@ -712,6 +713,14 @@
       "noYear": "Enregistrez d'abord l'année scolaire.",
       "logoType": "Format accepté : PNG, JPG, WebP ou SVG.",
       "logoSize": "Le logo dépasse 1 Mo."
+    },
+    "ready": {
+      "title": "Votre école est prête",
+      "body": "Dernière étape : faites entrer vos élèves et votre équipe. Les parents et les enseignants pourront ensuite se connecter avec leur numéro de téléphone.",
+      "import": "Importer la liste des élèves",
+      "enroll": "Inscrire un élève",
+      "teachers": "Ajouter les enseignants",
+      "staff": "Ajouter le personnel"
     }
   },
   "settings": {

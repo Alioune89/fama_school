@@ -18,6 +18,13 @@ test.describe("Profil du personnel", () => {
     await change.click();
     await expect(page.getByText("Les deux mots de passe ne sont pas identiques.")).toBeVisible();
 
+    // L'œil affiche ce qu'on tape, puis le masque à nouveau.
+    const current = page.getByLabel("Mot de passe actuel", { exact: true });
+    await page.getByRole("button", { name: "Afficher le mot de passe" }).first().click();
+    await expect(current).toHaveAttribute("type", "text");
+    await page.getByRole("button", { name: "Masquer le mot de passe" }).first().click();
+    await expect(current).toHaveAttribute("type", "password");
+
     await page.getByLabel("Confirmer le nouveau mot de passe").fill("Nouveau2027");
     await change.click();
     await expect(page.getByText("Mot de passe actuel incorrect.")).toBeVisible();

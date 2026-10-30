@@ -65,5 +65,15 @@ test.describe("Lot 1 — création et mise en route d'une école", () => {
 
     await expect(page.getByText("6 étapes sur 6 terminées")).toBeVisible();
     await expect(page.getByText("Votre école est prête")).toBeVisible();
+
+    // Les boutons pour faire entrer élèves et équipe, aussi sur le tableau de bord tant qu'aucun élève n'est inscrit.
+    await expect(page.getByRole("link", { name: "Ajouter les enseignants" })).toBeVisible();
+    await page.goto("/direction");
+    await page
+      .getByRole("region", { name: "Votre école est prête" })
+      .getByRole("link", { name: "Importer la liste des élèves" })
+      .click();
+    await expect(page).toHaveURL(/\/direction\/eleves\/importer$/);
+    await expect(page.getByText("Déposez votre fichier ici")).toBeVisible();
   });
 });

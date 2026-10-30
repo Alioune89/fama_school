@@ -7,6 +7,7 @@ import { useOffline } from "next/offline";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { sendPhoneCode, signInWithEmail } from "@/features/auth/actions";
 import type { AuthErrorCode } from "@/features/auth/errors";
@@ -102,7 +103,7 @@ export function LoginForm() {
           </Field>
           <Field data-invalid={emailError === "passwordRequired" ? true : undefined}>
             <FieldLabel htmlFor="password">{t("passwordLabel")}</FieldLabel>
-            <Input id="password" name="password" type="password" autoComplete="current-password" required />
+            <PasswordInput id="password" name="password" autoComplete="current-password" required />
           </Field>
           {emailError && <FieldError>{t(`errors.${emailError}`)}</FieldError>}
           <Button type="submit" size="touch" className="w-full" disabled={pending}>

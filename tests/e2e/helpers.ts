@@ -57,7 +57,7 @@ export async function loginWithEmail(page: Page, email: string, password: string
   await page.goto("/connexion");
   await page.getByRole("tab", { name: "E-mail (personnel)" }).click();
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill(password);
+  await page.getByLabel("Mot de passe", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
 }
 

@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { ReadyNextSteps } from "@/features/setup/components/ready-next-steps";
 import { getSetupData, type SetupData } from "@/features/setup/queries";
 import { SETUP_STEPS, type SetupStepKey } from "@/features/setup/steps";
 import { Link } from "@/i18n/navigation";
@@ -57,8 +58,8 @@ async function SetupOverview() {
           <span className="tabular font-semibold text-azure-700">{Math.round((data.status.completed / data.status.total) * 100)} %</span>
         </div>
         <Progress value={(data.status.completed / data.status.total) * 100} className="mt-3" aria-label={t("progress", { completed: data.status.completed, total: data.status.total })} />
-        {data.status.nextStep === null && <p className="mt-3 text-sm text-success-700">{t("allDone")}</p>}
       </div>
+      {data.status.nextStep === null && <ReadyNextSteps roles={entry.roles} className="mb-6" />}
 
       <ol className="grid gap-4 md:grid-cols-2">
         {SETUP_STEPS.map((step, index) => {

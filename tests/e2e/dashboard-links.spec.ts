@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { adminClient, DEMO, loginWithEmail, loginWithPhone } from "./helpers";
+import { adminClient, clickUntilVisible, DEMO, loginWithEmail, loginWithPhone } from "./helpers";
 
 test.describe("Tableau de bord de la direction", () => {
   test("chaque indicateur ouvre son détail ; les parents se filtrent et s'invitent", async ({ page }) => {
@@ -97,9 +97,13 @@ test.describe("Tableau de bord de la direction", () => {
     await expect(page).toHaveURL(/\/direction$/);
     await expect(page.getByRole("region", { name: "À faire aujourd'hui" })).toBeVisible();
     await page.goto("/direction/notes");
-    const menu = page.getByRole("navigation", { name: "Menu" }).filter({ visible: true }).first();
-    if (page.viewportSize()!.width < 1024) await page.getByRole("button", { name: "Plus" }).click();
-    const nav = page.viewportSize()!.width < 1024 ? page.getByRole("dialog").getByRole("navigation") : menu;
+    const mobile = page.viewportSize()!.width < 1024;
+    const nav = mobile
+      ? page.getByRole("dialog").getByRole("navigation")
+      : page.getByRole("navigation", { name: "Menu" }).filter({ visible: true }).first();
+    // Sur téléphone, le menu complet s'ouvre par « Plus » (bouton actif une fois la page interactive et la session lue).
+    if (mobile)
+      await clickUntilVisible(page.getByRole("button", { name: "Plus" }), nav.getByRole("link", { name: "Notes et bulletins" }));
     await expect(nav.getByRole("link", { name: "Notes et bulletins" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Programme" })).toBeVisible();
     await expect(nav.getByRole("button", { name: "Finances" })).toHaveCount(0);

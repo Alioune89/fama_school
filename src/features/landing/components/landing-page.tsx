@@ -123,8 +123,8 @@ async function PhoneMockup() {
     { icon: BookOpenCheck, tone: "bg-sun-100 text-sun-700", title: t("homework"), detail: null },
   ];
   return (
-    // Sur téléphone, le haut de page suffit : l'illustration est réservée aux grands écrans (page plus courte).
-    <div aria-hidden className="relative mx-auto hidden w-full max-w-[19rem] select-none lg:block">
+    // Un peu plus petit sur téléphone, sous les boutons : le haut de page reste vivant sans s'allonger.
+    <div aria-hidden className="relative mx-auto w-full max-w-[16rem] select-none sm:max-w-[19rem]">
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-lavender-200 via-azure-100 to-sun-100 blur-2xl" />
       <style dangerouslySetInnerHTML={{ __html: PHONE_CSS }} />
       <div className="rounded-[2.5rem] bg-ink p-2.5 shadow-float">
@@ -174,7 +174,7 @@ async function Hero() {
     <div className="relative overflow-hidden">
       <div aria-hidden className="absolute -top-40 -right-40 size-[36rem] rounded-full bg-lavender-200/60 blur-3xl" />
       <div aria-hidden className="absolute -bottom-48 -left-32 size-[30rem] rounded-full bg-azure-200/50 blur-3xl" />
-      <Section className="relative grid items-center gap-14 pt-12 lg:grid-cols-[1.15fr_0.85fr] lg:pt-20">
+      <Section className="relative grid items-center gap-10 pt-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 lg:pt-20">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-ink-soft ring-1 ring-line">
             <span aria-hidden className="size-1.5 rounded-full bg-success-500" />

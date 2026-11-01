@@ -31,6 +31,8 @@ export type ImportIssue = "missingName" | "missingClass" | "invalidSex" | "inval
 export type ParsedImport = {
   /** Champs reconnus dans l'en-tête (pour l'aperçu des colonnes). */
   columns: Field[];
+  /** En-têtes non reconnus : leurs données ne seront pas importées. */
+  ignoredColumns: string[];
   missingRequired: Field[];
   valid: ImportRow[];
   invalid: { row: number; issues: ImportIssue[]; label: string }[];
@@ -50,14 +52,24 @@ const normalizeHeader = (value: CellValue) =>
 /** Synonymes d'en-têtes rencontrés dans les fichiers des écoles. L'ordre compte (le plus précis d'abord). */
 const HEADER_PATTERNS: [RegExp, Field][] = [
   [
-    /^(telephone|tel|portable|contact|numero)s? (du |de la )?(parent|tuteur|pere|mere)? ?2$|^(telephone|tel|contact) (2e|second) parent$/,
+    /^(telephone|tel|portable|contact|numero)s? (du |de la )?(parent|tuteur|pere|mere)? ?2$|^(telephone|tel|contact) (2e|second) parent$|^(parent|tuteur) 2 (telephone|tel|portable|contact|numero)s?$/,
     "guardian2Phone",
   ],
-  [/^(nom )?(du |de la )?(parent|tuteur|tutrice) ?2$|^nom (2e|second) parent$|^parent 2 nom$/, "guardian2Name"],
-  [/^lien( de parente)?( du)?( parent)? ?2$/, "guardian2Relationship"],
-  [/^(telephone|tel|portable|contact|numero)s?( du| de la)?( parent| tuteur| pere| mere)?( 1)?$/, "guardian1Phone"],
-  [/^(nom )?(du |de la )?(parent|tuteur|tutrice|pere|mere)( 1)?$|^nom (du )?parent( 1)?$|^parent 1 nom$/, "guardian1Name"],
-  [/^lien( de parente)?( du)?( parent)?( 1)?$|^qualite$/, "guardian1Relationship"],
+  [
+    /^(nom )?(du |de la )?(parent|tuteur|tutrice) ?2$|^nom (2e|second) parent$|^(parent|tuteur) 2 (nom|nom et prenoms?|nom complet)$/,
+    "guardian2Name",
+  ],
+  [/^lien( de parente)?( du)?( parent)? ?2$|^(parent|tuteur) 2 lien( de parente)?$/, "guardian2Relationship"],
+  // « Parent 1 - Téléphone » : le numéro 1 est facultatif.
+  [
+    /^(telephone|tel|portable|contact|numero)s?( du| de la)?( parent| tuteur| pere| mere)?( 1)?$|^(parent|tuteur)( 1)? (telephone|tel|portable|contact|numero)s?$/,
+    "guardian1Phone",
+  ],
+  [
+    /^(nom )?(du |de la )?(parent|tuteur|tutrice|pere|mere)( 1)?$|^nom (du )?parent( 1)?$|^(parent|tuteur)( 1)? (nom|nom et prenoms?|nom complet)$/,
+    "guardian1Name",
+  ],
+  [/^lien( de parente)?( du)?( parent)?( 1)?$|^qualite$|^(parent|tuteur)( 1)? lien( de parente)?$/, "guardian1Relationship"],
   [/^(prenom|prenoms)( de l eleve)?$/, "firstName"],
   [/^(nom et prenoms?|prenom et nom|nom complet|eleve|nom de l eleve et prenom)$/, "fullName"],
   [/^nom( de famille)?( de l eleve)?$/, "lastName"],
@@ -166,6 +178,9 @@ export function parseImport(sheet: CellValue[][]): ParsedImport {
   const [headerRow = [], ...rows] = sheet;
   const fields = mapHeaders(headerRow);
   const columns = fields.filter((field): field is Field => field !== null);
+  const ignoredColumns = headerRow
+    .filter((cell, index) => fields[index] === null && normalizeHeader(cell))
+    .map((cell) => String(cell).replace(/\s+/g, " ").trim());
   const hasName = columns.includes("fullName") || (columns.includes("firstName") && columns.includes("lastName"));
   const missingRequired: Field[] = [
     ...(hasName ? [] : (["firstName", "lastName"] as Field[])),
@@ -239,7 +254,7 @@ export function parseImport(sheet: CellValue[][]): ParsedImport {
     });
   });
 
-  return { columns, missingRequired, valid, invalid };
+  return { columns, ignoredColumns, missingRequired, valid, invalid };
 }
 
 /** Modèle CSV proposé au téléchargement (séparateur « ; » : Excel en français l'ouvre directement). */

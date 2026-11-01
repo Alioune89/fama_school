@@ -1002,6 +1002,8 @@
       "changeFile": "Changer de fichier",
       "missingColumns": "Colonnes obligatoires introuvables",
       "missingColumnsHint": "Ajoutez ces colonnes dans la première ligne du fichier : {columns}.",
+      "ignoredColumns": "{count, plural, one {# colonne ne sera pas importée} other {# colonnes ne seront pas importées}}",
+      "ignoredColumnsHint": "Fama School ne reconnaît pas {columns}. Renommez l'en-tête (par exemple « Téléphone du parent ») ou laissez-la de côté si elle n'est pas utile.",
       "unknownClasses": "{count, plural, one {# ligne} other {# lignes}} avec une classe inconnue",
       "unknownClassesHint": "Ces classes n'existent pas pour l'année en cours : {classes}. Corrigez le fichier ou créez-les.",
       "manageClasses": "Gérer les classes",

@@ -196,6 +196,12 @@ export function StudentImport({ classNames, existing }: { classNames: string[]; 
           </Notice>
         )}
 
+        {parsed.ignoredColumns.length > 0 && (
+          <Notice tone="warning" title={t("ignoredColumns", { count: parsed.ignoredColumns.length })}>
+            {t("ignoredColumnsHint", { columns: parsed.ignoredColumns.map((column) => `« ${column} »`).join(", ") })}
+          </Notice>
+        )}
+
         {unknownClasses.length > 0 && (
           <Notice tone="warning" title={t("unknownClasses", { count: unknownClassRows.length })}>
             {t("unknownClassesHint", { classes: unknownClasses.join(", ") })}{" "}

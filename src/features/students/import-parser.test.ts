@@ -48,8 +48,38 @@ describe("mapHeaders", () => {
     ]);
   });
 
+  it("reconnaît les en-têtes « Parent 1 - Téléphone », « Parent 2 - Lien »…", () => {
+    expect(
+      mapHeaders([
+        "Nom et prénoms *",
+        "Parent 1 - Nom",
+        "Parent 1 -\nTéléphone",
+        "Parent 1 - Lien",
+        "Parent 2 - Nom",
+        "Parent 2 - Téléphone",
+        "Parent 2 - Lien",
+      ]),
+    ).toEqual([
+      "fullName",
+      "guardian1Name",
+      "guardian1Phone",
+      "guardian1Relationship",
+      "guardian2Name",
+      "guardian2Phone",
+      "guardian2Relationship",
+    ]);
+  });
+
   it("ignore les colonnes inconnues", () => {
     expect(mapHeaders(["Observation", "Classe"])).toEqual([null, "className"]);
+  });
+
+  it("signale les colonnes ignorées dans l'aperçu", () => {
+    const parsed = parseImport([
+      ["Nom et prénoms", "Sexe", "Classe", "Observation", ""],
+      ["DIOP Awa", "F", "CM2 A", "RAS", ""],
+    ]);
+    expect(parsed.ignoredColumns).toEqual(["Observation"]);
   });
 });
 

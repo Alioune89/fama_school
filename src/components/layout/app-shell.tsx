@@ -3,7 +3,9 @@ import { requireSpace } from "@/lib/auth/session";
 import type { Space } from "@/lib/auth/spaces";
 import { Footer } from "./footer";
 import { MobileNav } from "./mobile-nav";
+import { SectionGateFallback } from "./section-gate";
 import { Sidebar } from "./sidebar";
+import { SuspensionGate } from "./suspension-gate";
 import { Topbar } from "./topbar";
 
 /** Vérifie l'accès à l'espace sans bloquer l'affichage de la coquille statique. */
@@ -44,7 +46,13 @@ export function AppShell({ space, children }: { space: Space; children: ReactNod
           <Suspense fallback={null}>
             <SpaceGuard space={space} />
           </Suspense>
-          {children}
+          {space === "plateforme" ? (
+            children
+          ) : (
+            <Suspense fallback={<SectionGateFallback />}>
+              <SuspensionGate space={space}>{children}</SuspensionGate>
+            </Suspense>
+          )}
         </main>
         <Footer className="hidden lg:flex print:hidden" />
       </div>

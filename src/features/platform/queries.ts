@@ -10,7 +10,7 @@ export async function listSchools() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("schools")
-    .select("id, name, slug, city, plan, status, school_memberships(count)")
+    .select("id, name, slug, city, plan, status, subscription_ends_on, school_memberships(count)")
     .order("name");
   if (error) throw error;
 
@@ -118,7 +118,7 @@ export async function getSchoolDetail(schoolId: string) {
   const admin = createAdminClient();
   const { data: school, error } = await admin
     .from("schools")
-    .select("id, name, slug, city, region, address, phone, email, plan, status, settings, created_at")
+    .select("id, name, slug, city, region, address, phone, email, plan, status, settings, created_at, subscription_ends_on")
     .eq("id", schoolId)
     .maybeSingle();
   if (error) throw error;
@@ -139,6 +139,7 @@ export async function getSchoolDetail(schoolId: string) {
     levels,
     levelSubjects,
     last,
+    subscriptionPayments,
   ] = await Promise.all([
     admin.from("school_memberships").select("user_id, role, status").eq("school_id", schoolId).neq("role", "parent"),
     admin
@@ -159,6 +160,12 @@ export async function getSchoolDetail(schoolId: string) {
     admin.from("levels").select("id", count).eq("school_id", schoolId),
     admin.from("level_subjects").select("level_id", count).eq("school_id", schoolId),
     lastActivity(admin, schoolId),
+    admin
+      .from("subscription_payments")
+      .select("id, amount, method, paid_on, covers_until, reference")
+      .eq("school_id", schoolId)
+      .order("paid_on", { ascending: false })
+      .limit(24),
   ]);
   for (const result of [
     memberships,
@@ -172,6 +179,7 @@ export async function getSchoolDetail(schoolId: string) {
     year,
     levels,
     levelSubjects,
+    subscriptionPayments,
   ]) {
     if (result.error) throw result.error;
   }
@@ -236,6 +244,7 @@ export async function getSchoolDetail(schoolId: string) {
     school,
     team,
     invitations: invitations.data ?? [],
+    subscriptionPayments: subscriptionPayments.data ?? [],
     setup,
     activity: {
       windowDays: ACTIVITY_WINDOW_DAYS,

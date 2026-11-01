@@ -2623,6 +2623,7 @@ export type Database = {
           short_name: string | null;
           slug: string;
           status: Database["public"]["Enums"]["school_status"];
+          subscription_ends_on: string | null;
           timezone: string;
           updated_at: string;
         };
@@ -2646,6 +2647,7 @@ export type Database = {
           short_name?: string | null;
           slug: string;
           status?: Database["public"]["Enums"]["school_status"];
+          subscription_ends_on?: string | null;
           timezone?: string;
           updated_at?: string;
         };
@@ -2668,6 +2670,7 @@ export type Database = {
           short_name?: string | null;
           slug?: string;
           status?: Database["public"]["Enums"]["school_status"];
+          subscription_ends_on?: string | null;
           timezone?: string;
           updated_at?: string;
         };
@@ -3214,6 +3217,54 @@ export type Database = {
           },
         ];
       };
+      subscription_payments: {
+        Row: {
+          amount: number;
+          covers_until: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          method: Database["public"]["Enums"]["subscription_payment_method"];
+          note: string | null;
+          paid_on: string;
+          reference: string | null;
+          school_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          covers_until: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          method: Database["public"]["Enums"]["subscription_payment_method"];
+          note?: string | null;
+          paid_on: string;
+          reference?: string | null;
+          school_id: string;
+        };
+        Update: {
+          amount?: number;
+          covers_until?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          method?: Database["public"]["Enums"]["subscription_payment_method"];
+          note?: string | null;
+          paid_on?: string;
+          reference?: string | null;
+          school_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payments_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       teaching_assignments: {
         Row: {
           class_id: string;
@@ -3469,6 +3520,7 @@ export type Database = {
       staff_contract: "permanent" | "vacataire";
       student_document_kind: "birth_certificate" | "photo" | "previous_report" | "medical" | "other";
       subject_track: "french" | "arabic";
+      subscription_payment_method: "wave" | "orange_money" | "transfer" | "cash" | "other";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -3613,6 +3665,7 @@ export const Constants = {
       staff_contract: ["permanent", "vacataire"],
       student_document_kind: ["birth_certificate", "photo", "previous_report", "medical", "other"],
       subject_track: ["french", "arabic"],
+      subscription_payment_method: ["wave", "orange_money", "transfer", "cash", "other"],
     },
   },
 } as const;

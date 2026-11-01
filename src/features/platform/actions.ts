@@ -7,7 +7,14 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Constants } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
-import { createSchoolSchema, schoolPlanSchema, type CreateSchoolInput } from "./schemas";
+import {
+  createSchoolSchema,
+  schoolPlanSchema,
+  subscriptionEndSchema,
+  subscriptionPaymentSchema,
+  type CreateSchoolInput,
+  type SubscriptionPaymentInput,
+} from "./schemas";
 
 /**
  * Crée une école cliente et inscrit son directeur au répertoire (ce qui l'invite).
@@ -99,6 +106,47 @@ export async function updateSchoolPlan(input: z.input<typeof schoolPlanSchema>):
     .select("id");
   if (error) return fail("errors.unknown");
   if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
+}
+
+/** Fin de la période couverte, fixée à la main (fin du pilote, geste commercial). */
+export async function setSubscriptionEnd(input: z.input<typeof subscriptionEndSchema>): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user?.isPlatformAdmin) return fail("errors.forbidden");
+  const parsed = subscriptionEndSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+
+  // Colonne fermée à l'école elle-même : seule la clé de service peut l'écrire.
+  const { data, error } = await createAdminClient()
+    .from("schools")
+    .update({ subscription_ends_on: parsed.data.endsOn })
+    .eq("id", parsed.data.schoolId)
+    .select("id");
+  if (error) return fail("errors.unknown");
+  if (!data?.length) return fail("errors.notFound");
+  refresh();
+  return ok(undefined);
+}
+
+/** Paiement d'abonnement reçu d'une école ; la base prolonge l'abonnement jusqu'à la période couverte. */
+export async function recordSubscriptionPayment(input: SubscriptionPaymentInput): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user?.isPlatformAdmin) return fail("errors.forbidden");
+  const parsed = subscriptionPaymentSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const value = parsed.data;
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("subscription_payments").insert({
+    school_id: value.schoolId,
+    amount: value.amount,
+    method: value.method,
+    paid_on: value.paidOn,
+    covers_until: value.coversUntil,
+    reference: value.reference,
+  });
+  if (error) return fail(error.code === "23503" ? "errors.notFound" : "errors.unknown");
   refresh();
   return ok(undefined);
 }

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Building2, ChevronRight, Inbox, Plus } from "lucide-react";
+import { AlarmClock, Building2, ChevronRight, Inbox, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { EmptyState } from "@/components/layout/empty-state";
@@ -8,6 +8,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { SCHOOL_STATUS_TONES } from "@/features/platform/components/status-tones";
 import { HEALTH_TONE, schoolHealth } from "@/features/platform/health";
+import { SUBSCRIPTION_TONE, subscriptionState } from "@/features/platform/subscription";
+import { todayInDakar } from "@/features/dashboard/calendar";
 import { countActiveStudents, countNewDemoRequests, lastActivityBySchool, listSchools } from "@/features/platform/queries";
 import { Link } from "@/i18n/navigation";
 import { requireSpace } from "@/lib/auth/session";
@@ -26,53 +28,78 @@ async function SchoolsTable() {
   const ids = schools.map((school) => school.id);
   const [students, activity] = await Promise.all([countActiveStudents(ids), lastActivityBySchool(ids)]);
   const now = new Date();
+  const today = todayInDakar(now);
+  const subscriptions = new Map(schools.map((school) => [school.id, subscriptionState(school.subscription_ends_on, today)]));
+  // Pilote ou abonnement qui se termine bientôt, ou déjà échu : l'école est à relancer.
+  const toRenew = schools.filter(
+    (school) => school.status !== "archived" && ["endingSoon", "expired"].includes(subscriptions.get(school.id)!.state),
+  );
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white shadow-card ring-1 ring-line/70">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="bg-azure-50 text-xs font-semibold text-ink-soft">
-            <tr>
-              <th scope="col" className="px-5 py-4">{t("columns.name")}</th>
-              <th scope="col" className="px-5 py-4">{t("columns.city")}</th>
-              <th scope="col" className="px-5 py-4">{t("columns.plan")}</th>
-              <th scope="col" className="px-5 py-4">{t("columns.status")}</th>
-              <th scope="col" className="px-5 py-4">{t("columns.activity")}</th>
-              <th scope="col" className="px-5 py-4 text-right">{t("columns.members")}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {schools.map((school) => {
-              const health = schoolHealth({
-                activeStudents: students.get(school.id) ?? 0,
-                lastActivity: activity.get(school.id) ?? null,
-                now,
-              });
-              return (
-                <tr key={school.id} className="relative transition-colors hover:bg-azure-50/50">
-                  <td className="px-5 py-4">
-                    {/* Toute la ligne ouvre la fiche de l'école. */}
-                    <Link href={`/plateforme/ecoles/${school.id}`} className="block font-semibold text-ink after:absolute after:inset-0">
-                      {school.name}
-                    </Link>
-                    <span className="block text-xs text-muted-foreground">{school.slug}</span>
-                  </td>
-                  <td className="px-5 py-4 text-ink-soft">{school.city ?? "—"}</td>
-                  <td className="px-5 py-4 text-ink-soft">{t(`plans.${school.plan}`)}</td>
-                  <td className="px-5 py-4">
-                    <StatusPill tone={SCHOOL_STATUS_TONES[school.status]}>{t(`statuses.${school.status}`)}</StatusPill>
-                  </td>
-                  <td className="px-5 py-4">
-                    <StatusPill tone={HEALTH_TONE[health]}>{t(`health.${health}`)}</StatusPill>
-                  </td>
-                  <td className="tabular px-5 py-4 text-right font-semibold text-ink">{formatInteger(school.members)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+    <>
+      {toRenew.length > 0 && (
+        <p role="status" className="mb-6 flex items-center gap-3 rounded-xl bg-warning-50 px-4 py-3 text-warning-700 ring-1 ring-warning-500/30">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-warning-500/30">
+            <AlarmClock className="size-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1 font-medium">
+            {t("subscription.toRenew", { count: toRenew.length, schools: toRenew.map((school) => school.name).join(", ") })}
+          </span>
+        </p>
+      )}
+      <div className="overflow-hidden rounded-xl bg-white shadow-card ring-1 ring-line/70">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] text-left text-sm">
+            <thead className="bg-azure-50 text-xs font-semibold text-ink-soft">
+              <tr>
+                <th scope="col" className="px-5 py-4">{t("columns.name")}</th>
+                <th scope="col" className="px-5 py-4">{t("columns.city")}</th>
+                <th scope="col" className="px-5 py-4">{t("columns.plan")}</th>
+                <th scope="col" className="px-5 py-4">{t("columns.status")}</th>
+                <th scope="col" className="px-5 py-4">{t("columns.activity")}</th>
+                <th scope="col" className="px-5 py-4">{t("columns.subscription")}</th>
+                <th scope="col" className="px-5 py-4 text-right">{t("columns.members")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {schools.map((school) => {
+                const subscription = subscriptions.get(school.id)!;
+                const health = schoolHealth({
+                  activeStudents: students.get(school.id) ?? 0,
+                  lastActivity: activity.get(school.id) ?? null,
+                  now,
+                });
+                return (
+                  <tr key={school.id} className="relative transition-colors hover:bg-azure-50/50">
+                    <td className="px-5 py-4">
+                      {/* Toute la ligne ouvre la fiche de l'école. */}
+                      <Link href={`/plateforme/ecoles/${school.id}`} className="block font-semibold text-ink after:absolute after:inset-0">
+                        {school.name}
+                      </Link>
+                      <span className="block text-xs text-muted-foreground">{school.slug}</span>
+                    </td>
+                    <td className="px-5 py-4 text-ink-soft">{school.city ?? "—"}</td>
+                    <td className="px-5 py-4 text-ink-soft">{t(`plans.${school.plan}`)}</td>
+                    <td className="px-5 py-4">
+                      <StatusPill tone={SCHOOL_STATUS_TONES[school.status]}>{t(`statuses.${school.status}`)}</StatusPill>
+                    </td>
+                    <td className="px-5 py-4">
+                      <StatusPill tone={HEALTH_TONE[health]}>{t(`health.${health}`)}</StatusPill>
+                    </td>
+                    <td className="px-5 py-4">
+                      <StatusPill tone={SUBSCRIPTION_TONE[subscription.state]}>
+                        {t(`subscription.states.${subscription.state}`, { days: subscription.days ?? 0 })}
+                      </StatusPill>
+                    </td>
+                    <td className="tabular px-5 py-4 text-right font-semibold text-ink">{formatInteger(school.members)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

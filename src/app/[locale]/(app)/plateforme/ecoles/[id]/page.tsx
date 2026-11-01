@@ -8,12 +8,16 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { buttonVariants } from "@/components/ui/button";
+import { SubscriptionEndForm, SubscriptionPaymentForm } from "@/features/platform/components/subscription-forms";
 import { daysSince, HEALTH_TONE, schoolHealth } from "@/features/platform/health";
 import { getSchoolDetail } from "@/features/platform/queries";
+import { SUBSCRIPTION_TONE, subscriptionState, suggestedCoverage } from "@/features/platform/subscription";
+import { monthlyPrice } from "@/config/plans";
+import { todayInDakar } from "@/features/dashboard/calendar";
 import { SETUP_STEPS } from "@/features/setup/steps";
 import { Link } from "@/i18n/navigation";
 import { requireSpace } from "@/lib/auth/session";
-import { formatDate, formatInteger } from "@/lib/format";
+import { formatDate, formatInteger, formatXOF } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 import { SCHOOL_STATUS_TONES } from "@/features/platform/components/status-tones";
@@ -62,8 +66,10 @@ async function Detail({ params }: { params: Props["params"] }) {
     getTranslations("roles"),
     getTranslations("setup.steps"),
   ]);
-  const { school, team, invitations, setup, activity } = detail;
+  const { school, team, invitations, setup, activity, subscriptionPayments } = detail;
   const now = new Date();
+  const today = todayInDakar(now);
+  const subscription = subscriptionState(school.subscription_ends_on, today);
   const health = schoolHealth({ activeStudents: activity.activeStudents, lastActivity: activity.lastActivity, now });
   const days = daysSince(activity.lastActivity, now);
   const direction = team.filter((member) => member.roles.some((role) => role === "owner" || role === "director"));
@@ -128,6 +134,57 @@ async function Detail({ params }: { params: Props["params"] }) {
             className="col-span-2 lg:col-span-1"
           />
         </div>
+      </section>
+
+      <section aria-labelledby="subscription" className="mb-5 rounded-xl bg-white p-5 shadow-card ring-1 ring-line/70">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 id="subscription" className="font-semibold">
+              {t("subscription.title")}
+            </h2>
+            <StatusPill tone={SUBSCRIPTION_TONE[subscription.state]}>
+              {t(`subscription.states.${subscription.state}`, { days: subscription.days ?? 0 })}
+            </StatusPill>
+          </div>
+          <SubscriptionPaymentForm
+            schoolId={school.id}
+            monthly={monthlyPrice(school.plan)}
+            today={today}
+            coversUntil={suggestedCoverage(school.subscription_ends_on, today)}
+          />
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {school.subscription_ends_on
+            ? t("subscription.coveredUntil", { date: formatDate(school.subscription_ends_on) })
+            : t("subscription.noEnd")}
+          {monthlyPrice(school.plan) !== null &&
+            ` · ${t("subscription.monthly", { plan: t(`plans.${school.plan}`), price: formatXOF(monthlyPrice(school.plan)!) })}`}
+        </p>
+        <div className="mt-4">
+          <SubscriptionEndForm schoolId={school.id} endsOn={school.subscription_ends_on} />
+        </div>
+        <h3 className="mt-5 text-sm font-semibold">{t("subscription.paymentsTitle")}</h3>
+        {subscriptionPayments.length === 0 ? (
+          <p className="mt-1 text-sm text-muted-foreground">{t("subscription.noPayments")}</p>
+        ) : (
+          <ul className="mt-2 divide-y divide-line">
+            {subscriptionPayments.map((payment) => (
+              <li key={payment.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5 text-sm">
+                <div className="min-w-0">
+                  <p className="tabular font-semibold text-ink">{formatXOF(payment.amount)}</p>
+                  <p className="text-muted-foreground">
+                    {t("subscription.paidOn", { date: formatDate(payment.paid_on) })} ·{" "}
+                    {t(`subscription.methods.${payment.method}`)}
+                    {payment.reference && ` · ${payment.reference}`}
+                  </p>
+                </div>
+                <span className="text-muted-foreground">
+                  {t("subscription.covers", { date: formatDate(payment.covers_until) })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <div className="grid gap-5 lg:grid-cols-2">

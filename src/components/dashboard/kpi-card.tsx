@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ArrowUpRight, Ellipsis } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { bigNumber, formatInteger } from "@/lib/format";
@@ -51,12 +51,11 @@ export async function KpiCard({
         ) : (
           <span />
         )}
-        {href ? (
+        {/* La flèche n'apparaît que si la carte ouvre une page : rien de cliquable qui ne mène nulle part. */}
+        {href && (
           <span className="flex size-8 items-center justify-center rounded-full bg-white/70 text-ink ring-1 ring-ink/10 transition-colors group-hover:bg-white">
             <ArrowUpRight className="size-4" aria-hidden />
           </span>
-        ) : (
-          <Ellipsis className="size-5 text-ink/50" aria-hidden />
         )}
       </div>
       <div>

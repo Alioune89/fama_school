@@ -268,7 +268,8 @@
       "plan": "Formule",
       "status": "Statut",
       "members": "Membres",
-      "activity": "Activité"
+      "activity": "Activité",
+      "subscription": "Abonnement"
     },
     "health": {
       "setup": "Mise en route",
@@ -388,7 +389,46 @@
       "statusOf": "Statut de {school}",
       "save": "Enregistrer",
       "saved": "{school} : formule enregistrée.",
-      "statusHint": "Le revenu attendu compte les écoles au statut « Active ». Le statut sert au suivi commercial : une école suspendue garde pour l'instant l'accès à l'application."
+      "statusHint": "Le revenu attendu compte les écoles au statut « Active ». Une école « Suspendue » n'a plus accès à l'application ; ses données sont conservées et l'accès revient dès qu'elle repasse « Active »."
+    },
+    "subscription": {
+      "title": "Abonnement",
+      "states": {
+        "unset": "Date à définir",
+        "active": "À jour · {days, plural, one {# jour} other {# jours}}",
+        "endingSoon": "{days, plural, =0 {Se termine aujourd'hui} one {Se termine demain} other {Se termine dans # jours}}",
+        "expired": "{days, plural, one {Échu depuis # jour} other {Échu depuis # jours}}"
+      },
+      "coveredUntil": "Couvert jusqu'au {date}",
+      "noEnd": "Aucune date de fin : indiquez la fin du pilote ou de l'abonnement.",
+      "monthly": "Formule {plan} : {price} par mois",
+      "endsOn": "Fin de la période couverte (pilote ou abonnement)",
+      "saveEnd": "Enregistrer la date",
+      "endSaved": "Date de fin enregistrée.",
+      "addPayment": "Enregistrer un paiement",
+      "savePayment": "Enregistrer le paiement",
+      "cancel": "Annuler",
+      "paymentSaved": "Paiement enregistré : l'abonnement est prolongé.",
+      "fields": {
+        "amount": "Montant (FCFA)",
+        "paidOn": "Reçu le",
+        "coversUntil": "Couvre jusqu'au",
+        "reference": "Référence (facultatif)",
+        "method": "Moyen de paiement"
+      },
+      "methods": {
+        "wave": "Wave",
+        "orange_money": "Orange Money",
+        "transfer": "Virement",
+        "cash": "Espèces",
+        "other": "Autre"
+      },
+      "coversBeforePaid": "La période couverte doit se terminer après la date du paiement.",
+      "paymentsTitle": "Paiements reçus",
+      "noPayments": "Aucun paiement enregistré pour l'instant.",
+      "paidOn": "Reçu le {date}",
+      "covers": "Couvre jusqu'au {date}",
+      "toRenew": "{count, plural, one {# abonnement à renouveler} other {# abonnements à renouveler}} (bientôt terminé ou échu) : {schools}"
     }
   },
   "landing": {
@@ -3302,5 +3342,12 @@
         }
       }
     }
+  },
+  "suspended": {
+    "title": "Accès suspendu",
+    "body": "L'abonnement de {school} est à régulariser. Vos données sont conservées : l'accès reviendra dès que la situation sera réglée avec Fama School.",
+    "bodyParent": "L'accès à {school} est momentanément suspendu. Les informations de votre enfant sont conservées ; rapprochez-vous de l'école.",
+    "contact": "Contacter Fama School",
+    "whatsapp": "Bonjour, je vous contacte au sujet de l'abonnement de {school}."
   }
 }

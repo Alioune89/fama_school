@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { StudentImport } from "@/features/students/components/student-import";
-import { listClassOptions, listExistingStudents } from "@/features/students/queries";
+import { getImportColumns, listClassOptions, listExistingStudents } from "@/features/students/queries";
 import { Link } from "@/i18n/navigation";
 import { permissions } from "@/lib/auth/permissions";
 import { requireSpace } from "@/lib/auth/session";
@@ -20,9 +20,10 @@ async function ImportWizard() {
   if (!permissions.managePeople(entry.roles)) {
     return <p className="rounded-xl bg-warning-50 p-4 text-sm text-warning-700">{t("forbidden")}</p>;
   }
-  const [{ classes, yearLabel }, existing] = await Promise.all([
+  const [{ classes, yearLabel }, existing, savedColumns] = await Promise.all([
     listClassOptions(entry.schoolId!),
     listExistingStudents(entry.schoolId!),
+    getImportColumns(entry.schoolId!),
   ]);
   if (!yearLabel || classes.length === 0) {
     return (
@@ -34,7 +35,7 @@ async function ImportWizard() {
       </p>
     );
   }
-  return <StudentImport classNames={classes.map((c) => c.name)} existing={existing} />;
+  return <StudentImport classNames={classes.map((c) => c.name)} existing={existing} savedColumns={savedColumns} />;
 }
 
 export default async function ImportStudentsPage() {

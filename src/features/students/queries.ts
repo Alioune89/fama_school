@@ -1,6 +1,7 @@
 import "server-only";
 import { sanitizeSearch } from "@/lib/search";
-import type { ExistingStudent } from "./import-parser";
+import type { ColumnMapping, ExistingStudent } from "./import-parser";
+import { importColumnsSchema } from "./schemas";
 import { createClient } from "@/lib/supabase/server";
 
 export type StudentListFilters = { q?: string; classId?: string | null };
@@ -46,6 +47,14 @@ export async function listClassOptions(schoolId: string) {
 }
 
 export type ClassOption = Awaited<ReturnType<typeof listClassOptions>>["classes"][number];
+
+/** Association des colonnes retenue lors des imports précédents de l'école ({} : aucune). */
+export async function getImportColumns(schoolId: string): Promise<ColumnMapping> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("schools").select("settings").eq("id", schoolId).single();
+  const saved = importColumnsSchema.safeParse((data?.settings as Record<string, unknown> | null)?.importColumns ?? {});
+  return saved.success ? saved.data : {};
+}
 
 /** Tous les élèves de l'école (nom, naissance, classe de l'année), pour repérer les doublons à l'import. */
 export async function listExistingStudents(schoolId: string): Promise<ExistingStudent[]> {

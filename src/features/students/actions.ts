@@ -4,11 +4,15 @@ import { refresh } from "next/cache";
 import { fail, invalid, ok, type ActionResult } from "@/lib/action-result";
 import { permissions } from "@/lib/auth/permissions";
 import { getSchoolContext } from "@/lib/auth/school-context";
+import { createAdminClient } from "@/lib/supabase/admin";
+import type { Json } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
+import type { ColumnMapping } from "./import-parser";
 import {
   changeClassSchema,
   endEnrollmentSchema,
   importBatchSchema,
+  importColumnsSchema,
   registerStudentSchema,
   updateStudentSchema,
   type ChangeClassInput,
@@ -146,6 +150,28 @@ export async function importStudents(input: { rows: ImportRow[] }): Promise<Acti
       code: isRegistrationCode(e.code) ? e.code : "unknown",
     })),
   });
+}
+
+/**
+ * Retient l'association des colonnes choisie à l'import : le prochain fichier de l'école est reconnu tout seul.
+ * Le secrétariat importe aussi, mais ne modifie pas la fiche de l'école : écriture par la clé de service,
+ * limitée à ce réglage, après la vérification du droit d'importer.
+ */
+export async function saveImportColumns(columns: ColumnMapping): Promise<ActionResult> {
+  const ctx = await getSchoolContext("direction");
+  if (!ctx || !permissions.managePeople(ctx.roles)) return fail("errors.forbidden");
+  const parsed = importColumnsSchema.safeParse(columns);
+  if (!parsed.success) return fail("errors.unknown");
+
+  const admin = createAdminClient();
+  const { data, error } = await admin.from("schools").select("settings").eq("id", ctx.schoolId).single();
+  if (error) return fail("errors.unknown");
+  const settings = (data.settings ?? {}) as Record<string, unknown>;
+  const { error: updateError } = await admin
+    .from("schools")
+    .update({ settings: { ...settings, importColumns: parsed.data } as { [key: string]: Json } })
+    .eq("id", ctx.schoolId);
+  return updateError ? fail("errors.unknown") : ok(undefined);
 }
 
 async function currentYearId(schoolId: string) {

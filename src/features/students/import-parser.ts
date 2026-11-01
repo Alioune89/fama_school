@@ -9,6 +9,8 @@ import type { ImportRow, Relationship } from "./schemas";
 
 export type CellValue = string | number | boolean | Date | null | undefined;
 
+export type ImportField = Field;
+
 type Field =
   | "lastName"
   | "firstName"
@@ -29,13 +31,13 @@ type Field =
 export type ImportIssue = "missingName" | "missingClass" | "invalidSex" | "invalidDate" | "invalidPhone";
 
 export type ParsedImport = {
-  /** Champs reconnus dans l'en-tête (pour l'aperçu des colonnes). */
-  columns: Field[];
-  /** En-têtes non reconnus : leurs données ne seront pas importées. */
-  ignoredColumns: string[];
+  /** Pas de colonne Classe : la classe est le nom de la feuille. */
+  classFromSheet: boolean;
   missingRequired: Field[];
   valid: ImportRow[];
   invalid: { row: number; issues: ImportIssue[]; label: string }[];
+  /** Ligne du tableur (et feuille, s'il y en a plusieurs) de chaque numéro de ligne. */
+  lines: Map<number, { line: number; sheet: string | null }>;
 };
 
 const normalizeHeader = (value: CellValue) =>
@@ -50,28 +52,34 @@ const normalizeHeader = (value: CellValue) =>
     .trim();
 
 /** Synonymes d'en-têtes rencontrés dans les fichiers des écoles. L'ordre compte (le plus précis d'abord). */
+/** Mots qui désignent un numéro de téléphone (« Cel. papa », « GSM mère », « WhatsApp tuteur »…). */
+const PHONE = "(telephone|tel|portable|contact|numero|cel|cell|cellulaire|mobile|gsm|whatsapp)s?";
+
+/**
+ * Synonymes d'en-têtes rencontrés dans les fichiers des écoles. L'ordre compte (le plus précis d'abord).
+ * Le père (ou le parent 1) va en parent 1, la mère (ou le parent 2) en parent 2.
+ */
 const HEADER_PATTERNS: [RegExp, Field][] = [
   [
-    /^(telephone|tel|portable|contact|numero)s? (du |de la )?(parent|tuteur|pere|mere)? ?2$|^(telephone|tel|contact) (2e|second) parent$|^(parent|tuteur) 2 (telephone|tel|portable|contact|numero)s?$/,
+    new RegExp(
+      `^${PHONE} (du |de la )?(parent|tuteur|pere|mere)? ?2$|^(telephone|tel|contact) (2e|second) parent$|^(parent|tuteur) 2 ${PHONE}$|^${PHONE}( de la)? (mere|maman)$`,
+    ),
     "guardian2Phone",
   ],
   [
-    /^(nom )?(du |de la )?(parent|tuteur|tutrice) ?2$|^nom (2e|second) parent$|^(parent|tuteur) 2 (nom|nom et prenoms?|nom complet)$/,
+    /^(nom )?(du |de la )?(parent|tuteur|tutrice) ?2$|^nom (2e|second) parent$|^(parent|tuteur) 2 (nom|nom et prenoms?|nom complet)$|^(nom )?(et prenoms? )?(de la )?(mere|maman)$/,
     "guardian2Name",
   ],
   [/^lien( de parente)?( du)?( parent)? ?2$|^(parent|tuteur) 2 lien( de parente)?$/, "guardian2Relationship"],
   // « Parent 1 - Téléphone » : le numéro 1 est facultatif.
+  [new RegExp(`^${PHONE}( du| de la)?( parent| tuteur| pere| papa)?( 1)?$|^(parent|tuteur)( 1)? ${PHONE}$`), "guardian1Phone"],
   [
-    /^(telephone|tel|portable|contact|numero)s?( du| de la)?( parent| tuteur| pere| mere)?( 1)?$|^(parent|tuteur)( 1)? (telephone|tel|portable|contact|numero)s?$/,
-    "guardian1Phone",
-  ],
-  [
-    /^(nom )?(du |de la )?(parent|tuteur|tutrice|pere|mere)( 1)?$|^nom (du )?parent( 1)?$|^(parent|tuteur)( 1)? (nom|nom et prenoms?|nom complet)$/,
+    /^(nom )?(et prenoms? )?(du |de la )?(parent|tuteur|tutrice|pere|papa)( 1)?$|^nom (du )?parent( 1)?$|^(parent|tuteur)( 1)? (nom|nom et prenoms?|nom complet)$/,
     "guardian1Name",
   ],
   [/^lien( de parente)?( du)?( parent)?( 1)?$|^qualite$|^(parent|tuteur)( 1)? lien( de parente)?$/, "guardian1Relationship"],
   [/^(prenom|prenoms)( de l eleve)?$/, "firstName"],
-  [/^(nom et prenoms?|prenom et nom|nom complet|eleve|nom de l eleve et prenom)$/, "fullName"],
+  [/^(nom (et )?prenoms?|prenoms? (et )?nom|nom complet|eleve|nom de l eleve et prenom)$/, "fullName"],
   [/^nom( de famille)?( de l eleve)?$/, "lastName"],
   [/^(sexe|genre|s)$/, "sex"],
   [/^(date de naissance|date naissance|ne le|nee le|ne e le|naissance|date nais)$/, "birthDate"],
@@ -80,6 +88,13 @@ const HEADER_PATTERNS: [RegExp, Field][] = [
   [/^(matricule|n matricule|numero matricule|id|identifiant)$/, "matricule"],
   [/^(nationalite)$/, "nationality"],
 ];
+
+/** Colonnes qui n'ont pas leur place dans une fiche élève (numéro d'ordre, remarques) : écartées d'office. */
+const IGNORED_HEADERS = /^(n|no|num|n ordre|numero d ordre|ordre|rang|#|observations?|remarques?|commentaires?|obs)$/;
+
+export function isIgnoredHeader(key: string): boolean {
+  return IGNORED_HEADERS.test(key.replace(/#\d+$/, ""));
+}
 
 export function mapHeaders(headerRow: CellValue[]): (Field | null)[] {
   const used = new Set<Field>();
@@ -174,87 +189,235 @@ export function titleCase(value: string): string {
     .replace(/(^|[\s'-])(\p{L})/gu, (_, separator: string, letter: string) => separator + letter.toLocaleUpperCase("fr"));
 }
 
-export function parseImport(sheet: CellValue[][]): ParsedImport {
-  const [headerRow = [], ...rows] = sheet;
-  const fields = mapHeaders(headerRow);
-  const columns = fields.filter((field): field is Field => field !== null);
-  const ignoredColumns = headerRow
-    .filter((cell, index) => fields[index] === null && normalizeHeader(cell))
-    .map((cell) => String(cell).replace(/\s+/g, " ").trim());
-  const hasName = columns.includes("fullName") || (columns.includes("firstName") && columns.includes("lastName"));
-  const missingRequired: Field[] = [
-    ...(hasName ? [] : (["firstName", "lastName"] as Field[])),
-    ...(columns.includes("className") ? [] : (["className"] as Field[])),
-    ...(columns.includes("sex") ? [] : (["sex"] as Field[])),
-  ];
+/** Feuille d'un classeur (un fichier CSV n'en a qu'une, sans nom). */
+export type ImportSheet = { name: string; rows: CellValue[][] };
 
+/**
+ * Association des colonnes du fichier aux champs de Fama School. La clé est l'en-tête normalisé
+ * (« telephone », « telephone#2 » pour un en-tête répété) : elle vaut pour toutes les feuilles et d'un import à
+ * l'autre. null : colonne ignorée.
+ */
+export type ColumnMapping = Record<string, Field | null>;
+
+/** Colonne du fichier telle que l'écran d'association la présente. */
+export type ImportColumn = { key: string; label: string; samples: string[] };
+
+/** Choix proposés à l'écran d'association, dans l'ordre d'une fiche d'inscription. */
+export const IMPORT_FIELDS: readonly Field[] = [
+  "fullName",
+  "lastName",
+  "firstName",
+  "sex",
+  "className",
+  "birthDate",
+  "birthPlace",
+  "nationality",
+  "matricule",
+  "guardian1Name",
+  "guardian1Phone",
+  "guardian1Relationship",
+  "guardian2Name",
+  "guardian2Phone",
+  "guardian2Relationship",
+];
+
+const isBlank = (cell: CellValue) => text(cell) === "" && !(cell instanceof Date) && typeof cell !== "number";
+
+/** Lignes parcourues pour trouver les titres : au-delà, ce sont des élèves. */
+const HEADER_SCAN_ROWS = 15;
+
+/**
+ * Ligne des titres (index à partir de 0, -1 si la feuille est vide). Souvent la première, mais beaucoup de
+ * fichiers commencent par le nom de l'école ou l'année : on garde la ligne qui ressemble le plus à des titres.
+ */
+export function findHeaderRow(rows: CellValue[][]): number {
+  let best = -1;
+  let bestScore = 0;
+  rows.slice(0, HEADER_SCAN_ROWS).forEach((cells, index) => {
+    const labels = cells.filter((cell) => typeof cell === "string" && normalizeHeader(cell)).length;
+    const score = mapHeaders(cells).filter(Boolean).length * 10 + labels;
+    if (labels >= 2 && score > bestScore) {
+      best = index;
+      bestScore = score;
+    }
+  });
+  return best >= 0 ? best : rows.findIndex((cells) => !cells.every(isBlank));
+}
+
+function columnKeys(headerRow: CellValue[]): string[] {
+  const seen = new Map<string, number>();
+  return headerRow.map((cell) => {
+    const base = normalizeHeader(cell);
+    if (!base) return "";
+    const count = (seen.get(base) ?? 0) + 1;
+    seen.set(base, count);
+    return count === 1 ? base : `${base}#${count}`;
+  });
+}
+
+const sampleText = (value: CellValue) =>
+  value instanceof Date ? `${pad(value.getUTCDate())}/${pad(value.getUTCMonth() + 1)}/${value.getUTCFullYear()}` : text(value);
+
+/**
+ * Colonnes de toutes les feuilles, avec trois exemples chacune, et leur association : celle que l'école a
+ * déjà choisie (saved) sinon celle que l'on devine d'après l'en-tête. Un champ n'est associé qu'une fois.
+ */
+export function analyzeColumns(
+  sheets: ImportSheet[],
+  saved: ColumnMapping = {},
+): { columns: ImportColumn[]; mapping: ColumnMapping } {
+  const columns = new Map<string, ImportColumn>();
+  const detected = new Map<string, Field | null>();
+
+  for (const sheet of sheets) {
+    const headerIndex = findHeaderRow(sheet.rows);
+    if (headerIndex < 0) continue;
+    const header = sheet.rows[headerIndex]!;
+    const guesses = mapHeaders(header);
+    columnKeys(header).forEach((key, position) => {
+      if (!key) return;
+      const column = columns.get(key) ?? { key, label: text(header[position]), samples: [] };
+      for (const cells of sheet.rows.slice(headerIndex + 1)) {
+        if (column.samples.length >= 3) break;
+        const value = sampleText(cells[position]);
+        if (value && !column.samples.includes(value)) column.samples.push(value);
+      }
+      columns.set(key, column);
+      if (!detected.has(key)) detected.set(key, guesses[position] ?? null);
+    });
+  }
+
+  const mapping: ColumnMapping = {};
+  const taken = new Set<Field>();
+  for (const key of columns.keys()) {
+    if (key in saved) {
+      mapping[key] = saved[key] ?? null;
+      if (saved[key]) taken.add(saved[key]);
+    }
+  }
+  for (const [key, field] of detected) {
+    if (key in mapping) continue;
+    mapping[key] = field && !taken.has(field) ? field : null;
+    if (field) taken.add(field);
+  }
+  return { columns: [...columns.values()], mapping };
+}
+
+/** Associe une colonne à un champ ; la colonne qui l'avait jusque-là est libérée. */
+export function assignColumn(mapping: ColumnMapping, key: string, field: Field | null): ColumnMapping {
+  const next: ColumnMapping = {};
+  for (const [other, current] of Object.entries(mapping)) next[other] = field && current === field ? null : current;
+  next[key] = field;
+  return next;
+}
+
+/** Noms de feuilles donnés par Excel (« Feuil1 », « Sheet2 ») : ce ne sont pas des classes. */
+const GENERIC_SHEET = /^(feuil(le)?|sheet|tabelle|hoja|onglet)\s*\d*$/i;
+
+/**
+ * Sans colonne Classe, un classeur rangé avec une feuille par classe donne la classe de chaque élève par le
+ * nom de sa feuille.
+ */
+export function classFromSheetNames(sheets: ImportSheet[], mapping: ColumnMapping): boolean {
+  return (
+    !Object.values(mapping).includes("className") &&
+    sheets.length > 0 &&
+    sheets.every((sheet) => sheet.name.trim() !== "" && !GENERIC_SHEET.test(sheet.name.trim()))
+  );
+}
+
+export function missingFields(sheets: ImportSheet[], mapping: ColumnMapping): Field[] {
+  const mapped = new Set(Object.values(mapping));
+  const hasName = mapped.has("fullName") || (mapped.has("firstName") && mapped.has("lastName"));
+  return [
+    ...(hasName ? [] : (["firstName", "lastName"] as Field[])),
+    ...(mapped.has("className") || classFromSheetNames(sheets, mapping) ? [] : (["className"] as Field[])),
+    ...(mapped.has("sex") ? [] : (["sex"] as Field[])),
+  ];
+}
+
+export function parseImport(sheets: ImportSheet[], mapping: ColumnMapping): ParsedImport {
+  const classFromSheet = classFromSheetNames(sheets, mapping);
   const valid: ImportRow[] = [];
   const invalid: ParsedImport["invalid"] = [];
+  const lines: ParsedImport["lines"] = new Map();
+  // Numéro unique de chaque ligne, toutes feuilles confondues (avec une seule feuille : la ligne du tableur).
+  let offset = 0;
 
-  rows.forEach((cells, index) => {
-    const rowNumber = index + 2; // ligne du tableur (l'en-tête est la ligne 1)
-    if (cells.every((cell) => text(cell) === "" && !(cell instanceof Date) && typeof cell !== "number")) return;
+  for (const sheet of sheets) {
+    const headerIndex = findHeaderRow(sheet.rows);
+    if (headerIndex < 0) continue;
+    const fields = columnKeys(sheet.rows[headerIndex]!).map((key) => (key ? (mapping[key] ?? null) : null));
+    const sheetName = sheets.length > 1 ? sheet.name : null;
 
-    const get = (field: Field) => {
-      const position = fields.indexOf(field);
-      return position >= 0 ? cells[position] : undefined;
-    };
+    sheet.rows.slice(headerIndex + 1).forEach((cells, index) => {
+      const line = headerIndex + index + 2; // ligne du tableur, à partir de 1
+      const rowNumber = offset + line;
+      if (cells.every(isBlank)) return;
+      lines.set(rowNumber, { line, sheet: sheetName });
 
-    let firstName = titleCase(text(get("firstName")));
-    let lastName = titleCase(text(get("lastName")));
-    if ((!firstName || !lastName) && text(get("fullName"))) {
-      const split = splitFullName(text(get("fullName")));
-      firstName = firstName || titleCase(split.firstName);
-      lastName = lastName || titleCase(split.lastName);
-    }
+      const get = (field: Field) => {
+        const position = fields.indexOf(field);
+        return position >= 0 ? cells[position] : undefined;
+      };
 
-    const issues: ImportIssue[] = [];
-    if (!firstName || !lastName) issues.push("missingName");
-    const className = text(get("className"));
-    if (!className) issues.push("missingClass");
-    const sex = parseSex(get("sex"));
-    if (!sex) issues.push("invalidSex");
-    const birthDate = parseDate(get("birthDate"));
-    if (birthDate === "invalid") issues.push("invalidDate");
-
-    const guardians: ImportRow["guardians"] = [];
-    for (const n of [1, 2] as const) {
-      const name = titleCase(text(get(`guardian${n}Name`)));
-      const rawPhone = text(get(`guardian${n}Phone`));
-      const phone = rawPhone ? normalizePhone(rawPhone) : null;
-      if (rawPhone && !phone) issues.push("invalidPhone");
-      if (name || phone) {
-        guardians.push({
-          full_name: name || `${n === 1 ? "Parent" : "Second parent"} de ${firstName}`.trim(),
-          phone,
-          relationship: parseRelationship(get(`guardian${n}Relationship`), n === 1 ? "father" : "mother"),
-        });
+      let firstName = titleCase(text(get("firstName")));
+      let lastName = titleCase(text(get("lastName")));
+      if ((!firstName || !lastName) && text(get("fullName"))) {
+        const split = splitFullName(text(get("fullName")));
+        firstName = firstName || titleCase(split.firstName);
+        lastName = lastName || titleCase(split.lastName);
       }
-    }
 
-    const label = [firstName, lastName].filter(Boolean).join(" ") || `Ligne ${rowNumber}`;
-    if (issues.length > 0) {
-      invalid.push({ row: rowNumber, issues: [...new Set(issues)], label });
-      return;
-    }
+      const issues: ImportIssue[] = [];
+      if (!firstName || !lastName) issues.push("missingName");
+      const className = text(get("className")) || (classFromSheet ? sheet.name.trim() : "");
+      if (!className) issues.push("missingClass");
+      const sex = parseSex(get("sex"));
+      if (!sex) issues.push("invalidSex");
+      const birthDate = parseDate(get("birthDate"));
+      if (birthDate === "invalid") issues.push("invalidDate");
 
-    valid.push({
-      row: rowNumber,
-      className,
-      student: {
-        first_name: firstName,
-        last_name: lastName,
-        sex: sex!,
-        birth_date: birthDate === "invalid" ? null : birthDate,
-        birth_place: titleCase(text(get("birthPlace"))) || null,
-        nationality: text(get("nationality")) || null,
-        matricule: text(get("matricule")) || null,
-      },
-      guardians,
+      const guardians: ImportRow["guardians"] = [];
+      for (const n of [1, 2] as const) {
+        const name = titleCase(text(get(`guardian${n}Name`)));
+        const rawPhone = text(get(`guardian${n}Phone`));
+        const phone = rawPhone ? normalizePhone(rawPhone) : null;
+        if (rawPhone && !phone) issues.push("invalidPhone");
+        if (name || phone) {
+          guardians.push({
+            full_name: name || `${n === 1 ? "Parent" : "Second parent"} de ${firstName}`.trim(),
+            phone,
+            relationship: parseRelationship(get(`guardian${n}Relationship`), n === 1 ? "father" : "mother"),
+          });
+        }
+      }
+
+      const label = [firstName, lastName].filter(Boolean).join(" ") || `Ligne ${line}`;
+      if (issues.length > 0) {
+        invalid.push({ row: rowNumber, issues: [...new Set(issues)], label });
+        return;
+      }
+
+      valid.push({
+        row: rowNumber,
+        className,
+        student: {
+          first_name: firstName,
+          last_name: lastName,
+          sex: sex!,
+          birth_date: birthDate === "invalid" ? null : birthDate,
+          birth_place: titleCase(text(get("birthPlace"))) || null,
+          nationality: text(get("nationality")) || null,
+          matricule: text(get("matricule")) || null,
+        },
+        guardians,
+      });
     });
-  });
+    offset += sheet.rows.length + 1;
+  }
 
-  return { columns, ignoredColumns, missingRequired, valid, invalid };
+  return { classFromSheet, missingRequired: missingFields(sheets, mapping), valid, invalid, lines };
 }
 
 /** Modèle CSV proposé au téléchargement (séparateur « ; » : Excel en français l'ouvre directement). */

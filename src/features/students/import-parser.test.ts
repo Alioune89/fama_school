@@ -4,6 +4,10 @@ import {
   mapHeaders,
   nameKey,
   parseDate,
+  analyzeColumns,
+  assignColumn,
+  findHeaderRow,
+  isIgnoredHeader,
   parseImport,
   parseRelationship,
   parseSex,
@@ -11,6 +15,7 @@ import {
   titleCase,
 } from "./import-parser";
 import type { ImportRow } from "./schemas";
+import type { CellValue } from "./import-parser";
 
 describe("mapHeaders", () => {
   it("reconnaît les en-têtes usuels, accents et majuscules compris", () => {
@@ -73,14 +78,6 @@ describe("mapHeaders", () => {
   it("ignore les colonnes inconnues", () => {
     expect(mapHeaders(["Observation", "Classe"])).toEqual([null, "className"]);
   });
-
-  it("signale les colonnes ignorées dans l'aperçu", () => {
-    const parsed = parseImport([
-      ["Nom et prénoms", "Sexe", "Classe", "Observation", ""],
-      ["DIOP Awa", "F", "CM2 A", "RAS", ""],
-    ]);
-    expect(parsed.ignoredColumns).toEqual(["Observation"]);
-  });
 });
 
 describe("valeurs", () => {
@@ -137,11 +134,17 @@ describe("valeurs", () => {
   });
 });
 
+/** Une feuille, colonnes devinées d'après les en-têtes. */
+const parse = (rows: CellValue[][]) => {
+  const sheets = [{ name: "", rows }];
+  return parseImport(sheets, analyzeColumns(sheets).mapping);
+};
+
 describe("parseImport", () => {
   const header = ["Nom", "Prénom", "Sexe", "Date de naissance", "Classe", "Nom du parent", "Téléphone du parent", "Lien"];
 
   it("produit des lignes prêtes à importer et numérote comme le tableur", () => {
-    const result = parseImport([
+    const result = parse([
       header,
       ["DIOP", "awa", "F", "14/03/2015", "CM2 A", "moussa diop", "77 123 45 67", "Père"],
       ["Fall", "Modou", "G", 42077, "CM1 A", "", "221761234567", ""],
@@ -181,7 +184,7 @@ describe("parseImport", () => {
   });
 
   it("signale chaque ligne invalide avec ses problèmes, sans bloquer les autres", () => {
-    const result = parseImport([
+    const result = parse([
       header,
       ["Ba", "", "X", "31/02/2015", "", "", "123", ""],
       ["Sarr", "Ibrahima", "M", "", "6e A", "", "", ""],
@@ -193,7 +196,7 @@ describe("parseImport", () => {
   });
 
   it("ignore les lignes vides et accepte une colonne « Nom et prénoms »", () => {
-    const result = parseImport([
+    const result = parse([
       ["Nom et prénoms", "Sexe", "Classe"],
       ["", "", ""],
       ["NDIAYE Mame Diarra", "F", "CE2 A"],
@@ -202,7 +205,116 @@ describe("parseImport", () => {
   });
 
   it("indique les colonnes obligatoires absentes", () => {
-    expect(parseImport([["Nom", "Prénom"]]).missingRequired).toEqual(["className", "sex"]);
+    expect(parse([["Nom", "Prénom"]]).missingRequired).toEqual(["className", "sex"]);
+  });
+});
+
+describe("fichiers des écoles, tels quels", () => {
+  it("trouve la ligne des titres sous le nom de l'école et l'année", () => {
+    const rows: CellValue[][] = [
+      ["GROUPE SCOLAIRE LES BAOBABS"],
+      ["Année scolaire 2026-2027", null],
+      [],
+      ["N°", "NOM & PRENOMS", "SEXE", "CLASSE"],
+      [1, "DIOP Awa", "F", "CM2 A"],
+    ];
+    expect(findHeaderRow(rows)).toBe(3);
+    const result = parse(rows);
+    expect(result.valid.map((row) => [row.row, row.student.first_name, row.className])).toEqual([[5, "Awa", "CM2 A"]]);
+  });
+
+  it("présente chaque colonne avec des exemples et laisse l'école associer celles qu'on ne devine pas", () => {
+    const sheets = [
+      {
+        name: "",
+        rows: [
+          ["Élève", "Genre", "Classe", "Personne à prévenir", "Observations"],
+          ["DIOP Awa", "F", "CM2 A", "77 123 45 67", "RAS"],
+          ["FALL Modou", "G", "CM2 A", "76 987 65 43", ""],
+        ],
+      },
+    ];
+    const { columns, mapping } = analyzeColumns(sheets);
+    expect(columns.find((column) => column.key === "personne a prevenir")).toEqual({
+      key: "personne a prevenir",
+      label: "Personne à prévenir",
+      samples: ["77 123 45 67", "76 987 65 43"],
+    });
+    expect(mapping).toEqual({
+      eleve: "fullName",
+      genre: "sex",
+      classe: "className",
+      "personne a prevenir": null,
+      observations: null,
+    });
+
+    const chosen = assignColumn(mapping, "personne a prevenir", "guardian1Phone");
+    expect(parseImport(sheets, chosen).valid[0]!.guardians[0]!.phone).toBe("+221771234567");
+  });
+
+  it("reconnaît « Cel. papa », « GSM maman », « Nom de la mère »", () => {
+    expect(mapHeaders(["Nom du père", "Cel. papa", "Nom de la mère", "GSM maman", "WhatsApp tuteur"])).toEqual([
+      "guardian1Name",
+      "guardian1Phone",
+      "guardian2Name",
+      "guardian2Phone",
+      null,
+    ]);
+    expect(mapHeaders(["Tél. mère"])).toEqual(["guardian2Phone"]);
+  });
+
+  it("écarte d'office le numéro d'ordre et les observations", () => {
+    expect(["n", "observations", "remarque", "n#2"].map(isIgnoredHeader)).toEqual([true, true, true, true]);
+    expect(isIgnoredHeader("cel papa")).toBe(false);
+  });
+
+  it("n'associe un champ qu'à une colonne", () => {
+    const mapping = { tel: "guardian1Phone", portable: null } as const;
+    expect(assignColumn(mapping, "portable", "guardian1Phone")).toEqual({ tel: null, portable: "guardian1Phone" });
+  });
+
+  it("reprend les choix déjà faits par l'école, avant ce que l'on devine", () => {
+    const sheets = [{ name: "", rows: [["Nom", "Prénom", "Sexe", "Classe", "Cel. papa", "Téléphone"]] }];
+    const { mapping } = analyzeColumns(sheets, { "cel papa": "guardian1Phone", telephone: null });
+    expect(mapping["cel papa"]).toBe("guardian1Phone");
+    expect(mapping.telephone).toBeNull();
+  });
+
+  it("lit toutes les feuilles et prend la classe du nom de la feuille", () => {
+    const sheets = [
+      {
+        name: "CM2 A",
+        rows: [
+          ["Nom", "Prénom", "Sexe"],
+          ["Diop", "Awa", "F"],
+        ],
+      },
+      { name: "CM2 B", rows: [["LISTE DE LA CLASSE"], ["Nom", "Prénom", "Sexe"], ["Fall", "Modou", "G"]] },
+    ];
+    const result = parseImport(sheets, analyzeColumns(sheets).mapping);
+    expect(result.classFromSheet).toBe(true);
+    expect(result.missingRequired).toEqual([]);
+    expect(result.valid.map((row) => [row.student.first_name, row.className])).toEqual([
+      ["Awa", "CM2 A"],
+      ["Modou", "CM2 B"],
+    ]);
+    // Numéros uniques d'une feuille à l'autre, ligne du tableur conservée pour l'affichage.
+    const [first, second] = result.valid.map((row) => row.row);
+    expect(first).not.toBe(second);
+    expect(result.lines.get(second!)).toEqual({ line: 3, sheet: "CM2 B" });
+  });
+
+  it("ne prend pas « Feuil1 » pour une classe", () => {
+    const sheets = [
+      {
+        name: "Feuil1",
+        rows: [
+          ["Nom", "Prénom", "Sexe"],
+          ["Diop", "Awa", "F"],
+        ],
+      },
+    ];
+    expect(parseImport(sheets, analyzeColumns(sheets).mapping).missingRequired).toEqual(["className"]);
   });
 });
 

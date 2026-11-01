@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Constants } from "@/lib/supabase/database.types";
+import { IMPORT_FIELDS, type ColumnMapping } from "./import-parser";
 import { isoDateField, optionalIsoDateField, optionalPhoneField, optionalText, requiredText } from "@/lib/validation";
 
 export const RELATIONSHIPS = Constants.public.Enums.guardian_relationship;
@@ -71,6 +72,12 @@ export const importRowSchema = z.object({
 export type ImportRow = z.infer<typeof importRowSchema>;
 
 export const importBatchSchema = z.object({ rows: z.array(importRowSchema).min(1).max(250) });
+
+/** Association des colonnes retenue par l'école (réglage schools.settings.importColumns). */
+export const importColumnsSchema = z
+  .record(z.string().min(1).max(120), z.enum(IMPORT_FIELDS as [string, ...string[]]).nullable())
+  .refine((mapping) => Object.keys(mapping).length <= 100)
+  .transform((mapping) => mapping as ColumnMapping);
 
 export const changeClassSchema = z.object({
   studentId: z.uuid(),

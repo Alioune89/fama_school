@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { DEMO, loginWithEmail } from "./helpers";
+import { adminClient, DEMO, loginWithEmail } from "./helpers";
+import { buildXlsx } from "./xlsx";
 
 /** Texte visible (les pages précédentes restent en mémoire, masquées, et le tableau est caché sur mobile). */
 const visibleText = (page: Page, text: string) => page.getByText(text).filter({ visible: true }).first();
@@ -123,6 +124,95 @@ test.describe("Lot 1 — élèves", () => {
     await page.getByRole("button", { name: "Importer 2 élèves" }).click();
     await expect(visibleText(page, "2 élèves importés")).toBeVisible();
     await expect(visibleText(page, "1 ligne écartée à l'aperçu")).toBeVisible();
+  });
+});
+
+test.describe("Import : le fichier de l'école tel quel", () => {
+  test.beforeEach(async ({ page }) => {
+    await loginWithEmail(page, DEMO.director);
+    await expect(page).toHaveURL(/\/direction$/);
+  });
+
+  test("titres décalés, une feuille par classe, colonne à associer, puis choix retenu", async ({ page }) => {
+    test.setTimeout(120_000);
+    const tag = `Classeur${Date.now().toString(36)}`;
+    // En-tête propre à l'exécution : les projets desktop et mobile ne partagent pas le choix retenu.
+    const phoneHeader = `Cel. papa ${tag}`;
+    const phoneKey = `cel papa ${tag.toLowerCase()}`;
+    const sheet = (name: string, first: string, phone: string) => ({
+      name,
+      rows: [
+        ["GROUPE SCOLAIRE LES BAOBABS"],
+        ["Année scolaire 2026-2027"],
+        [],
+        ["NOM & PRENOMS", "Genre", phoneHeader, "Observations"],
+        [`${tag.toUpperCase()} ${first}`, "F", phone, "RAS"],
+      ],
+    });
+    const file = (suffix: string) => ({
+      name: "classeur.xlsx",
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      buffer: buildXlsx([sheet("CM2 A", `Awa${suffix}`, uniquePhone("75")), sheet("CM1 A", `Binta${suffix}`, uniquePhone("70"))]),
+    });
+    const drop = async (suffix: string, expected: string) => {
+      await expect(async () => {
+        await page.locator("#student-import-file").setInputFiles(file(suffix));
+        await expect(visibleText(page, expected)).toBeVisible({ timeout: 2_000 });
+      }).toPass();
+    };
+
+    try {
+      await page.goto("/direction/eleves/importer");
+      await drop("", "À quoi correspond chaque colonne ?");
+      await expect(visibleText(page, "Pas de colonne Classe")).toBeVisible();
+      await expect(
+        visibleText(page, "Chaque élève sera inscrit dans la classe qui porte le nom de sa feuille : CM2 A, CM1 A."),
+      ).toBeVisible();
+      await page.getByLabel(`Correspondance de la colonne ${phoneHeader}`).selectOption({ label: "Téléphone du parent" });
+      await page.getByRole("button", { name: "Continuer" }).click();
+
+      await expect(visibleText(page, "2 élèves prêts à importer · aucune ligne écartée")).toBeVisible();
+      await expect(page.getByText(/Parent de Awa · \+221 75/).filter({ visible: true })).toBeVisible();
+      await page.getByRole("button", { name: "Importer 2 élèves" }).click();
+      await expect(visibleText(page, "2 élèves importés")).toBeVisible();
+
+      // Même présentation le mois suivant : la colonne est reconnue, directement l'aperçu.
+      const admin = adminClient();
+      await expect
+        .poll(async () => {
+          const { data } = await admin.from("schools").select("settings").eq("slug", "les-baobabs").single();
+          return (data?.settings as { importColumns?: Record<string, unknown> }).importColumns?.[phoneKey];
+        })
+        .toBe("guardian1Phone");
+      await page.goto("/direction/eleves/importer");
+      await drop("bis", "2 élèves prêts à importer · aucune ligne écartée");
+      await expect(page.getByText("À quoi correspond chaque colonne ?")).toHaveCount(0);
+      await expect(page.getByText(/Parent de Awabis · \+221 75/).filter({ visible: true })).toBeVisible();
+    } finally {
+      const admin = adminClient();
+      const { data } = await admin.from("schools").select("id, settings").eq("slug", "les-baobabs").single();
+      const settings = (data?.settings ?? {}) as { importColumns?: Record<string, unknown> };
+      if (settings.importColumns) {
+        const importColumns = { ...settings.importColumns };
+        delete importColumns[phoneKey];
+        await admin
+          .from("schools")
+          .update({ settings: { ...settings, importColumns } })
+          .eq("id", data!.id);
+      }
+    }
+  });
+
+  test("un fichier .xls explique comment l'enregistrer en .xlsx", async ({ page }) => {
+    await page.goto("/direction/eleves/importer");
+    await expect(async () => {
+      await page.locator("#student-import-file").setInputFiles({
+        name: "ancien.xls",
+        mimeType: "application/vnd.ms-excel",
+        buffer: Buffer.from("ancien format"),
+      });
+      await expect(visibleText(page, "Ce fichier est au format Excel 97-2003 (.xls).")).toBeVisible({ timeout: 2_000 });
+    }).toPass();
   });
 });
 

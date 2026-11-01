@@ -1,7 +1,7 @@
 import "server-only";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
-import { formatDate, formatXOF } from "@/lib/format";
+import { formatDate, formatTime, formatXOF } from "@/lib/format";
 
 export type NotificationParams = Record<string, string | number | null | undefined>;
 
@@ -40,6 +40,10 @@ export async function renderNotification(
     case "examResult":
       values.result = tExams(`results.${values.result as "admitted"}`);
       values.mention = values.mention ? tExams("mentionSuffix", { mention: tExams(`mentions.${values.mention as "bien"}`) }) : "";
+      break;
+    case "arrival":
+    case "departure":
+      values.time = values.at ? formatTime(values.at) : "";
       break;
     case "paymentReceived":
     case "paymentCancelRequested":

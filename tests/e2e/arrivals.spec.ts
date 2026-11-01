@@ -1,11 +1,27 @@
 import { expect, test } from "@playwright/test";
-import { DEMO, loginWithEmail, loginWithPhone } from "./helpers";
+import { adminClient, DEMO, loginWithEmail, loginWithPhone } from "./helpers";
 
 test.describe("Pointage des arrivées", () => {
   test("la direction imprime les cartes, pointe l'arrivée et la sortie d'une élève ; le parent voit les heures", async ({
     browser,
   }, testInfo) => {
     const baseURL = testInfo.project.use.baseURL;
+
+    // Une seule arrivée par jour : on repart d'une journée vierge pour Mariama (et de ses avis du jour).
+    const admin = adminClient();
+    const { data: mariama } = await admin
+      .from("students")
+      .select("id")
+      .eq("first_name", "Mariama")
+      .eq("last_name", "Sow")
+      .single();
+    const today = new Date().toISOString().slice(0, 10);
+    await admin.from("student_arrivals").delete().eq("student_id", mariama!.id).eq("date", today);
+    await admin.from("student_departures").delete().eq("student_id", mariama!.id).eq("date", today);
+    await admin
+      .from("notifications")
+      .delete()
+      .in("dedupe_key", [`arrival:${mariama!.id}:${today}`, `departure:${mariama!.id}:${today}`]);
 
     const directorContext = await browser.newContext({ ...testInfo.project.use, baseURL });
     const director = await directorContext.newPage();
@@ -61,6 +77,14 @@ test.describe("Pointage des arrivées", () => {
     await loginWithPhone(parent, DEMO.parentPhone);
     await expect(parent).toHaveURL(/\/parent$/);
     await expect(parent.getByRole("link", { name: /Mariama Sow/ }).getByText(/^Arrivé·e à \d{1,2} h \d{2}$/)).toBeVisible();
+    // …et a été prévenu par la cloche (puis sur son téléphone, s'il a activé les alertes).
+    await parent.getByRole("button", { name: /^Notifications/ }).click();
+    const menu = parent.getByRole("menu");
+    await expect(menu.getByRole("menuitem", { name: /Mariama est arrivé·e à l'école/ }).first()).toContainText(
+      /Pointage à \d{1,2} h \d{2}/,
+    );
+    await expect(menu.getByRole("menuitem", { name: /Mariama est sorti·e de l'école/ }).first()).toBeVisible();
+    await parent.keyboard.press("Escape");
     await parent.getByRole("link", { name: /Mariama Sow/ }).click();
     await expect(parent.getByText(/^Arrivé·e à l'école aujourd'hui à \d{1,2} h \d{2}$/)).toBeVisible();
     await expect(parent.getByText(/^Sorti·e de l'école aujourd'hui à \d{1,2} h \d{2}$/)).toBeVisible();

@@ -2465,6 +2465,14 @@
         "title": "Annulation demandée : reçu {number}",
         "body": "{amount} · {reason}"
       },
+      "arrival": {
+        "title": "{child} est arrivé·e à l'école",
+        "body": "Pointage à {time}."
+      },
+      "departure": {
+        "title": "{child} est sorti·e de l'école",
+        "body": "Sortie pointée à {time}."
+      },
       "unknown": {
         "title": "Nouvelle notification",
         "body": ""

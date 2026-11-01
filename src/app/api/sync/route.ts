@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { arrivalSyncHandlers } from "@/features/arrivals/sync";
 import { attendanceSyncHandlers } from "@/features/attendance/sync";
 import { gradesSyncHandlers } from "@/features/grades/sync";
+import { processDeliveries } from "@/features/notifications/deliveries";
 import { reportSyncHandlers } from "@/features/reports/sync";
 import { syncRequestSchema, type SyncResponse } from "@/lib/offline/operations";
 import { applyOperations, type SyncHandlers } from "@/lib/offline/server";
@@ -36,5 +37,9 @@ export async function POST(request: Request) {
   if (body.data.userId !== userId) return NextResponse.json({ error: "otherUser" }, { status: 409 });
 
   const results = await applyOperations(supabase, body.data.operations, handlers);
+  // Un pointage ou un appel prévient les parents : l'alerte part tout de suite, sans attendre la page suivante.
+  if (results.some((result) => result.status === "applied")) {
+    after(() => processDeliveries({ force: true }).catch((error) => console.error("Envoi des notifications :", error)));
+  }
   return NextResponse.json({ results } satisfies SyncResponse);
 }

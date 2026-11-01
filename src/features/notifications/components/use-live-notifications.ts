@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { useEffect, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
 
 /**
  * Cloche en temps réel : à chaque notification qui arrive pour ce compte (Supabase Realtime, filtré par la RLS),
- * la page se rafraîchit (pastille, liste, page ouverte) et un message bref s'affiche. Revenir sur l'application
- * (onglet ou téléphone remis au premier plan) rafraîchit aussi, au cas où la connexion serait tombée entre-temps.
+ * onArrive est appelé et la page se rafraîchit (pastille, liste, page ouverte). Revenir sur
+ * l'application (onglet ou téléphone remis au premier plan) rafraîchit aussi, au cas où la connexion serait
+ * tombée entre-temps.
  */
-export function useLiveNotifications(userId: string) {
-  const t = useTranslations("notifications");
+export function useLiveNotifications(userId: string, onArrive: () => void) {
   const router = useRouter();
+  const arrive = useRef(onArrive);
+  useEffect(() => {
+    arrive.current = onArrive;
+  });
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -25,16 +27,20 @@ export function useLiveNotifications(userId: string) {
     // Le client Supabase (temps réel) se charge après l'affichage de la page, pas avant.
     let cancelled = false;
     let unsubscribe = () => {};
-    void import("@/lib/supabase/client").then(({ createClient }) => {
+    void import("@/lib/supabase/client").then(async ({ createClient }) => {
       if (cancelled) return;
       const supabase = createClient();
+      // Le temps réel filtre par la RLS : il lui faut la session du compte avant l'abonnement, sinon rien n'arrive.
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (data.session) await supabase.realtime.setAuth(data.session.access_token);
       const channel = supabase
         .channel(`notifications:${userId}`)
         .on(
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
           () => {
-            toast(t("live"));
+            arrive.current();
             refreshSoon();
           },
         )
@@ -57,5 +63,5 @@ export function useLiveNotifications(userId: string) {
       cancelled = true;
       unsubscribe();
     };
-  }, [userId, router, t]);
+  }, [userId, router]);
 }

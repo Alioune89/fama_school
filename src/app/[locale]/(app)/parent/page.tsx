@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PersonAvatar } from "@/components/people/person-avatar";
 import { listArrivals, listDepartures } from "@/features/arrivals/queries";
 import { todayInDakar } from "@/features/dashboard/calendar";
+import { PushPrompt } from "@/features/notifications/components/push-prompt";
 import { ChildHighlights } from "@/features/parent/components/child-highlights";
 import {
   countRecentReports,
@@ -133,6 +134,7 @@ export default async function ParentHomePage() {
           </Suspense>
         }
       />
+      <PushPrompt />
       <Suspense fallback={<div className="h-40 animate-pulse rounded-xl bg-white shadow-card" aria-hidden />}>
         <Children />
       </Suspense>

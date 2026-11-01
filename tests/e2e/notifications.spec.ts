@@ -63,8 +63,15 @@ test.describe("Notifications", () => {
         occurred_at: new Date().toISOString(),
         author_name: "Awa Diop",
       });
-      await expect(page.getByText("Nouvelle notification")).toBeVisible({ timeout: 15_000 });
+      // Le parent voit la notification elle-même (avec son, vibration sur Android) et peut l'ouvrir d'un appui.
+      const toast = page.locator("[data-sonner-toast]").filter({ hasText: /Signalement pour Mariama/ });
+      await expect(toast).toBeVisible({ timeout: 15_000 });
+      await expect(toast).toContainText("Signalement pour Mariama : Santé");
+      await expect(toast).toContainText("Par Awa Diop");
       await expect(page.getByRole("button", { name: "Notifications : 1 non lue" })).toBeVisible();
+      await toast.getByRole("button", { name: "Voir" }).click();
+      await expect(page).toHaveURL(/\/parent\/enfants\/[0-9a-f-]{36}$/);
+      await expect(page.getByRole("button", { name: "Notifications", exact: true })).toBeVisible();
 
       // Profil : canaux de notification.
       await page.goto("/parent/profil");

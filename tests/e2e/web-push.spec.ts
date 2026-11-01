@@ -11,6 +11,9 @@ test.describe("Notifications push", () => {
   test("sans clés, le parent garde son choix et voit que le service arrive bientôt", async ({ page }) => {
     await loginWithPhone(page, DEMO.parentPhone);
     await expect(page).toHaveURL(/\/parent$/);
+    // Rien à activer tant que le service n'est pas ouvert : pas d'invitation sur l'accueil.
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Soyez prévenu tout de suite" })).toHaveCount(0);
     await page.goto("/parent/profil");
     const push = page.getByRole("switch", { name: "Notifications sur le téléphone" });
     if ((await push.getAttribute("aria-checked")) !== "true") await push.click();

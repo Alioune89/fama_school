@@ -55,7 +55,11 @@ self.addEventListener("push", (event) => {
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",
       data: { url: data.url ?? "/" },
-    }),
+      // Son du téléphone (silent: false) et vibration (Android), même si une alerte du même sujet est déjà affichée.
+      silent: false,
+      renotify: Boolean(data.tag),
+      vibrate: [180, 80, 180],
+    } as NotificationOptions),
   );
 });
 

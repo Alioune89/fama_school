@@ -1,8 +1,9 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { markNotificationsRead } from "../actions";
 import type { NotificationItem } from "../queries";
+import { chime, primeChime } from "./chime";
 import { useLiveNotifications } from "./use-live-notifications";
 
 const relative = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
@@ -46,9 +48,15 @@ export function NotificationMenu({
   className: string;
 }) {
   const t = useTranslations("notifications");
-  useLiveNotifications(userId);
   const router = useRouter();
   const [, startTransition] = useTransition();
+  // Notifications déjà connues, et arrivée en direct en attente de son texte (rendu au serveur, reçu au rafraîchissement).
+  const known = useRef(new Set(items.map((item) => item.id)));
+  const live = useRef(false);
+  useLiveNotifications(userId, () => {
+    live.current = true;
+  });
+  useEffect(() => primeChime(), []);
 
   function open(item: NotificationItem) {
     startTransition(async () => {
@@ -56,6 +64,22 @@ export function NotificationMenu({
       if (item.link) router.push(item.link);
     });
   }
+
+  // Dès que le texte est là : son, vibration et la notification elle-même, avec un bouton pour l'ouvrir.
+  useEffect(() => {
+    const arrived = items.filter((item) => !item.read && !known.current.has(item.id));
+    for (const item of items) known.current.add(item.id);
+    const latest = arrived[0];
+    if (!live.current || !latest) return;
+    live.current = false;
+    chime();
+    const others = arrived.length - 1;
+    toast(latest.title, {
+      description: [latest.body, others > 0 ? t("liveOthers", { count: others }) : null].filter(Boolean).join(" · ") || undefined,
+      action: latest.link ? { label: t("see"), onClick: () => open(latest) } : undefined,
+      duration: 10_000,
+    });
+  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps -- seule l'arrivée de nouvelles notifications compte
 
   return (
     <DropdownMenu>

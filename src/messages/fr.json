@@ -2519,7 +2519,16 @@
       }
     },
     "justNow": "à l'instant",
-    "live": "Nouvelle notification"
+    "see": "Voir",
+    "liveOthers": "{count, plural, one {et # autre} other {et # autres}}",
+    "prompt": {
+      "title": "Soyez prévenu tout de suite",
+      "body": "Arrivée de votre enfant, absence, note, reçu : une alerte sonne sur votre téléphone, même application fermée.",
+      "enable": "Activer les alertes",
+      "dismiss": "Plus tard",
+      "enabled": "Alertes activées sur ce téléphone.",
+      "failed": "Les alertes n'ont pas pu être activées. Autorisez les notifications pour Fama School dans les réglages du téléphone, puis réessayez."
+    }
   },
   "announcements": {
     "title": "Annonces",

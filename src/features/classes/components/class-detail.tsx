@@ -90,7 +90,7 @@ export async function ClassDetailView({ id }: { id: string }) {
         )}
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <section className="rounded-xl bg-white p-6 shadow-card ring-1 ring-line/70">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-semibold">{t("detail.students")}</h2>

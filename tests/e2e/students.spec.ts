@@ -200,6 +200,8 @@ test.describe("Import : le fichier de l'école tel quel", () => {
           .update({ settings: { ...settings, importColumns } })
           .eq("id", data!.id);
       }
+      // Les élèves du classeur (noms longs, sans espace) ne restent pas dans les classes des autres parcours.
+      await admin.from("students").delete().ilike("last_name", tag);
     }
   });
 
